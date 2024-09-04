@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+	<head>
+		<meta charset="UTF-8">
+		<title>部门编辑</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/chosen/chosen.min.css">
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.css">
+		<link rel="stylesheet" href="../../Lib/select/css/select-mania.css" />
+		<link rel="stylesheet" href="../../Lib/jsTree/style.min.css">
+
+		<style>
+			html,
+			body {
+				overflow-x: hidden;
+				overflow-y: auto;
+			}
+			
+			.container-fluid {
+				padding: 10px;
+			}
+			
+			input {
+				border: 1px solid #95b8e7;
+				border-radius: 5px;
+			}
+			
+			.font {
+				font-family: "微软雅黑";
+				font-size: 12px;
+				width: 100px;
+			}
+		</style>
+
+	</head>
+
+	<body>
+
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-2">
+					<form class="form-horizontal" id="form">
+						<div class="form-group">
+							<label for="P_DepartName" class="col-sm-2 required">时间间隔(/分钟)</label>
+							<div class="col-sm-7">
+								<input type="text" class="form-control" id="P_REM_TIME" name="P_REM_TIME" oninput="if(this.value=='00'){this.value='0';}else{this.value=this.value.replace(/[^0-9]/g,'')}" />
+							</div>
+							<em style="color: red;" class="col-sm-2">只能输入整数</em>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/jsTree/jstree.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js"></script>
+		<script src="../../Lib/select/js/select-mania.js"></script>
+		<!--弹框-->
+		<script type="text/javascript" src="../../Lib/layer/layer.js"></script>
+		<script src="../../Lib/public.js"></script>
+		<script src="../../Lib/jsTree/jstree.js"></script>
+		<script type="text/javascript">
+			var ID = $.url("DB_ID");
+			var pType = $.url("pType");
+			function submitBtn() {
+				var P_REM_TIME = $("#P_REM_TIME").val();
+				if(P_REM_TIME == "") {
+					layer.alert("请填写时间！");
+					return false;
+				} else {
+					var parames={
+						"P_EVENT_ID":ID,
+						"P_TYPE":pType,
+						"P_TIME":P_REM_TIME
+					}
+					webapi("/order/RemTimeSet", parames, function(res) {
+						if(res == "SUCCESS") {
+							var index = parent.layer.getFrameIndex(window.name); //获取父页面窗口索引
+							layer.msg("设置成功", {
+								icon: 6,
+								time: 1000
+							});
+							setTimeout(function() {
+								window.parent.updateGrid();
+								parent.layer.close(index);
+							}, 500);
+						} else {
+							layer.msg("设置失败", {
+								icon: 5,
+								time: 1000
+							});
+							parent.lock = false;
+						}
+					}, function(err) {
+						parent.lock = false;
+						layer.alert("服务器出错！");
+					});
+				}
+
+			}
+		</script>
+	</body>
+
+</html>

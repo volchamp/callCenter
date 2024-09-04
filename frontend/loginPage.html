@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>智能呼叫中心系统</title>
+		<link rel="shortcut icon" href="Static/Img/favicon.ico" rel="external nofollow" type="image/x-icon" />
+		<link rel="stylesheet" href="Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="Lib/log.css" />
+		<style type="text/css">
+			body {
+				min-width: 71rem;
+				min-height: 42rem;
+				overflow: auto;
+			}
+			
+			.foot {
+				height: 100px;
+				min-height: 6.4rem;
+				position: absolute;
+				font-size: 20px;
+				bottom: 0px;
+				left: 0px;
+			}
+			
+			.version {
+				font-weight: normal !important;
+				letter-spacing: 1px !important;
+				font-size: 14px;
+				;
+				padding-top: 10px !important;
+			}
+			
+			@media(min-width: 800px) {
+				.log-title {
+					font-size: 1.90rem;
+				}
+				label {
+					font-size: 0.90rem;
+				}
+				input {
+					font-size: 0.90rem;
+				}
+				.log {
+					right: 100px;
+				}
+			}
+			
+			@media(min-width: 1300px) {
+				.log-title {
+					font-size: 2.0rem;
+				}
+				label {
+					font-size: 1.0rem;
+				}
+				input {
+					font-size: 1.0rem;
+				}
+				.log {
+					right: 250px;
+				}
+			}
+			
+			@media(min-width: 1900px) {
+				.log-title {
+					font-size: 2.5rem;
+				}
+				label {
+					font-size: 1.2rem;
+				}
+				input {
+					font-size: 1.2rem;
+				}
+				.log {
+					right: 250px;
+				}
+			}
+			
+			@media(min-width: 2700px) {
+				label {
+					width: 100px;
+					font-size: 1.8rem;
+				}
+				.log-title {
+					font-size: 3rem;
+				}
+				input {
+					font-size: 1.8rem;
+				}
+				.log {
+					right: 300px;
+				}
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<div data-loading="正在加载..." id="loading" class="load-indicator loading" style="position: absolute;top: 0;left: 0; width: 100%;z-index: 10; height: 100%; background: #eee"></div>
+		<!--头部-->
+		<div class="head">
+			
+		</div>
+		<!--主体内容-->
+		<div class="content">
+			<img src="img/logbj2.png" />
+			<div class="log" id="log">
+				<div class="log-head">
+					<div class="title" style="position: relative">
+						<div class="log-title">登录</div>
+					</div>
+				</div>
+				<!--登录内容-->
+				<div class="log-content">
+					<div class="title" style="border-bottom: none;">
+						<div class="name">
+							<div>
+								<label>账号</label><input type="text" id="userName" name="userName" value="text" placeholder="请输入账号!" maxlength="50" oninput="this.value=this.value.trim()" />
+							</div>
+						</div>
+						<div class="password">
+							<div>
+								<label>密码</label><input type="password" id="password" name="password" value="ynedw@2019" placeholder="请输入密码" oninput="this.value=this.value.trim()" maxlength="50" />
+							</div>
+						</div>
+						<div class="validation" id="val">
+							<div id="validata">
+								<label>验证码</label><input type="text" id="validation" name="validation" class="validata" maxlength="4" oninput="this.value=this.value.trim()" />
+							</div>
+							<img id="ImgIcon" src="LoginCon/GetValidateCode" onclick="changeImg()" style="width: 25%;height: 40px;position: absolute;bottom: 5px;right: 0;border-width:0;" />
+						</div>
+					</div>
+					<!--登录按钮-->
+					<div class="log-btn">
+						<div class="nav" style="border-bottom: none;">
+							<button id="sub" type="button" class="btn">登录</button>
+						</div>
+					</div>
+				</div>
+			</div>
+			</div>
+			<!--脚部-->
+			<div class="foot">
+				<p class="version">Copyright © 2019 All Rights Reserved Version 1.0</p>
+				<p class="version">为了提高系统使用感知，请使用360极速模式或谷歌浏览器操作该系统</p>
+			</div>
+			
+			<script type="text/javascript" src="Lib/jquery-3.4.1.min.js"></script>
+			<script type="text/javascript" src="Lib/base64InOut.js"></script>
+			<script type="text/javascript" src="Lib/md5.js"></script>
+			<script type="text/javascript" src="Lib/CheckPwd.js"></script>
+			<script type="text/javascript" src="Lib/respond.min.js"></script>
+			<script type="text/javascript" src="Lib/public.js"></script>
+			<script type="text/javascript">
+				$(document).ready(function() {
+					$("#loading").hide();
+					$("#userName").focus();
+					//帮顶
+					document.onkeydown = function(event) {
+						e = event ? event : (window.event ? window.event : null);
+						if(e.keyCode == 13) {
+							document.getElementById("sub").click();
+							return false;
+						}
+					}
+					$("#sub").click(function() {
+						var USER_ID = $("#userName").val();
+						var PASSWORD = $("#password").val(); //手机验证码
+						var CODE = $("#validation").val();
+
+						if(USER_ID == "" || USER_ID == "员工工号") {
+							alert('请输入员工工号');
+							return false;
+						}
+						if(PASSWORD == "" || PASSWORD == "登录密码") {
+							alert('请输入登录密码');
+							return false;
+						}
+						if(CODE == "" || CODE == "验证码") {
+							alert('请输入图形验证码');
+							return false;
+						}
+						if(checkStrong(PASSWORD) < 3) {
+							PWD_STRENGTH = 0;
+						} else {
+							PWD_STRENGTH = 1
+						}
+						var s = new base64InOut();
+						$.ajax({
+							type: 'post',
+							url: urlpath + '/LoginCon/login',
+							dataType:'json',
+							data: {
+								'P_USERNAME': s.base64Encodes(USER_ID),
+								'P_PASSWORD': s.base64Encodes(hex_md5(PASSWORD).toUpperCase()),
+								'P_CODE': CODE,
+								'P_PWD_STRENGTH': PWD_STRENGTH
+							},
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true == !(document.all),
+							success: function(data) {
+								if(data.result == "SUSSESS") {
+									window.localStorage.setItem("page", data.mainpage);
+									$.each(data.userinfo, function(item, value) {
+										window.localStorage.setItem(item, value);
+									});
+									window.location = "Layout/index.html";
+								} else if(data.result.substring(0, 1) == "1") {
+									var str = data.result.substring(1);
+									openUpdatePassword(USER_ID, str);
+									changeImg();
+								} else {
+									alert(data.result + "" + "!");
+									changeImg();
+								}
+							},
+							complete: function(data) {
+								// $("#loading").hide();
+								// var resultobj = eval('[' + data.responseText + ']');
+								// console.log(resultobj);
+								// if(resultobj[0].result == "SUSSESS") {
+								// 	window.localStorage.setItem("page", resultobj[0].mainpage);
+								// 	window.localStorage.setItem("demo", "a0");
+								// 	window.location = "Layout/index.html";
+								// } else if(resultobj[0].result.substring(0, 1) == "1") {
+								// 	var str = resultobj.result.substring(1);
+								// 	openUpdatePassword(USER_ID, str);
+								// 	changeImg();
+								// } else {
+								// 	alert('警告', resultobj.result);
+								// 	changeImg();
+								// }
+							},
+							error: function(err, error) {
+								$("#loading").hide();
+								changeImg();
+							}
+						});
+					});
+				});
+
+				// 刷新图片
+				function changeImg() {
+					$("#validation").val("");
+					var imgSrc = $("#ImgIcon");
+					var src = imgSrc.attr("src");
+					imgSrc.attr("src", changeUrl(src));
+				}
+				//为了使每次生成图片不一致，即不让浏览器读缓存，所以需要加上时间戳
+				function changeUrl(url) {
+					var timestamp = (new Date()).valueOf();
+					var index = url.indexOf("?", url);
+					if(index > 0) {
+						url = url.substring(0, index);
+					}
+					if((url.indexOf("&") >= 0)) {
+						url = url + "×tamp=" + timestamp;
+					} else {
+						url = url + "?timestamp=" + timestamp;
+					}
+					return url;
+				}
+				$("#log").width($("#log").height() / 5 * 4); //动态设置登录框的宽度
+				var vwidth = $("#val").width(); //取密码/用户名/验证码整行的宽度
+				var imgWidth = $("#ImgIcon").width(); //取图片验证码的宽度
+				var label = $("label").width();
+				$("input").width(vwidth - label - 8); //设置input的宽度
+				$("#validata").width(vwidth - imgWidth); //设置去除验证码图片的宽度
+				$("#validation").width($("#validata").width() - label - 8); //设置验证码输入宽的宽度
+				/*窗体改变刷新页面*/
+				$(window).resize(function() {　　
+					location.reload();
+				})
+			</script>
+	</body>
+
+</html>

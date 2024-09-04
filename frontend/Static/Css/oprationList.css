@@ -1,0 +1,219 @@
+#top{
+    font-size: 12px;
+    height: 92px;
+    padding: 15px;
+    font: 12px "微软雅黑";
+}
+#top table,#center table{
+    border-collapse: collapse;
+    border-spacing: 0;
+    width: 100%;
+}
+#top tr,#center tr,#bottom tr{
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+#top td{
+    display: table-cell;
+    vertical-align: inherit;
+    width: 12%;
+    height: 100%;
+    padding-left: 10px;
+}
+#top tbody,#center tbody,#bottom tbody
+{
+    display: table-row-group;
+    vertical-align: middle;
+    border-color: inherit;
+}
+#top a{
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    background-color: transparent;
+}
+#top table tbody tr td img{
+    border-top-left-radius: 2px;
+    border-bottom-left-radius: 2px;
+    width: 34px;
+    height: 34px;
+    float: left;
+    display: block;
+    margin:20px 10px 0px 10px ;
+}
+#top table tbody tr td em{
+    display: block;
+    color: #606669;
+    height: 72px;
+    background: #e9eff1;
+    font-style: normal;
+}
+#top table tbody tr td em b{
+    padding-top: 16px;
+    display: block;
+    font-weight: normal;
+}
+#top table tbody tr td em i{
+    font-size: 20px;
+    color: #007bff;
+    display: block;
+}
+#center{
+    width: 98.3%;
+    height: 100px;
+    background: #fff8ee;
+    border: 1px solid #ffe9c9;
+    color: #333333;
+    font-size: 12px;
+    margin: 10px 0 10px 15px;
+}
+#center,.event_fill{
+    float: left;
+    min-height: 24px;
+    line-height: 26px;
+}
+#center th,#center td{
+    font-weight: normal;
+    text-align: left;
+    padding: 0px;
+}
+#center td{
+    line-height: 100px;
+}
+#center a{
+    margin: 0 0 5px 10px;
+    text-decoration: none;
+}
+#center a.retrievebtn {
+    padding: 0 20px;
+    border: 1px solid #0066cc;
+    border-radius: 3px;
+    display: inline-block;
+    font: 12px "宋体";
+    line-height: 24px;
+    cursor: pointer;
+}
+#center a.retrievebtn:hover{
+    color: #fff;
+    background: #13a2ff;
+    border-color: #028feb;
+}
+#center .retrievebtn:focus{
+    color: #fff;
+    background: #13a2ff;
+    border-color: #028feb;
+}
+.form-control{
+    display: inline-block !important;
+}
+.formselect {
+    width: 30%;
+    display: inline-block;
+    margin-left: 30px;
+    margin-bottom: 10px;
+}
+.brselect{
+    margin-top: 15px;
+}
+#bottom{
+    margin: 10px 15px;
+    width: 98.3%;
+    height: auto;
+    float: left;
+}
+#bottom .order_list {
+    margin-bottom: 15px;
+    border: 1px solid #dbdcdb;
+    color: #3c3c3c;
+    font-size: 12px;
+}
+#bottom .ol_title {
+    padding: 0 15px;
+    background: #eaf8ff;
+    height: 35px;
+    color: #3c3c3c;
+    line-height: 35px;
+}
+#bottom h3{
+    font-size: 16px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-family: "Helvetica Neue", Helvetica, Tahoma, Arial, 'PingFang SC', 'Source Han Sans CN', 'Source Han Sans', 'Source Han Serif', 'Hiragino Sans GB', 'WenQuanYi Micro Hei', 'Microsoft YaHei', sans-serif;
+    font-weight: 700;
+    line-height: 1.1;
+    color: inherit;
+    width: 50%;
+    display: inline-block;
+}
+#bottom  .order_list .ol_title a {
+    float: right;
+    display: block;
+    height: 16px;
+    width: 60px;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    background-color: transparent;
+    color: #7FC2FF;
+}
+#bottom .order_list .ol_con {
+    padding: 10px;
+    position: relative;
+    z-index: -1;
+}
+#bottom.order_list .ol_con table {
+    width: auto;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+#bottom th {
+    font-weight: bold;
+    text-align: -internal-center;
+    display: table-cell;
+    vertical-align: inherit;
+}
+#bottom .order_list .ol_con th a {
+    float: left;
+    margin: 0 20px 0 5px;
+    border: 1px solid #ebebeb;
+    /*padding: 5px 10px;*/
+    display: block;
+    text-align: center;
+    width: 60px;
+    height: 60px;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+#bottom .order_list .ol_con th a span {
+    margin-top: 2px;
+    display: block;
+    color: #999999;
+    font-weight: normal;
+    width: 58px;
+}
+#bottom .order_list .ol_con td {
+    line-height: 24px;
+}
+#bottom .order_list .ol_con td em {
+    color: #008bc9;
+}
+em, i {
+    font-style: normal;
+}
+#bottom  .order_list .ol_con td span.olc_txt {
+    margin-right: 10px;
+    padding-right: 10px;
+    background: url(../../Static/Img/cut-off-line.gif) no-repeat right;
+    display: inline-block;
+}
+#bottom  .yellow_txt {
+    color: #eb6100;
+}
+#bottom .order_list .ol_con td span.olc_txt.last {
+    background: none;
+    padding-right: 0px;
+}
+#from{
+    padding-top: 10px;
+}

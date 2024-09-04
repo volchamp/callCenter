@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>地图</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+    <link rel="stylesheet" href="../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.css">
+    <style>
+        html,body{
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        #content{
+            width: 90%;
+            height: 90%;
+            margin: 2% 5%;
+            border:solid 1px RED;
+        }
+    </style>
+    <script src="../Lib/jquery-3.4.1.min.js"></script>
+<!--    <script src="../Lib/echarts-2.2.7/build/dist/echarts.js"></script>-->
+<!--    <script src="../Lib/echarts-2.2.7/build/dist/echarts-all.js"></script>-->
+        <script src="../Lib/Echarts4.1.0/echarts.min.js"></script>
+        <script src="../Lib/Echarts4.1.0/echarts-gl.js"></script>
+    <script src="../Lib/public.js"></script>
+    <script>
+        $(document).ready(function () {
+
+            var uploadedDataURL = "../Lib/Echarts4.1.0/json/data-1528970362114-r1MK321WQ.json";
+
+            var geoGpsMap = {
+                '1': [102.712251, 25.040609],
+                '2': [103.797851, 26.001557],
+                '3': [100.972344, 23.077321],
+                '4': [101.546046, 25.041988],
+                '5': [100.225668, 25.589449],
+                '6': [101.546046, 25.041988],
+            };
+            var geoCoordMap = {
+                "昆明市": [102.712251, 25.040609],
+
+                "曲靖市":[103.797851, 26.001557],
+
+                "玉溪市":[102.543907, 24.350461],
+
+                "保山市":[99.167133, 25.011802],
+
+                "昭通市":[103.817216, 27.836999],
+
+                "丽江市":[100.733026, 27.072108],
+
+                "普洱市":[100.972344, 23.077321],
+
+                "临沧市":[99.60697, 23.886567],
+
+                "楚雄彝族自治州":[101.546046, 25.041988],
+
+                "红河哈尼族彝族自治州":[102.884182, 23.366775],
+
+                "文山壮族苗族自治州":[104.64401, 23.66951],
+
+                "西双版纳傣族自治州":[100.797941, 22.001724],
+
+                "大理白族自治州":[100.225668, 25.589449],
+
+                "德宏傣族景颇族自治州":[98.278363, 24.436694],
+
+                "怒江傈僳族自治州":[98.854304, 26.850949],
+
+                "迪庆藏族自治州":[99.706463, 27.826853],
+
+            };
+
+            var colors = [
+                ["#1DE9B6", "#F46E36", "#04B9FF", "#5DBD32", "#FFC809", "#FB95D5", "#BDA29A", "#6E7074", "#546570", "#C4CCD3"],
+                ["#37A2DA", "#67E0E3", "#32C5E9", "#9FE6B8", "#FFDB5C", "#FF9F7F", "#FB7293", "#E062AE", "#E690D1", "#E7BCF3", "#9D96F5", "#8378EA", "#8378EA"],
+                ["#DD6B66", "#759AA0", "#E69D87", "#8DC1A9", "#EA7E53", "#EEDD78", "#73A373", "#73B9BC", "#7289AB", "#91CA8C", "#F49F42"],
+            ];
+            var colorIndex = 0;
+            $(function() {
+                var year = ["周一", "周二", "周三", "周四", "周五","周六", "周日"];
+                var mapData = [
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    [],
+                    []
+                ];
+
+                /*柱子Y名称*/
+                var categoryData = [];
+                var barData = [];
+                for (var key in geoCoordMap) {
+                    categoryData.push(key);
+                    mapData[0].push({
+                        "year": '周一',
+                        "name": key,
+                        "value": randomNum(100, 300)
+                    });
+                    mapData[1].push({
+                        "year": '周二',
+                        "name": key,
+                        "value": randomNum(100, 300)
+                    });
+                    mapData[2].push({
+                        "year": '周三',
+                        "name": key,
+                        "value": randomNum(100, 300)
+                    });
+                    mapData[3].push({
+                        "year": '周四',
+                        "name": key,
+                        "value": randomNum(100, 300)
+                    });
+                    mapData[4].push({
+                        "year": '周五',
+                        "name": key,
+                        "value": randomNum(100, 300)
+                    });
+                    mapData[5].push({
+                        "year": '周六',
+                        "name": key,
+                        "value": randomNum(100, 300)
+                    });
+                    mapData[6].push({
+                        "year": '周日',
+                        "name": key,
+                        "value": randomNum(100, 300)
+                    });
+
+                }
+                for (var i = 0; i < mapData.length; i++) {
+                    barData.push([]);
+                    for (var j = 0; j < mapData[i].length; j++) {
+                        barData[i].push(mapData[i][j].value)
+                    }
+                }
+                $.getJSON(uploadedDataURL, function(geoJson) {
+                    echarts.registerMap('云南', geoJson);
+                    var convertData = function(data) {
+                        var res = [];
+                        for (var i = 0; i < data.length; i++) {
+                            var geoCoord = geoCoordMap[data[i].name];
+                            if (geoCoord) {
+                                res.push({
+                                    name: data[i].name,
+                                    value: geoCoord.concat(data[i].value)
+                                });
+                            }
+                        }
+                        return res;
+                    };
+
+                    var convertToLineData = function(data, gps) {
+                        var res = [];
+                        for (var i = 0; i < data.length; i++) {
+                            var dataItem = data[i];
+                            var fromCoord = geoCoordMap[dataItem.name];
+                            debugger;
+                            var toCoord = gps; //郑州
+                            //  var toCoord = geoGps[Math.random()*3];
+                            if (fromCoord && toCoord) {
+                                res.push([{
+                                    coord: fromCoord,
+                                    value: dataItem.value
+                                }, {
+                                    coord: toCoord,
+                                }]);
+                            }
+                        }
+                        return res;
+                    };
+                    var myChart = echarts.init(document.getElementById('content'));
+                    optionXyMap01 = {
+                        timeline: {
+                            data: year,
+                            axisType: 'category',
+                            autoPlay: true,
+                            playInterval: 3000,
+                            left: '10%',
+                            right: '10%',
+                            bottom: '1%',
+                            width: '80%',
+                            //  height: null,
+                            label: {
+                                normal: {
+                                    textStyle: {
+                                        color: '#ddd'
+                                    }
+                                },
+                                emphasis: {
+                                    textStyle: {
+                                        color: '#fff'
+                                    }
+                                }
+                            },
+                            symbolSize: 10,
+                            lineStyle: {
+                                color: '#555'
+                            },
+                            checkpointStyle: {
+                                borderColor: '#777',
+                                borderWidth: 2
+                            },
+                            controlStyle: {
+                                showNextBtn: true,
+                                showPrevBtn: true,
+                                normal: {
+                                    color: '#666',
+                                    borderColor: '#666'
+                                },
+                                emphasis: {
+                                    color: '#aaa',
+                                    borderColor: '#aaa'
+                                }
+                            },
+
+                        },
+                        baseOption: {
+                            animation: true,
+                            animationDuration: 1000,
+                            animationEasing: 'cubicInOut',
+                            animationDurationUpdate: 1000,
+                            animationEasingUpdate: 'cubicInOut',
+                            grid: {
+                                right: '1%',
+                                top: '15%',
+                                bottom: '10%',
+                                width: '30%'
+                            },
+                            tooltip: {
+                                trigger: 'axis', // hover触发器
+                                axisPointer: { // 坐标轴指示器，坐标轴触发有效
+                                    type: 'shadow', // 默认为直线，可选为：'line' | 'shadow'
+                                    shadowStyle: {
+                                        color: 'rgba(150,150,150,0.1)' //hover颜色
+                                    }
+                                }
+                            },
+                            geo: {
+                                show: true,
+                                map: '云南',
+                                roam: true,
+                                zoom: 1.1,
+                                center: [106.83531246, 25.0267395887],
+                                label: {
+                                    emphasis: {
+                                        show: false
+                                    }
+                                },
+                                itemStyle: {
+                                    normal: {
+                                        borderColor: 'rgba(147, 235, 248, 1)',
+                                        borderWidth: 1,
+                                        areaColor: {
+                                            type: 'radial',
+                                            x: 0.5,
+                                            y: 0.5,
+                                            r: 0.8,
+                                            colorStops: [{
+                                                offset: 0,
+                                                color: 'rgba(147, 235, 248, 0)' // 0% 处的颜色
+                                            }, {
+                                                offset: 1,
+                                                color: 'rgba(147, 235, 248, .2)' // 100% 处的颜色
+                                            }],
+                                            globalCoord: false // 缺省为 false
+                                        },
+                                        shadowColor: 'rgba(128, 217, 248, 1)',
+                                        // shadowColor: 'rgba(255, 255, 255, 1)',
+                                        shadowOffsetX: -2,
+                                        shadowOffsetY: 2,
+                                        shadowBlur: 10
+                                    },
+                                    emphasis: {
+                                        areaColor: '#389BB7',
+                                        borderWidth: 0
+                                    }
+                                }
+                            },
+                        },
+                        options: []
+
+                    };
+                    for (var n = 0; n < year.length; n++) {
+                        optionXyMap01.options.push({
+                            backgroundColor: '#051b4a',
+                            title: [{
+                                /* text: '地图',
+                                 subtext: '内部数据请勿外传',
+                                 left: 'center',
+                                 textStyle: {
+                                     color: '#fff'
+                                 }*/
+                            },
+                                {
+                                    id: 'statistic',
+                                    text: year[n] + "天数据统计情况",
+                                    left: '75%',
+                                    top: '8%',
+                                    textStyle: {
+                                        color: '#fff',
+                                        fontSize: 30
+                                    }
+                                }
+                            ],
+                            xAxis: {
+                                type: 'value',
+                                scale: true,
+                                position: 'top',
+                                min: 0,
+                                boundaryGap: false,
+                                splitLine: {
+                                    show: false
+                                },
+                                axisLine: {
+                                    show: false
+                                },
+                                axisTick: {
+                                    show: false
+                                },
+                                axisLabel: {
+                                    margin: 2,
+                                    textStyle: {
+                                        color: '#aaa'
+                                    }
+                                },
+                            },
+                            yAxis: {
+                                type: 'category',
+                                //  name: 'TOP 20',
+                                nameGap: 16,
+                                axisLine: {
+                                    show: true,
+                                    lineStyle: {
+                                        color: '#ddd'
+                                    }
+                                },
+                                axisTick: {
+                                    show: false,
+                                    lineStyle: {
+                                        color: '#ddd'
+                                    }
+                                },
+                                axisLabel: {
+                                    interval: 0,
+                                    textStyle: {
+                                        color: '#ddd'
+                                    }
+                                },
+                                data: categoryData
+                            },
+                            series: [
+                                //未知作用
+                                {
+                                    //文字和标志
+                                    name: 'light',
+                                    type: 'scatter',
+                                    coordinateSystem: 'geo',
+                                    data: convertData(mapData[n]),
+                                    symbolSize: function(val) {
+                                        return val[2] / 10;
+                                    },
+                                    label: {
+                                        normal: {
+                                            formatter: '{b}',
+                                            position: 'right',
+                                            show: true
+                                        },
+                                        emphasis: {
+                                            show: true
+                                        }
+                                    },
+                                    itemStyle: {
+                                        normal: {
+                                            color: colors[colorIndex][n]
+                                        }
+                                    }
+                                },
+                                //地图？
+                                {
+                                    type: 'map',
+                                    map: '云南',
+                                    geoIndex: 0,
+                                    aspectScale: 0.75, //长宽比
+                                    showLegendSymbol: false, // 存在legend时显示
+                                    label: {
+                                        normal: {
+                                            show: false
+                                        },
+                                        emphasis: {
+                                            show: false,
+                                            textStyle: {
+                                                color: '#fff'
+                                            }
+                                        }
+                                    },
+                                    roam: true,
+                                    itemStyle: {
+                                        normal: {
+                                            areaColor: '#031525',
+                                            borderColor: '#FFFFFF',
+                                        },
+                                        emphasis: {
+                                            areaColor: '#2B91B7'
+                                        }
+                                    },
+                                    animation: false,
+                                    data: mapData
+                                },
+                                //地图点的动画效果
+                                {
+                                    //  name: 'Top 5',
+                                    type: 'effectScatter',
+                                    coordinateSystem: 'geo',
+                                    data: convertData(mapData[n].sort(function(a, b) {
+                                        return b.value - a.value;
+                                    }).slice(0, 20)),
+                                    symbolSize: function(val) {
+                                        return val[2] / 10;
+                                    },
+                                    showEffectOn: 'render',
+                                    rippleEffect: {
+                                        brushType: 'stroke'
+                                    },
+                                    hoverAnimation: true,
+                                    label: {
+                                        normal: {
+                                            formatter: '{b}',
+                                            position: 'right',
+                                            show: true
+                                        }
+                                    },
+                                    itemStyle: {
+                                        normal: {
+                                            color: colors[colorIndex][n],
+                                            shadowBlur: 10,
+                                            shadowColor: colors[colorIndex][n]
+                                        }
+                                    },
+                                    zlevel: 1
+                                },
+                                //地图线的动画效果
+                                {
+                                    type: 'lines',
+                                    zlevel: 2,
+                                    effect: {
+                                        show: true,
+                                        period: 4, //箭头指向速度，值越小速度越快
+                                        trailLength: 0.02, //特效尾迹长度[0,1]值越大，尾迹越长重
+                                        symbol: 'arrow', //箭头图标
+                                        symbolSize: 3, //图标大小
+                                    },
+                                    lineStyle: {
+                                        normal: {
+                                            color: colors[colorIndex][n],
+                                            width: 0.1, //尾迹线条宽度
+                                            opacity: 0.5, //尾迹线条透明度
+                                            curveness: .3 //尾迹线条曲直度
+                                        }
+                                    },
+                                    data: convertToLineData(mapData[n], geoGpsMap[Math.ceil(Math.random() * 6)])
+                                },
+                                //柱状图
+                                {
+                                    zlevel: 1.5,
+                                    type: 'bar',
+                                    symbol: 'none',
+                                    itemStyle: {
+                                        normal: {
+                                            color: colors[colorIndex][n]
+                                        }
+                                    },
+                                    data: barData[n]
+                                }
+                            ]
+                        })
+                    }
+                    myChart.setOption(optionXyMap01);
+                });
+            });
+
+
+            function randomNum(minNum, maxNum) {
+               // alert(arguments.length);
+                switch (arguments.length) {
+                    case 1:
+                      // alert(parseInt(Math.random() * minNum + 1, 10));
+                        return parseInt(Math.random() * minNum + 1, 10);
+                        break;
+                    case 2:
+                       // alert(parseInt(Math.random() * (maxNum - minNum + 1) + minNum, 10));
+                        return parseInt(Math.random() * (maxNum - minNum + 1) + minNum, 10);
+                        break;
+                    default:
+                        return 0;
+                        break;
+                }
+            }
+
+
+
+        });
+
+    </script>
+</head>
+<body>
+<div id="content"></div>
+</body>
+</html>

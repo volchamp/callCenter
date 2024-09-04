@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<title>问题添加</title>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<link rel="stylesheet" href="../../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../../Lib/jsTree/style.min.css">
+		<link rel="stylesheet" href="../../../Lib/bootstrap-3.3.7-dist/css/bootstrap.css" />
+		<link rel="stylesheet" href="../../../Lib/bootstrap-table/dist/bootstrap-table.css" />
+		<link rel="stylesheet" href="../../../Lib/jsTree/style.min.css">
+
+		<style>
+			html,
+			body {
+				height: 100%;
+				width: 100%;
+				overflow: auto;
+			}
+			
+			.container-fluid {
+				padding: 5px;
+			}
+			
+			.row {
+				margin-top: 10px;
+				margin-bottom: 5px;
+				height: 100%;
+			}
+			
+			.table-title {
+				font-size: 16px;
+				padding: 10px 0;
+			}
+			.treeject {
+				position: absolute;
+				border: 1px solid #3BA4FF;
+				border-radius: 3px;
+				border-top: 0px;
+				-moz-border-radius-topleft: 0px;
+				-moz-border-radius-topright: 0px;
+				overflow: auto;
+				display: none;
+				background: #fff;
+				z-index: 9999;
+				max-height: 230px;
+				width:119%;
+				font-size: 10px;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<div style="overflow: hidden">
+			<div class="col-md-6 ">
+				<div class="table-title">
+					题库列表
+				</div>
+				<div>
+					<div class="form-inline">
+						<div class="input-group">
+							<span class="input-group-btn">
+                            <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
+							</span>
+							<input type="text" style="margin-left: 0;width: 180px" class="form-control" id="searchString" placeholder="请输入问题名称">
+						</div>
+
+						<div class="input-group" >
+
+							<div  style="float: left;width: 91%;margin-left: 10px" id="selecttree" >
+								<input style="width: 160px;" id="factory_text" type="text" readonly class="form-control search-input" placeholder="请选择题目分类" >
+								<input id="factory_id" type="hidden">
+								<div id="tree" class="treeject" style="position:absolute;border:1px solid #3BA4FF;border-radius: 3px;border-top:0px;-moz-border-radius-topleft:0px ;-moz-border-radius-topright: 0px;overflow: auto;display: none;background: #fff;z-index:9999;max-height: 230px;width: 160px;font-size: 10px;top: 35px;"></div>
+							</div>
+						</div>
+						<button type="button" class="btn btn-primary" id="queryBtn">查 询</button>
+						<button type="button" style="float:right;" class="btn btn-info" onclick="addQues()">
+                        <span class="glyphicon glyphicon-arrow-right"></span> 添加至试卷
+                    </button>
+					</div>
+
+				</div>
+
+				<!-- 主体数据表格等内容部分 -->
+				<div class="mainBody row">
+					<div class="col-md-12">
+						<table id="Exam"></table>
+					</div>
+				</div>
+			</div>
+			<div class="col-sm-6 ">
+				<div class="table-title">
+					试卷已添加题目
+				</div>
+				<div>
+					<div class="form-inline">
+						<button type="button" class="btn btn-danger" onclick="removeQues()">
+                        <span class="glyphicon glyphicon-arrow-left"></span> 从试卷移除
+                    </button>
+						<button type="button" class="btn btn-success" onclick="done()">
+                        <span class="glyphicon glyphicon-ok-circle"></span> &nbsp;完&nbsp;成&nbsp;
+                    </button>
+					</div>
+				</div>
+				<div class="mainBody row">
+					<div class="col-md-12">
+						<table id="Grid"></table>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript" src="../../../Lib/jquery-3.4.1.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+		<script type="text/javascript" src="../../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/bootstrap-table/dist/bootstrap-table.js"></script>
+		<script type="text/javascript" src="../../../Lib/bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/bootstrap-table/src/virtual-scroll/index.js"></script>
+		<script src="../../../Lib/jsTree/jstree.js"></script>
+		<script type="text/javascript" src="../../../Lib/public.js"></script>
+		<script>
+			P_PAPER_ID = $.url("P_PAPER_ID");
+			$(function() {
+				getQuestionTable();
+				getGridTable();
+
+				$("#queryBtn").click(function() {
+					getQuestionTable();
+				});
+
+				$('#tree').jstree({
+					'core': {
+						"multiple": false,
+						"themes": {
+							"responsive": false
+						},
+						'data': {
+							"url": urlpath + "/CommonHander/getZdTypeTree",
+							"data": function(node) {
+								return {
+									"id": node.id
+								};
+							}
+						},
+						'themes': {
+							'responsive': true
+						}
+					}
+					,plugins: ["checkbox"],
+					checkbox: {
+						"three_state": false//父子级不关联选中
+					},
+
+				}).bind('activate_node.jstree', function(obj, e) {
+					var ref = $("#tree").jstree(true);
+					sel = ref.get_selected();
+					var nodes = $("#tree").jstree("get_checked");
+					var text = "";
+					var id = "";
+					for(var i = 0; i < nodes.length; i++) {
+						if(i==0){
+							id=nodes[i];
+							text=$("#tree").jstree("get_text", nodes[i]);
+						}else{
+							id=id+","+nodes[i];
+							text=text+","+$("#tree").jstree("get_text", nodes[i]);
+						}
+					}
+					$("#factory_id").val(id);
+					$("#factory_text").val(text);
+				});
+				$("#selecttree").on("blur", "#factory_text", function(e) {
+					setTimeout(function() {
+						$("#tree").hide();
+					},200)
+				})
+				$("#selecttree").on("click", "#factory_text", function() {
+					if($("#tree")[0].style.display == "none"|| $("#tree")[0].style.display == "") {
+						$("#tree")[0].style.display = "block";
+					} else if($("#tree")[0].style.display == "block") {
+						$("#tree")[0].style.display = "none";
+					}
+				})
+			});
+
+			function getQuestionTable() {
+				$('#Exam').bootstrapTable('destroy');
+				g = $('#Exam').bootstrapTable({
+					url: urlpath + '/exam/examStoreQuery',
+					method: 'get',
+					contentType: "text/json; charset=UTF-8",
+					queryParamsType: "",
+					sidePagination: 'server', //指定服务器端分页
+					dataType: "json",
+					sortable: true, //是否启用排序
+					sortOrder: "asc", //排序方式
+					sortName: "",
+					pagination: true,
+					pageNumber: 1,
+					pageSize: 10, //单页记录数
+					pageList: [10, 15, 20, 30], //分页步进值
+					clickToSelect: true, //点击选中
+					// height:$('body').height() -40,
+					//得到查询的参数
+					queryParams: function(params) {
+						//这里的键的名字和控制器的变量名必须一致，这边改动，控制器也需要改成一样的
+						var temp = {
+							page: params.pageNumber, //初始化加载第一页，默认第一页
+							rows: params.pageSize, //每页的记录行数
+							KEYWORD: $("#searchString").val(),
+							P_QUESTION_TYPE:$("#factory_id").val(),
+							sort: params.sortName,
+							order: params.sortOrder
+						};
+						return temp;
+					},
+					columns: [{
+							checkbox: true
+						},
+						{
+							field: "ID",
+							title: "ID",
+							align: 'left',
+							sortable: true,
+							width: 80
+						},
+						{
+							field: "QUESTION_NAME",
+							title: "题目内容",
+							align: 'left',
+							width: 300
+						},
+						{
+							field: "ANSWER",
+							title: "正确答案",
+							align: 'left',
+							width: 200
+						},
+						{
+							field: "QUESTION_CLASS",
+							title: "题目类型",
+							align: 'left',
+							width: 100
+						},
+                        {
+					        field: "TYPE_NAME",
+                            title: "题目分类",
+                            align: "left",
+                            width:100
+                        }
+					]
+				});
+			}
+
+			function getGridTable() {
+				$('#Grid').bootstrapTable('destroy');
+				g = $('#Grid').bootstrapTable({
+					url: urlpath + '/exam/examPaperStoreQuery?P_PAPER_ID=' + P_PAPER_ID,
+					method: 'get',
+					contentType: "text/json; charset=UTF-8",
+					queryParamsType: "",
+					sidePagination: 'server', //指定服务器端分页
+					dataType: "json",
+					sortable: true, //是否启用排序
+					sortOrder: "asc", //排序方式
+					sortName: "",
+					pagination: true,
+					pageNumber: 1,
+					pageSize: 10, //单页记录数
+					pageList: [10, 15, 20, 30], //分页步进值
+					clickToSelect: true, //点击选中
+					// height:$('body').height()-60 ,
+					//得到查询的参数
+					queryParams: function(params) {
+						//这里的键的名字和控制器的变量名必须一致，这边改动，控制器也需要改成一样的
+						var temp = {
+							page: params.pageNumber, //初始化加载第一页，默认第一页
+							rows: params.pageSize, //每页的记录行数
+							keyword: $("#searchString").val(),
+							sort: params.sortName,
+							order: params.sortOrder
+						};
+						return temp;
+					},
+					columns: [{
+							checkbox: true
+						},
+						{
+							field: "ID",
+							title: "ID",
+							align: 'left',
+							sortable: true,
+							width: 100
+						},
+						{
+							field: "QUESTION_NAME",
+							title: "题目内容",
+							align: 'left',
+							width: 300
+						},
+						{
+							field: "QUESTION_CLASS",
+							title: "题目类型",
+							align: 'left',
+							width: 300
+						}
+					]
+				});
+			}
+
+			function addQues() {
+				var data = $("#Exam").bootstrapTable('getSelections');
+				if(data.length == 0) {
+					new $.zui.Messager('请选择要添加的问题！', {
+						type: 'danger',
+						placement: 'center'
+					}).show();
+					return false;
+				}
+				var selids = "";
+				for(var i = 0; i < data.length; i++) {
+					if(!validateQuestion(data[i].QUESTION_CLASS,data[i].ANSWER,data[i].TYPE_NAME))
+					{
+						new $.zui.Messager('题目必须配置正确答案！', {
+						type: 'danger',
+						placement: 'center'
+					}).show();
+					return false;
+					}
+					else
+					{
+						selids += data[i].ID + ',';
+					}
+				}
+				console.log(selids);
+				selids = selids.substring(0, selids.length - 1);
+				$.ajax({
+					type: 'post',
+					url: urlpath + '/exam/examPaperStoreAdd',
+					data: {
+						"IDS": selids,
+						"P_ID": P_PAPER_ID
+					},
+					dataType: 'text',
+					success: function(res) {
+						if(res == "SUCCESS") {
+							new $.zui.Messager('提示消息：添加成功', {
+								type: 'success',
+								placement: 'center'
+							}).show();
+							refreshGrid();
+						} else {
+							new $.zui.Messager('提示消息：添加失败', {
+								type: 'danger',
+								placement: 'center'
+							}).show();
+						}
+					},
+					error: function(err) {
+
+					}
+				});
+			}
+
+			function validateQuestion(type,answer,cat)
+			{
+
+				if(cat=="")
+				{
+					return false;
+				}
+				else
+				{
+					// if(type=="判断"&&answer==undefined)
+					// {
+					// 	return false;
+					// }
+					// else if(type=="单选"&&answer==undefined)
+					// {
+					// 	return false;
+					// }
+					// else if(type=="多选"&&answer==undefined)
+					// {
+					// 	return false;
+					// }
+					if(answer==undefined)
+					{
+						return false;
+					}
+					else
+					{
+						return true;
+					}
+				}
+			}
+
+			function removeQues() {
+				var data = $("#Grid").bootstrapTable('getSelections');
+				if(data.length == 0) {
+					new $.zui.Messager('请选择要移除的问题！', {
+						type: 'danger',
+						placement: 'center'
+					}).show();
+					return false;
+				}
+				var selids = "";
+				for(var i = 0; i < data.length; i++) {
+					selids += data[i].ID + ',';
+				}
+				selids = selids.substring(0, selids.length - 1);
+				$.ajax({
+					type: 'post',
+					url: urlpath + '/exam/examPaperStoreDel',
+					data: {
+						"IDS": selids,
+						"P_PAPER_ID": P_PAPER_ID
+					},
+					dataType: 'text',
+					success: function(res) {
+						if(res == "SUCCESS") {
+							new $.zui.Messager('提示消息：移除成功', {
+								type: 'success',
+								placement: 'center'
+							}).show();
+							refreshGrid();
+						} else {
+							new $.zui.Messager('提示消息：移除失败', {
+								type: 'danger',
+								placement: 'center'
+							}).show();
+						}
+					},
+					error: function(err) {
+
+					}
+				});
+			}
+
+			function refreshGrid() {
+				$("#Grid").bootstrapTable('refresh');
+			}
+
+			function done() {
+				window.parent.closeTrigger();
+			}
+		</script>
+	</body>
+
+</html>

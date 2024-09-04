@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>人员树</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Lib/jsTree/style.min.css">
+		<style></style>
+	</head>
+	<style>
+		html,
+		body {
+			background: #F9F9F9;
+			height: 100%;
+			width: 100%;
+			overflow: hidden;
+		}
+		
+		btn_class {
+			height: 98%;
+		}
+		 /*滚动条样式*/
+        .innerbox::-webkit-scrollbar {/*滚动条整体样式*/
+            width: 6px;     /*高宽分别对应横竖滚动条的尺寸*/
+            height: 6px;
+            
+        }
+        .innerbox::-webkit-scrollbar-thumb {/*滚动条里面小方块*/
+            border-radius: 5px;
+            -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+            background: rgba(0,0,0,0.2);
+        }
+        .innerbox::-webkit-scrollbar-track {/*滚动条里面轨道*/
+            -webkit-box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
+            border-radius: 0;
+            background: rgba(0,0,0,0.1);
+        }
+ 
+	</style>
+
+	<body>
+		<div class="container">
+				<div class="innerbox panel-body" style="max-height: 85%;overflow: auto;margin-right: 15px;padding-left: 30%;">
+					<div style="" id="jsTree"></div>
+				</div>
+				<div class="form-group ">
+					<div class="btn_class">
+						<button class="btn btn-primary " style="position: absolute;bottom: 15px;left: 41%;letter-spacing: 2px;" type="button" onclick="loadUser()">选择
+                </button>
+					</div>
+				</div>
+		</div>
+
+		<script src="../../Static/Js/myEchars.js"></script>
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.js"></script>
+		<script src="../../Static/Js/yunnan.js"></script>
+		<script src="../../Lib/public.js"></script>
+		<script src="../../Lib/jsTree/jstree.min.js"></script>
+		<script src="../../Lib/jsTree/jstree.js"></script>
+		<script type="text/javascript">
+			var TEXT = '';
+			var ID = '';
+			var P_ID = $.url("P_ID");
+
+			$(document).ready(function() {
+				$('#jsTree').bind("activate_node.jstree", function(obj, e) {
+					var currentNode = e.node;
+					if(!e.instance.is_leaf(currentNode)) {
+						e.instance.deselect_node(currentNode);
+					};
+				});
+				getTreeData();
+			});
+
+			function getTreeData() {
+				$.ajax({
+					type: "POST",
+					url: urlpath + "/CommonHander/getAreaNode",
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain:true==!(document.all),//兼容ie
+					dataType: 'json',
+					success: function(tree) {
+						loadTree(tree);
+					}
+				});
+			}
+
+			function loadTree(tree) {
+				$('#jsTree').jstree({
+					'core': {
+						"multiple": false,
+						'data': tree
+					},
+					"plugins": ["checkbox"]
+				}).bind('activate_node.jstree', function(obj, e) {
+					TEXT = e.node.text;
+					ID = e.node.id;
+				});
+				$('#jsTree').jstree().open_all();
+			}
+
+			function loadUser() {
+				var parent = window.parent;
+				if(ID==""){
+					new $.zui.Messager('请选择地区！', {
+						type: 'danger',
+						placement: 'center'
+					}).show();
+					return false;
+				}else{
+				parent.$("#" + P_ID).val(ID);
+				parent.$("#" + P_ID + "la").val(TEXT);
+				parent.$.zui.modalTrigger.close();
+				}
+				
+			}
+		</script>
+	</body>
+
+</html>

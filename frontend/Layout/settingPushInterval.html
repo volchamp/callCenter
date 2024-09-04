@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>设置催办时间间隔</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+    <link rel="stylesheet" href="../Lib/zui-1.9.1-dist/dist/lib/chosen/chosen.min.css">
+    <link rel="stylesheet" href="../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.css">
+    <link rel="stylesheet" href="../Lib/jsTree/style.min.css">
+
+    <style>
+        .container,
+        .row,
+        .col-md-2,
+        .col-md-12 {
+            height: 93%;
+        }
+
+        .col-md-2 {
+            margin: 50px 0;
+            height: calc(100% - 100px);
+            border-right: 1px solid #DFDFDF;
+        }
+
+        .col-md-2>p {
+            font-size: 2.5rem;
+            height: 60px;
+            line-height: 40px;
+        }
+
+        .col-md-2>ul {
+            list-style: none;
+        }
+
+        .col-md-2>ul>li {
+            font-size: 2rem;
+            cursor: pointer;
+            height: 50px;
+            line-height: 50px;
+        }
+
+        .icon-circle {
+            color: #ccc;
+            position: relative;
+            bottom: 2px;
+        }
+
+        .select,
+        .select .icon-circle {
+            color: #469AFD;
+        }
+
+        .col-md-12 {
+            padding: 80px 100px;
+        }
+
+        .col-md-12>p {
+            color: red;
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 40px;
+        }
+
+        #btnType {
+            height: calc(100% - 90px);
+            overflow: auto;
+        }
+        #date {
+            height: calc(100% - 90px);
+            overflow: hidden;
+            text-align: center;
+        }
+        #btnType .btn {
+            background: transparent;
+            margin: 20px 30px;
+            color: #C8C8C8;
+            border-color: #C8C8C8;
+        }
+
+        .btn:focus,
+        .btn:active:focus,
+        .btn.active:focus,
+        .btn.focus,
+        .btn:active.focus,
+        .btn.active.focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+        #btnType .btn-lg {
+            padding: 15px 40px;
+            font-size: 18px;
+        }
+
+        #btnType .group {
+            text-align: center;
+        }
+
+        #btnType .group .btn-primary {
+            color: #0B5EE3;
+            border-color: #0B5EE3;
+        }
+
+        #saveBox {
+            text-align: center;
+        }
+
+        #save {
+            padding: 10px 50px;
+        }
+    </style>
+
+    <script src="../Lib/jquery-3.4.1.min.js"></script>
+    <script src="../Lib/zui-1.9.1-dist/dist/lib/chosen/chosen.min.js"></script>
+    <script src="../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+    <script src="../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.js" ></script>
+    <script src="../Lib/public.js"></script>
+    <script src="../Lib/jsTree/jstree.js"></script>
+
+
+    <script>
+        $(function () {
+            getdate();
+        })
+
+        function savetime(){
+            var pra={
+                "P_INTERVAL":$("#DATE_TIME").val()
+            }
+            console.log($("DATE_TIME").val());
+            webapi("/approval/setUrgentInterval",pra, function (res) {
+                if(res=="SUCCESS"){
+                    new $.zui.Messager('设置成功', {
+                        type: 'success',
+                        icon: "ok-sign"
+                    }).show();
+                }
+            })
+        }
+
+        function getdate(){
+            webapi("/approval/getUrgentInterval","", function (res) {
+                $("#DATE_TIME").val(res)
+            })
+        }
+    </script>
+</head>
+<body>
+
+<!--    <div class="container-fluid" >-->
+<!--        <div class="row">-->
+<!--            <div class="col-md-2">-->
+<!--                <div class="panel" style="width: 100%;min-width: 550px;">-->
+<!--                    <div class="panel-body">-->
+<!--                        <form  class="form-horizontal" id="form">-->
+<!--                            <div class="form-group">-->
+<!--                                <label for="DATE_TIME" class="col-sm-3 required">催办间隔(分钟)</label>-->
+<!--                                <div class="col-sm-9">-->
+<!--                                    <input type="number" maxlength="2" style="width: 200px;" id="DATE_TIME" name="DATE_TIME" class="form-control" />-->
+<!--                                </div>-->
+<!--                            </div>-->
+<!--                            <button class="btn btn-primary" style="float:left;margin-left: 36%;margin-top: 15px;width: 200px;margin-bottom: 10px" onclick="savetime()" type="button" data-loading-text="正在保存...">保存</button>-->
+<!--                        </form>-->
+<!--                    </div>-->
+<!--                </div>-->
+<!--            </div>-->
+<!--        </div>-->
+
+<!--    </div>-->
+
+<div class="container">
+    <div class="row">
+        <div id="shijian"  class="col-md-12">
+            <p>请配置催单时间间隔~</p>
+            <div id="date">
+                <label style="padding: 5px 8px;text-align: right;font-size: 16px;">时间设置<strong>(/分钟)</strong>:</label>
+                <div style="display: inline-block;">
+                    <input type="number" oninput="this.value = this.value.replace(/[^0-9]/g,'');" maxlength="5" style="width: 200px;" id="DATE_TIME" name="DATE_TIME" class="form-control" />
+                </div>
+                <label style="color:red ;">&nbsp;只能输入整数</label>
+            </div>
+            <div id="saveBox">
+                <button class="btn btn-lg btn-primary" id="save" onclick="savetime()" type="button">保存</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

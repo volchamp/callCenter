@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>首页</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Lib/easyUpload/main.css">
+		<link rel="stylesheet" href="../../Lib/select/css/select-mania.css" />
+		<style>
+			html,
+			body {
+				background: #F9F9F9;
+				overflow: hidden;
+			}
+			
+			.container-fluid {
+				padding: 0 5%;
+			}
+			
+			.row {
+				margin-top: 1.5%;
+				height: calc(100% - 1%);
+			}
+			
+			.timePanel {
+				padding: 2% 5%;
+			}
+			
+			.timePanel .date {
+				font-size: 20px;
+				margin-right: 0px;
+				padding-left: 5px;
+			}
+			
+			.userInfo table {
+				width: 100%;
+			}
+			
+			.userInfo .user {
+				display: inline-block;
+				position: relative;
+				top: 2px;
+				left: 20px;
+			}
+			
+			.userInfo .user span:first-child {
+				font-size: 18px;
+			}
+			
+			.userInfo .user span:last-child {
+				font-size: 12px;
+				color: #C9C9C9;
+			}
+			
+			.userInfo table tr:last-child td {
+				text-align: center;
+			}
+			
+			.userInfo table tr:last-child td div:first-child {
+				font-size: 17px;
+			}
+			
+			.userInfo table tr:last-child td div:last-child {
+				color: #C9C9C9;
+			}
+			
+			.myPanel {
+				height: 15%;
+				line-height: 15%;
+				padding: 0 8%;
+				font-size: 18px;
+			}
+			
+			.myPanel div {
+				width: 40px;
+				height: 40px;
+				line-height: 50px;
+				text-align: center;
+				border-radius: 20px;
+				background: #39A5FE;
+				color: #fff;
+				display: inline-block;
+				position: relative;
+				top: 3px;
+			}
+			
+			.myPanel .label-badge {
+				padding: 3px;
+				font-size: 10px;
+				position: relative;
+				bottom: 10px;
+			}
+			
+			.rightPanel {
+				height: 94%;
+				border-radius: 4px;
+			}
+			
+			.rightPanel .panel-heading {
+				background: #fff;
+			}
+			
+			.rightPanel .list-group-item {
+				border: 0;
+			}
+			
+			#loadingBtn {
+				width: 20%;
+				margin-left: 35%;
+				position: absolute;
+				bottom: 6%;
+				margin-bottom: 2%;
+				color: #fff;
+				border: #3BA4FF;
+				background: #3BA4FF;
+			}
+			
+			#loadingBtn:hover {
+				background-color: #0000F1;
+				border: #0000F1;
+			}
+			
+			.urgent {
+				display: inline-block;
+				width: 23%;
+				cursor: pointer;
+			}
+			
+			.urgent .label:empty {
+				display: inline-block;
+				width: 65px;
+				height: 15px;
+				position: absolute;
+				background: #E4E4E4;
+				margin-top: 5px;
+			}
+			
+			.urgent span:first-child {
+				font-size: 12px;
+				margin-left: 18px;
+				margin-top: 8px;
+			}
+			
+			.noticeTime {
+				float: right;
+				color: #C9C9C9;
+				display: block;
+			}
+			
+			.yz {
+				display: none;
+			}
+			
+			[v-cloak] {
+				display: none;
+			}
+			
+			.question-center {
+				width: 100%;
+				height: 100%;
+				cursor: pointer;
+				background: #3BA4FF;
+				border-radius: 5px;
+				padding: 7%;
+			}
+			
+			.question-center>p {
+				color: #fff;
+				font-size: 20px;
+			}
+			
+			.question-center:hover {
+				background: #3280FC;
+				box-shadow: 0 0 12px #3280FC;
+			}
+			
+			.form-group {
+				float: left;
+				width: 50%;
+			}
+			
+			.form-control {
+				display: inline-block !important;
+			}
+			
+			.a-hover:hover {
+				text-decoration: none;
+			}
+			
+			.a-hover>.icon {
+				font-size: 12px;
+			}
+			
+			.panel {
+				margin-bottom: 3%;
+			}
+			
+			.panel-heading {
+				padding: 0.5%;
+				font-size: 18px;
+			}
+			
+			.panel-body {
+				padding: 2% 4% 4% 4%;
+			}
+			
+			.noshow {
+				display: none;
+			}
+			
+			.list-group-item {
+				padding: 6px 10px;
+				font-size: 16px;
+			}
+			
+			.required {
+				font-size: 15px;
+			}
+			
+			.time {
+				color: #3BA4FF;
+			}
+			
+			icon {
+				font-size: 25px;
+			}
+			
+			.list-group-item {
+				clear: both;
+				content: '';
+			}
+			
+			.list-group-item>a {
+				overflow: hidden;
+				text-overflow: ellipsis;
+				-o-text-overflow: ellipsis;
+				white-space: nowrap;
+				width: 50%;
+				height: 24px;
+				display: block;
+				float: left;
+			}
+			
+			.icon-img {
+				width: 30px;
+				height: 30px;
+				margin-top: -12px;
+				margin-left: 4px;
+			}
+			
+			135px
+		</style>
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<div v-cloak class="row" id="v_body">
+				<div class="col-md-3" style="height: 100%;">
+					<div>
+						<div class="panel">
+							<div class="panel-body timePanel">
+								<div style="width: 27%;float: left;height: 82px;margin-top:10px"><img style="height: 84px;" src="../../Static/Img/riqi (4).png" /></div>
+								<div style="width: 63%;float: right;margin-top:10px;">
+									<div class="date" v-text="nowDate"></div>
+									<div class="time" v-text="nowTime"></div>
+								</div>
+							</div>
+						</div>
+
+						<div class="panel">
+							<div class="panel-body userInfo">
+								<table>
+									<tr style="margin-bottom: 5px;">
+										<td colspan="2">
+											<img :src="img_url?img_url:img" style="width: 50px;height: 50px;cursor: pointer;" onclick="getUserInfo1()" class="img-circle">
+											<div class="user" style="text-align: center;">
+												<span>{{name}}</span><br>
+												<span>{{rolename}}</span>
+											</div>
+										</td>
+									</tr>
+									<tr>
+										<td style="padding-right: 5px;padding-top: 4%;">
+											<div class="question-center" onclick="lookList(6,'我的待评分事件')">
+												<p style="font-size: 20px;">{{applyCount.waitNum}}</p>
+												<p>待评分</p>
+											</div>
+										</td>
+										<td style="padding-left: 5px;padding-top: 4%;">
+											<div class="question-center" onclick="lookList(1,'我的发起')">
+												<p style="font-size: 20px;">{{applyCount.creatNum}}</p>
+												<p>发起量</p>
+											</div>
+
+										</td>
+									</tr>
+								</table>
+							</div>
+						</div>
+					</div>
+					<div style="overflow: auto;height: 47%;">
+						<!--						<div class="panel">-->
+						<!--							<div class="panel-body myPanel" style="cursor: pointer;" onclick="lookList(7,'我的关注')">-->
+						<!--								<div style="background: #39A5FE;"><i class="icon icon-star icon-2x"></i></div>&nbsp;我的系统-->
+						<!--							</div>-->
+						<!--						</div>-->
+
+						<!-- <div class="panel">
+							<div class="panel-body myPanel" style="cursor: pointer;" onclick="lookList(8,'我的收藏(事件)')">
+								<div style="background: #F1B684;"><i class=" icon icon-heart icon-2x"></i></div>&nbsp;我的收藏(事件)
+								<span v-if="applyCount.collectNum>0" class="label label-badge label-danger">{{applyCount.collectNum}}</span>
+							</div>
+						</div> -->
+						<div class="panel">
+							<div class="panel-body myPanel" style="cursor: pointer;" onclick="look_lisi('../ordinaryUsers/knowledgeCollectList.html','我的收藏')">
+								<div style="background: #F1B684;"><i class=" icon icon-bookmark icon-2x"></i></div>&nbsp;我的收藏
+							</div>
+						</div>
+						<div class="panel">
+							<div class="panel-body myPanel" style="cursor: pointer;" onclick="look_lisi('../ordinaryUsers/knowledgeBase.html','运维知识库')">
+								<div style="background: #39A5FE;"><i class="icon icon-book icon-2x"></i></div>
+								&#12288;
+								<span>运维知识库</span>
+							</div>
+						</div>
+
+						<div class="panel">
+							<div class="panel-body myPanel" style="cursor: pointer;" onclick="look_lisi('../ordinaryUsers/myhistoryJobs.html','历史事件查询')">
+								<div style="background: #AC6CFF;"><img class="icon-img" src="../../Static/Img/Normal.png"></img>
+								</div>
+								&#12288;
+								<span>历史事件查询</span>
+							</div>
+						</div>
+						<div class="panel">
+<!--							<div class="panel-body myPanel" style="cursor: pointer;" onclick="look_lisi('../ordinaryUsers/SearchAll.html','运维百度')">-->
+							<div class="panel-body myPanel" style="cursor: pointer;" onclick="look_lisi('../../OrderManage/SearchFromAll.html','运维百度')">
+								<div style="background: #39A5FE;"><i class="icon icon-search icon-2x"></i></div>
+								&#12288;
+								<span>运维百度</span>
+							</div>
+						</div>
+					</div>
+
+				</div>
+				<div class="col-md-9" style="height: 100%">
+					<img src="../../Static/Img/welcome_bg.jpg" style="width:100%; height:20%;" class="img-rounded" alt="圆角图片">
+					<div class="row" style="margin-top:20px;height:77%">
+						<div id="cont" class="col-md-7" style="height: 100%;">
+							<div class="panel rightPanel">
+								<div class="panel-heading">
+									<div style="height: 100%;width: 100%;padding: 0px 5px;">
+										事件发起
+										<div style="float:right;width: 130px;cursor: pointer;" onclick="loadwindow('','700','事件快捷录入','cog','../../Layout/ordinaryUsers/SimpleApproval/SimpleApprovalAdd.html')">
+											<div style="background: #3BA4FF;width: 120px;height: 27px;display: inline-block;border-radius: 4px;"><img style="height: 20px;margin-left: 4px;" src="../../Static/Img/luru.png"></img>
+												<span style="color: #fff;float: right;margin-top: 2px;margin-right:15px;">快捷录入</span>
+											</div>
+										</div>
+									</div>
+
+								</div>
+								<div class="panel-body" style="height:calc(100% - 20px);padding: 0px 0% 2% 0%;">
+									<div style="height: 92%;width: 100%;overflow: auto;">
+										<!--								<form class="form-horizontal" id="form1" style="padding-top: 5px;">-->
+										<!--									<div class="form-group" v-for="item in formData" v-if="item.INPUT_TYPE=='text'&&item.CSS=='col2'">-->
+										<!--										<label class="col-sm-4 control-label" :class="[item.YZ_TYPE!=''&&item.YZ_TYPE!=null&&item.YZ_TYPE!=undefined ? required : '']">{{item.FILE_TEXT}}</label>-->
+										<!--										<div class="col-sm-8">-->
+										<!--											<input class="form-control" type="text" :id="item.FILED_COLOUM" :name="item.FILED_COLOUM">-->
+										<!--										</div>-->
+										<!--									</div>-->
+										<!--									<div class="form-group" style="width:100%" v-else-if="item.INPUT_TYPE=='text'&&item.CSS=='col1'">-->
+										<!--										<label class="col-sm-2 control-label" :class="[item.YZ_TYPE!=''&&item.YZ_TYPE!=null&&item.YZ_TYPE!=undefined ? required : '']">{{item.FILE_TEXT}}</label>-->
+										<!--										<div class="col-sm-10">-->
+										<!--											<input maxlength="30" placeholder="限制只能输入30字" class="form-control" type="text" :id="item.FILED_COLOUM" :name="item.FILED_COLOUM">-->
+										<!--										</div>-->
+										<!--									</div>-->
+										<!--									<div class="form-group" v-else-if="item.INPUT_TYPE=='tree'">-->
+										<!--										<label class="col-sm-4 control-label" :class="[item.YZ_TYPE!=''&&item.YZ_TYPE!=null&&item.YZ_TYPE!=undefined ? required : '']">{{item.FILE_TEXT}}</label>-->
+										<!--										<div class="col-sm-8">-->
+										<!--											<input class="form-control" readonly="readonly" style="width: 90px;" :id="item.FILED_COLOUM+'la'" />-->
+										<!--											<a style="display: inline-block;font-size: 15px;margin-right: 5px;" @click="selectTree(item.FILE_TEXT,item.DATA_SOURCE)" class="form-label a-hover"><i class="icon icon-plus"></i>点击选择</a>-->
+										<!--											<input :id="item.FILED_COLOUM" :name="item.FILED_COLOUM" style="display: none">-->
+										<!--										</div>-->
+										<!--									</div>-->
+										<!--									<div class="form-group" v-else-if="item.INPUT_TYPE=='select'">-->
+										<!--										<label class="col-sm-4 control-label" :class="[item.YZ_TYPE!=''&&item.YZ_TYPE!=null&&item.YZ_TYPE!=undefined ? required : '']">{{item.FILE_TEXT}}</label>-->
+										<!--										<div class="col-sm-8">-->
+										<!--											<component :is="item.FILED_COLOUM" :filed="item.FILED_COLOUM"></component>-->
+										<!--										</div>-->
+										<!--									</div>-->
+										<!--									<div class="form-group" v-else-if="item.INPUT_TYPE=='checkbox'">-->
+										<!--										<label class="col-sm-4 control-label" :class="[item.YZ_TYPE!=''&&item.YZ_TYPE!=null&&item.YZ_TYPE!=undefined ? required : '']">{{item.FILE_TEXT}}</label>-->
+										<!--										<component :is="item.FILED_COLOUM" :filed="item.FILED_COLOUM" :text="item.FILE_TEXT"></component>-->
+										<!--									</div>-->
+										<!--									<div class="form-group" style="width: 100%;" v-else-if="item.INPUT_TYPE=='textarea'">-->
+										<!--										<label class="col-sm-2 control-label" :class="[item.YZ_TYPE!=''&&item.YZ_TYPE!=null&&item.YZ_TYPE!=undefined ? required : '']">{{item.FILE_TEXT}}</label>-->
+										<!--										<div class="col-sm-10">-->
+										<!--											<textarea class="form-control" rows="3" maxlength="250" placeholder="限制只能输入250字" :id="item.FILED_COLOUM" :name="item.FILED_COLOUM"></textarea>-->
+										<!--										</div>-->
+										<!--									</div>-->
+										<!--									<div class="form-group" v-else-if="item.INPUT_TYPE=='radioBadge'">-->
+										<!--										<label class="col-sm-4 control-label" :class="[item.YZ_TYPE!=''&&item.YZ_TYPE!=null&&item.YZ_TYPE!=undefined ? required : '']">{{item.FILE_TEXT}}</label>-->
+										<!--										<component :is="item.FILED_COLOUM" :filed="item.FILED_COLOUM"></component>-->
+										<!--									</div>-->
+										<!--									<div class="form-group" style="width: 100%;" v-else-if="item.INPUT_TYPE=='file'">-->
+										<!--										<div class="form-group" style="margin-bottom: 0;width: 100%;">-->
+										<!--											<label class="col-sm-2 control-label">附件上传</label>-->
+										<!--											<div class="col-sm-10">-->
+										<!--												<div id="uploader"></div>-->
+										<!--											</div>-->
+										<!--											&lt;!&ndash;<input type="hidden" name="P_FUJIAN_ID" id="P_FUJIAN_ID">&ndash;&gt;-->
+										<!--										</div>-->
+										<!--									</div>-->
+										<!--									<input type="reset" style="display: none">-->
+										<!--									&lt;!&ndash;<button style="margin: auto;margin-bottom: 10px;left: 0;bottom: 45px;" class="btn btn-block  btn-primary" id="loadingBtn" type="button" data-loading-text="正在提交...">提交 </button>&ndash;&gt;-->
+										<!--								</form>-->
+										<form id="form1" class="form-horizontal" style="padding-top: 10px;">
+											<div class="form-group">
+												<label class="col-md-4 control-label required">发起人</label>
+												<div class="col-md-8">
+													<input type="text" id="SEND_USER" name="SEND_USER" class="form-control">
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-md-4 control-label required">联系电话</label>
+												<div class="col-md-8">
+													<input type="text" id="REAL_NBR" name="REAL_NBR" class="form-control">
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-md-4 control-label required">类型</label>
+												<div class="col-md-8">
+													<select id="TYPE" name="TYPE" class="form-control">
+														<option value=""></option>
+													</select>
+												</div>
+											</div>
+											<div id="hidede" class="form-group">
+												<label class="col-md-4 control-label" style="font-size: 16px;font-weight: 800;">系统</label>
+												<div class="col-md-8">
+													<select id="SYSTEM" name="SYSTEM">
+														<option value=""></option>
+													</select>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-md-4 control-label required">来源</label>
+												<div class="col-md-8">
+													<select id="SOURCE" name="SOURCE" class="form-control">
+														<option value=""></option>
+													</select>
+												</div>
+											</div>
+											<div class="form-group">
+												<label class="col-md-4 control-label required">区域</label>
+												<div class="col-md-8">
+													<input readonly="readonly" id="AREAla" class="form-control" style="width: 45%;">
+													<a class="form-label a-hover" style="font-size: 15px; margin-right: 5px;" onclick="selectTree('区域','../../Layout/ordinaryUsers/areaSelect.html?P_ID=AREA')">
+														<i class="icon icon-plus"></i>点击选择</a>
+													<input id="AREA" name="AREA" style="display: none;">
+												</div>
+											</div>
+											<div class="form-group" style="width: 100%;"><label class="col-sm-2 control-label required">事件名称</label>
+												<div class="col-sm-10"><input maxlength="30" placeholder="限制只能输入30字" type="text" id="TITLE" name="TITLE" class="form-control"></div>
+											</div>
+											<div class="form-group" style="width: 100%;"><label class="col-sm-2 control-label required">事件详情</label>
+												<div class="col-sm-10"><textarea rows="7" maxlength="250" placeholder="限制只能输入250字" id="DETAIL" name="DETAIL" class="form-control"></textarea></div>
+											</div>
+											<div id="jjcd" class="form-group" style="width:65%;">
+												<label style="margin-left: -35px;" class="col-sm-4 control-label required">紧急程度</label>
+												<div>
+													<div class="col-sm-8">
+														<div onclick="urgent(4,this)" class="urgent EM_LEVEL"><span>&nbsp;&nbsp;低 </span><br><span class="label label-badge"></span></div>
+														<div onclick="urgent(3,this)" class="urgent EM_LEVEL"><span>&nbsp;&nbsp;中</span><br><span class="label label-badge"></span></div>
+														<div onclick="urgent(2,this)" class="urgent EM_LEVEL"><span>&nbsp;&nbsp;高</span><br><span class="label label-badge"></span></div>
+														<div onclick="urgent(1,this)" class="urgent EM_LEVEL"><span>紧急</span><br><span class="label label-badge"></span></div>
+													</div>
+													<input value="4" type="hidden" id="urgent" name="EM_LEVEL" class="urgent_input"></div>
+											</div>
+											<div style="display: none;" class="form-group"><label class="col-sm-4 control-label">提醒方式</label>
+												<div class="col-sm-8" text="提醒方式"><label class="checkbox-inline"><input type="checkbox" name="REMIND_TYPE" value="op.ID"><span>短信提醒</span></label></div>
+											</div>
+											<div class="form-group" style="width: 100%;">
+												<div class="form-group" style="margin-top:15px;margin-left:2px; width: 100%;"><label class="col-sm-2 control-label">附件上传</label>
+													<div class="col-sm-10">
+														<div id="uploader">
+															<div class="easy-uploader">
+																<div class="btn-box"><span class="btn-select-file btn">选取文件</span><i style="display: none !important;" class="btn-check-all cursor-select checkbox unchecked"></i><input class="input-file" type="file" accept=".*" multiple="multiple" style="display:none;"></div>
+																<ul class="list"></ul>
+															</div>
+														</div>
+													</div>
+												</div>
+											</div>
+											<input type="reset" style="display: none;">
+										</form>
+									</div>
+									<button class="btn btn-block  btn-primary" id="loadingBtn" type="button" data-loading-text="正在提交...">提交 </button>
+								</div>
+							</div>
+						</div>
+						<div class="col-md-5" style="height: 48%">
+							<div class="panel rightPanel" style="margin-bottom: 0px;">
+								<div class="panel-heading" style="padding: 0px 8px;">
+									已解决事件
+									<a class="a-hover" style="float: right;text-decoration:none;font-size: 16px;" @click="quest">查看更多&nbsp;<i class="icon icon-chevron-right" style="display: inline-block;margin-right: -8px;"></i><i class="icon icon-chevron-right"></i></a>
+								</div>
+								<ul class="list-group" style="height: 82%;overflow: auto;">
+									<li v-for="item in OrderTitle" class="list-group-item" @click="openwindow(item.APPLY_ID)">
+										<a><i class="icon icon-volume-up"></i>&nbsp;&nbsp;<span>{{item.COLUMN_VALUE}}</span></a>
+										<!-- <span style="margin-left: 5px;float: left;color: #CCCC77;">待处理</span> -->
+										<span class="noticeTime">{{item.CREATE_TIME}}</span>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div class="col-md-5" style="height: 49%">
+							<div class="panel rightPanel" style="margin-bottom: 0px;">
+								<div class="panel-heading" style="border-top: 0px solid #ddd;padding: 0px 8px;">
+									通知公告
+									<a class="a-hover" style="float: right;text-decoration:none;font-size: 16px;" @click="morenote()">查看更多&nbsp;<i class="icon icon-chevron-right" style="display: inline-block;margin-right: -8px;"></i><i class="icon icon-chevron-right"></i></a>
+								</div>
+								<ul class="list-group" style="height: 82%;overflow: auto;">
+									<li v-for="item in notes" class="list-group-item">
+										<a @click="getTitle(item.NOTE_ID)"><i class="icon icon-volume-up"></i>&nbsp;&nbsp;{{item.TITLE}}</a>
+										<span class="noticeTime">{{item.CREATE_TIME}}</span>
+									</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script src="../../Lib/easyUpload/easyUploader.js"></script>
+		<script src="../../Lib/select/js/select-mania.js"></script>
+		<script src="../../Lib/vue.js" type="text/javascript"></script>
+		<script src="../../Lib/public.js"></script>
+		<script>
+			var YZ_TYPE = [];
+			var fileid = "";
+			var applyTrigger = new $.zui.ModalTrigger();
+			var typeSelectmain;
+			var sysSelectmain;
+			var sourceSelectmain;
+			var vm = new Vue({
+				el: '#v_body',
+				data: {
+					required: 'required',
+					applyCount: {},
+					notes: [],
+					OrderTitle: [],
+					name: "",
+					depart: "",
+					role: "",
+					img_url: "",
+					urlPath: urlpath,
+					img: "../../Static/Img/photo.jpg",
+					nowTime: "",
+					rolename: '', //不添加vue时间会出错，虽然前台看不出效果，vue.js一直报错
+					nowDate: "",
+					formData: []
+				},
+				methods: {
+					getTitle: function(val) {
+						loadwindow(460, 590, '公告详情', 'bars', '../../Layout/ordinaryUsers/noteDetail.html?pType=1&noteid=' + val);
+					},
+					openwindow: function(val) {
+						loadwindow('', '', '问题查看', 'cogs', '../../Layout/adminUsers/orderDetails.html?p_apply_id=' + val + '&P_OP=' + 108, 'fullscreen');
+					},
+					morenote: function() {
+						loadwindow('', '', '通知公告', 'bars', '../../Layout/ordinaryUsers/NoteList.html', 'fullscreen');
+					},
+					quest: function() {
+						loadwindow('', '', '问题发起', 'bars', '../../Layout/maintenanceStaff/taskList.html?P_STATE=1', 'fullscreen');
+					},
+					nonull: function() {
+						alert("nonnn");
+					},
+					// 获取当前时间函数
+					timeFormate: function(timeStamp) {
+						var year = new Date(timeStamp).getFullYear();
+						var month = new Date(timeStamp).getMonth() + 1 < 10 ? "0" + (new Date(timeStamp).getMonth() + 1) : new Date(timeStamp).getMonth() + 1;
+						var date = new Date(timeStamp).getDate() < 10 ? "0" + new Date(timeStamp).getDate() : new Date(timeStamp).getDate();
+						var hh = new Date(timeStamp).getHours() < 10 ? "0" + new Date(timeStamp).getHours() : new Date(timeStamp).getHours();
+						var mm = new Date(timeStamp).getMinutes() < 10 ? "0" + new Date(timeStamp).getMinutes() : new Date(timeStamp).getMinutes();
+						var ss = new Date(timeStamp).getSeconds() < 10 ? "0" + new Date(timeStamp).getSeconds() : new Date(timeStamp).getSeconds();
+						this.nowDate = year + "年" + month + "月" + date + "日";
+						var time = hh + " : " + mm + " : " + ss
+						this.nowTime = time;
+					},
+					selectTree: function(text, url) {
+						loadwindow('450', '400', text, 'cogs', url);
+					},
+
+					getUserInfo: function() {
+						var _this = this;
+						$.ajax({
+							type: "post",
+							url: urlpath + '/UserHander/getUserInfo',
+							data: {},
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true == !(document.all),
+							dataType: 'json',
+							success: function(res) {
+								_this.img_url = res[0].IMG_URL;
+								_this.role = res[0].ROLE_NAME;
+								_this.depart = res[0].DEPART_NAME;
+								_this.name = res[0].USER_NAME;
+								$("#SEND_USER").val(res[0].USER_NAME);
+								$("#REAL_NBR").val(res[0].REAL_ACC_NBR);
+							}
+						});
+					},
+
+					// createComponent: function(Data) {
+					// 	for(var i = 0; i < Data.length; i++) {
+					// 		var comName = "";
+					// 		comName = Data[i].FILED_COLOUM;
+					// 		var type = Data[i].INPUT_TYPE;
+					// 		if(Data[i].YZ_TYPE != '' && Data[i].YZ_TYPE != null && Data[i].YZ_TYPE != undefined) {
+					// 			YZ_TYPE.push({
+					// 				"ID": comName,
+					// 				"RULE": Data[i].YZ_TYPE
+					// 			});
+					// 		}
+					// 		if(type == "select" || type == "radioBadge" || type == "checkbox") {
+					// 			$.ajax({
+					// 				type: "post",
+					// 				async: false,
+					// 				url: urlpath + Data[i].DATA_SOURCE,
+					// 				xhrFields: {
+					// 					withCredentials: true
+					// 				},
+					// 				crossDomain: true == !(document.all), //兼容ie
+					// 				dataType: 'json',
+					// 				success: function(res1) {
+					// 					if(type == 'select') {
+					// 						Vue.component(comName, {
+					// 							data: function() {
+					// 								return {
+					// 									selecs: res1
+					// 								}
+					// 							},
+					// 							props: ['filed'],
+					// 							template: '<select class="form-control" :id="filed" :name="filed">' +
+					// 								'<option value=""></option>' +
+					// 								'<option v-for="se in selecs" :value="se.ID">{{se.TEXT}}</option>' +
+					// 								'</select>'
+					// 						});
+					// 					}
+					// 					if(type == "radioBadge") {
+					// 						Vue.component(comName, {
+					// 							data: function() {
+					// 								return {
+					// 									ops: res1
+					// 								}
+					// 							},
+					// 							methods: {
+					// 								setBadgeData: function(num, e, filed) {
+					// 									var obj = e.currentTarget;
+					// 									$('.urgent.' + filed).css("color", "#353535");
+					// 									$('.urgent.' + filed + ' .label').css("background", "#E4E4E4");
+					// 									$(obj).css("color", "red");
+					// 									$(obj).children(".label").css("background", "#00DA50");
+					// 									$('#' + filed).val(num)
+					// 								}
+					// 							},
+					// 							props: ['filed', 'text'],
+					// 							template: '<div><div class="col-sm-8" >' +
+					// 								'<div v-for="op in ops" class="urgent" :class="filed" @click="setBadgeData(op.ID,$event,filed)" >' +
+					// 								'<span>{{op.TEXT}}</span><br>' +
+					// 								'<span class="label label-badge"></span>' +
+					// 								'</div>' +
+					// 								'</div>' +
+					// 								'<input class="urgent_input" type="hidden" :id="filed" :name="filed"></div>'
+					//
+					// 						});
+					// 					}
+					// 					if(type == "checkbox") {
+					// 						Vue.component(comName, {
+					// 							data: function() {
+					// 								return {
+					// 									ops1: res1
+					// 								}
+					// 							},
+					// 							props: ['filed'],
+					// 							template: '<div class="col-sm-8">' +
+					// 								'<label class="checkbox-inline" v-for="op in ops1"><input type="checkbox"   :name="filed" value="op.ID" /><span>{{op.TEXT}}</span></label> ' +
+					// 								'</div>'
+					//
+					// 						});
+					// 					}
+					// 				}
+					// 			});
+					// 		}
+					// 	}
+					// },
+					question: function() {
+						var $this = this;
+						$.ajax({
+							type: "post",
+							//url: urlpath + '/approval/getOrderTitle',
+							url: urlpath + '/approval/homeFinishOrder',
+							async: true,
+							data: {},
+							dataType: 'json',
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true == !(document.all), //兼容ie
+						}).then(function(res) {
+							$this.OrderTitle = res;
+						}).fail(function() {
+							alert("获取问题通知信息失败");
+						});
+					}
+				},
+				created: function() {
+					this.getUserInfo();
+					var self = this;
+					this.question();
+					//先给时间赋个值
+					self.timeFormate(new Date());
+					//设置一个定时器，实时更新时间，每10秒更新一次
+					this.timer = setInterval(function() {
+						self.timeFormate(new Date());
+					}, 1000);
+					$.ajax({
+						type: "get",
+						async: true,
+						url: urlpath + "/approval/getApplyCount",
+						data: {},
+						dataType: 'json',
+						xhrFields: {
+							withCredentials: true
+						},
+						crossDomain: true == !(document.all), //兼容ie
+					}).then(function(res) {
+						self.applyCount = res;
+					}).fail(function() {
+						alert("获取数据失败");
+					});
+					$.ajax({
+						type: "get",
+						url: urlpath + '/CommonHander/getIndexNote',
+						async: true,
+						data: {},
+						dataType: 'json',
+						xhrFields: {
+							withCredentials: true
+						},
+						crossDomain: true == !(document.all), //兼容ie
+					}).then(function(res) {
+						self.notes = res;
+					}).fail(function() {
+						alert("获取通知信息失败");
+					});
+					//获取表单数据
+					//先判断session里有没有存表单数据，如果有则直接使用，没有再去调用后台
+					// if(sessionStorage.getItem("formdata") == null || sessionStorage.getItem("formdata") == undefined) {
+					// 	$.ajax({
+					// 		type: "get",
+					// 		url: urlpath + '/approval/getForm',
+					// 		async: false,
+					// 		data: {
+					// 			"typeId": 1
+					// 		},
+					// 		dataType: 'json',
+					// 		xhrFields: {
+					// 			withCredentials: true
+					// 		},
+					// 		crossDomain: true == !(document.all), //兼容ie
+					// 		success: function(res) {
+					// 			sessionStorage.setItem('formdata', JSON.stringify(res));
+					// 			self.formData = res;
+					// 			self.createComponent(res);
+					// 			// setUploader();
+					// 		}
+					// 	});
+					// } else {
+					// 	var formdata = sessionStorage.getItem("formdata");
+					// 	var jsonData = JSON.parse(formdata);
+					// 	self.formData = jsonData;
+					// 	self.createComponent(jsonData);
+					// 	// setUploader();
+					// }
+
+				},
+				mounted: function() {
+					$("#SEND_USER").val(this.name);
+					$("#REAL_NBR").val(this.userPhone);
+
+					$("#REAL_NBR").on("change", function(e) {
+						var value = e.delegateTarget.value;
+						var mobileRegex = /^(((1[3456789][0-9]{1})|(15[0-9]{1}))+\d{8})$/;
+						var phoneRegex = /^0\d{2,3}-?\d{7,8}$/;
+						if(!mobileRegex.test(value) && !phoneRegex.test(value)) {
+							// $('#REAL_NBR').val('');
+							$('#REAL_NBR').parent(".col-sm-8").addClass("has-error");
+						} else {
+							$('#REAL_NBR').parent(".col-sm-8").removeClass("has-error");
+							// $('#REAL_NBR').parent(".col-sm-8").addClass("has-success");
+						}
+					});
+
+					$("#TYPE").change(function() {
+						var value = $(this).children('option:selected').val(); //这就是selected的值
+						if(value == 2) {
+							$("#hidede").addClass("noshow");
+							$("#SYSTEM").val("");
+						} else {
+							$("#hidede").removeClass("noshow");
+						}
+					});
+				},
+				beforeDestroy: function() {
+					if(this.timer) {
+						clearInterval(this.timer); // 在Vue实例销毁前，清除我们的定时器
+					}
+				}
+			});
+
+			function selectTree(text, url) {
+				loadwindow('450', '400', text, 'cogs', url);
+			}
+
+			$(function() {
+				$("#jjcd").hide();
+				if($('body').height() <= 657) {
+					$('.time').css({
+						'font-size': '20px'
+					})
+					$('.date').css({
+						'font-size': '16px'
+					})
+				} else if($('body').height() <= 719) {
+					$('.time').css({
+						'font-size': '25px'
+					})
+					$('.date').css({
+						'font-size': '20px'
+					})
+				} else if($('body').height() <= 869) {
+					$('.time').css({
+						'font-size': '30px'
+					})
+					$('.date').css({
+						'font-size': '25px'
+					})
+				} else {
+					$('.time').css({
+						'font-size': '35px'
+					})
+					$('.date').css({
+						'font-size': '30px'
+					})
+				}
+				getSelectjquery('TR_BASE_APPLY_XX', 'TYPE', 'TYPE');
+				getSelectjquery('TR_BASE_APPLY_XX', 'SYSTEM', 'SYSTEM');
+				getSelectjquery('TR_BASE_APPLY_XX', 'SOURCE', 'SOURCE');
+
+				$('#loadingBtn').on('click', function() {
+					var $btn = $(this);
+					$btn.button('loading');
+					var data1 = $("#form1").serializeArray();
+					data1.push({
+						name: "P_FUJIAN_INFO",
+						value: fileid
+					});
+					data1.push({
+						name: "SYSTEM",
+						value: $("#SYSTEM").val()
+					});
+					data1.push({
+						name: "TYPE",
+						value: $("#TYPE").val()
+					});
+					data1.push({
+						name: "SOURCE",
+						value: $("#SOURCE").val()
+					});
+					data1.push({
+						name: "P_TYPE_ID",
+						value: 1
+					});
+					var isnull = /^[\s]*$/;
+					var mobileRegex = /^(((1[3456789][0-9]{1})|(15[0-9]{1}))+\d{8})$/;
+					var phoneRegex = /^0\d{2,3}-?\d{7,8}$/;
+					if(isnull.test($("#TYPE").val())) {
+						tishi('问题类型不能为空！');
+						$btn.button('reset');
+					} else if(!mobileRegex.test($("#REAL_NBR").val()) && !phoneRegex.test($("#REAL_NBR").val())) {
+						tishi('联系方式不正确！');
+						$btn.button('reset');
+					} else if(isnull.test($("#SOURCE").val())) {
+						tishi('问题来源不能为空！');
+						$btn.button('reset');
+					} else if(isnull.test($("#urgent").val())) {
+						tishi('紧急程度不能为空！');
+						$btn.button('reset');
+					} else if(isnull.test($("#TITLE").val())) {
+						tishi('问题名称不能为空！');
+						$btn.button('reset');
+					} else if(isnull.test($("#DETAIL").val())) {
+						tishi('问题详情不能为空！');
+						$btn.button('reset');
+					} else if(isnull.test($("#AREA").val())) {
+						tishi('区域不能为空！');
+						$btn.button('reset');
+					} else if(isnull.test($("#SEND_USER").val())) {
+						tishi('问题发起人不能为空！');
+						$btn.button('reset');
+					} else {
+						$.ajax({
+							url: urlpath + "/approval/approvalAdd",
+							type: "post",
+							data: data1,
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true,
+							dataType: 'json',
+							success: function(res) {
+								if(res.RESULT == "SUCCESS") {
+									new $.zui.Messager('提示消息：提交成功', {
+										type: 'success',
+										placement: 'center'
+									}).show();
+									$("input[type=reset]").trigger("click");
+									$('.urgent').css("color", "#353535");
+									$('.urgent .label').css("background", "#E4E4E4");
+									$('.urgent_input').val('');
+									reSet();
+									vm.question();
+									$("#SEND_USER").val(vm.name);
+									$("#REAL_NBR").val(vm.userPhone);
+									$("#AREAla").val();
+									$("#AREA").val();
+									$('.select-mania-value').text('');
+								} else {
+									new $.zui.Messager('提示消息：提交失败', {
+										type: 'danger',
+										placement: 'center'
+									}).show();
+								}
+								$btn.button('reset');
+							},
+							error: function(res) {
+								$btn.button('reset');
+							}
+						});
+					}
+				});
+
+			});
+			var uploader = easyUploader({
+				id: "uploader",
+				/* 渲染容器id */
+				accept: '.jpg,.png,.gif,.txt,.pdf,.docx,.doc,.xlsx,.xls,.zip,.ppt,.pptx',
+				/* 上传类型 */
+				action: urlpath + "/attach/uploadFile",
+				/* 上传地址 */
+				autoUpload: true,
+				/* 是否开启自动上传 */
+				crossDomain: true,
+				/* 是否允许跨域 */
+				data: null,
+				/* 上传配置参数，依据dataFormat而不同， */
+				dataFormat: 'formData',
+
+				/* 上传表单类型，有formData和base64两种 */
+				dataType: 'json',
+				/* 同$.ajax，�默认返回数据格式为json */
+				headers: {
+					// testKey: 'testValue'
+				},
+				/* 上传的请求头部，视需要配置 */
+				maxCount: 5,
+				/* 最大上传文件数 */
+				maxSize: 3,
+				/* 最大上传文件体积，单位M */
+				multiple: true,
+				/* 是否开启多选上传 */
+				name: 'upfile',
+				/* 上传的文件字段名 */
+				previewWidth: 70,
+				/* 压缩预览图的宽度，样式中高度等于宽度 */
+				processData: false,
+				/* 同$.ajax参数，这里默认为false */
+				successKey: 'code',
+				/* 标识上传成功的key */
+				successValue: 200,
+				/* 标识上传成功对应的value */
+				showAlert: true,
+				/* 是否开启alert提示 */
+				timeout: 0,
+				/* ajax请求超时时间，默认值为0，表示永不超时*/
+				withCredentials: true,
+				/* 是否支持发送 cookie 凭证信息 */
+				beforeUpload: null,
+				/* ajax上传前的回调函数 */
+				onAlert: null, //alert时的钩子
+				onChange: null, // input选中时触发
+				onError: function(err) { //上传失败时的钩子
+					new $.zui.Messager('文件上传失败', {
+						icon: 'info-sign',
+						placement: 'center', // 定义显示位置
+						time: 1500,
+						type: 'danger'
+					}).show();
+				},
+				onRemove: function(removedFiles, files) {
+					/*
+					 *批量删除时只返回removedFiles:剩下的文件信息,files为空
+					 *单个删除时返回removedFiles，files,removedFiles:剩下的文件信息,files:删除的文件信息
+					 */
+					//console.log(removedFiles);
+					fileid = "";
+					for(var i = 0; i < removedFiles.length; i++) {
+						if(fileid.indexOf(removedFiles[i].ajaxResponse.original) == -1) {
+							fileid += removedFiles[i].ajaxResponse.original + '|' + removedFiles[i].ajaxResponse.url + ',';
+						}
+					};
+				}, //移除文件时的钩子
+				onSuccess: function(res) { //上传成功时的钩子
+					if(res.state == "SUCCESS") {
+						if(fileid.indexOf(res.original) == -1) {
+							fileid += res.original + "|" + res.url + ",";
+						}
+					} else {
+						new $.zui.Messager('系统暂只支持上传.jpg,.png,.gif,.txt,.pdf,.docx,.doc,.xlsx,.xls,.zip,.ppt,.pptx格式的文件!', {
+							icon: 'info-sign',
+							placement: 'center', // 定义显示位置
+							time: 1500,
+							type: 'danger'
+						}).show();
+					}
+				}
+			});
+
+			function getSelectjquery(tableName, columnName, useId) {
+				$.ajax({
+					type: 'get',
+					dataType: 'json',
+					url: urlpath + '/ProcessHandler/GetProcessType',
+					data: {
+						"P_TABLE": tableName,
+						"P_COLUMN": columnName
+					},
+					success: function(res) {
+						var str = "";
+						if(res.length > 0) {
+							$.each(res, function(i, item) {
+								str += "<option  value=" + item.ID + ">" + item.TEXT + "</option>";
+							});
+							$("#" + useId).append(str);
+							var sele = $('#' + useId).selectMania({
+								themes: ['green'],
+								placeholder: '请选择',
+								removable: false,
+								ajax: false,
+							});
+						}
+					},
+					error: function(err) {
+						alert("获取下拉数据错误,错误信息为" + err);
+					}
+				})
+			}
+
+			function getSelect(tableName, columnName, useId) {
+
+				$.ajax({
+					type: 'get',
+					dataType: 'json',
+					url: urlpath + '/ProcessHandler/GetProcessType',
+					data: {
+						"P_TABLE": tableName,
+						"P_COLUMN": columnName
+					},
+					success: function(res) {
+						if(res.length > 0) {
+							var opStr = "";
+							$.each(res, function(i, item) {
+								opStr += "<option  value=" + item.ID + ">" + item.TEXT + "</option>";
+							});
+							$("#" + useId).append(opStr);
+						}
+					},
+					error: function(err) {
+						alert("获取下拉数据错误,错误信息为" + err);
+					}
+				})
+			}
+
+			function urgent(num, obj) {
+				$(".col-sm-8 span").css("color", "black");
+				$('.urgent').css("color", "#353535");
+				$('.urgent .label').css("background", "#E4E4E4");
+				$("#NAME-" + num).css("color", "red");
+				var color = "";
+				switch(num) {
+					case 4:
+						color = "#11bae1";
+						break;
+					case 3:
+						color = "orange";
+						break;
+					case 2:
+						color = "#f4e60d";
+						break;
+					case 1:
+						color = "red";
+						break;
+				}
+				$(obj).children(".label").css("background", color);
+				$("#urgent").val(num);
+			}
+
+			function tishi(res) {
+				new $.zui.Messager(res, {
+					type: 'danger',
+					placement: 'center'
+				}).show();
+			}
+
+			//查看任务列表信息
+			//我的关注7 我的收藏8 待评分事件6 我的发起1
+			function lookList(P_STATE, P_TITLE) {
+				applyTrigger.show({
+					iframe: "../maintenanceStaff/orderList.html?P_STATE=" + P_STATE,
+					height: $('body').height() * 0.90,
+					width: $('body').width() * 0.95,
+					title: P_TITLE
+				});
+			}
+
+			function look_lisi(url, P_TITLE) {
+				applyTrigger.show({
+					iframe: url,
+					height: $('body').height(),
+					width: $('body').width(),
+					title: P_TITLE
+				});
+			}
+
+			function reSet() {
+				fileid = "";
+				var new_files = [];
+				var that = uploader;
+				that.ajax.isReady = false;
+				that.files = new_files;
+				$('.list-item').remove();
+				that.ajax.isReady = true;
+			}
+
+			function getUserInfo1() {
+				applyTrigger.show({
+					iframe: '../../Layout/userInfo.html',
+					height: 390,
+					width: 400,
+					title: '头像修改'
+				});
+			}
+
+			function closeTrigger() {
+				applyTrigger.close();
+			}
+		</script>
+	</body>
+
+</html>

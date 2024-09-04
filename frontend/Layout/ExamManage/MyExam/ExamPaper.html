@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<title>我的试卷</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<link rel="stylesheet" href="../../../Lib/bootstrap-3.3.7-dist/css/bootstrap.css" />
+		<link rel="stylesheet" href="../../../Lib/bootstrap-table/dist/bootstrap-table.css" />
+		<link rel="stylesheet" href="../../../Static/Css/checkboxRadito.css" />
+		<style>
+			* {
+				font-family: "微软雅黑", "宋体", Arial, sans-serif;
+			}
+			
+			html,
+			body {
+				height: 100%;
+				width: 100%;
+				font-family: "微软雅黑", "宋体", Arial, sans-serif;
+				overflow: hidden;
+				background: #F9F9F9;
+			}
+			.container-fluid {
+				padding: 5px;
+				width: 80%;
+				height: 90%;
+				margin: auto;
+				clear: both;
+			}
+			
+			#title1 {
+				text-align: center;
+				padding-top: 5px;
+				padding-bottom: 10px;
+			}
+			
+			#examtime {
+				color: blueviolet;
+				font-size: 30px;
+			}
+			
+			#submitExam {
+				width: 258px;
+				height: 30px;
+				padding-top: 100px;
+				padding-left: 120px;
+			}
+			
+			.submitExam1 {
+				color: #fff;
+				font-size: 16px;
+				cursor: pointer;
+				padding: 1px 15px;
+				background-color: #1770FE;
+				border: 1px solid #1770FE;
+			}
+			
+			.submitExam2 {
+				color: #fff;
+				font-size: 16px;
+				padding-left: 70px;
+				cursor: pointer;
+				padding: 1px 15px;
+				background-color: #1770FE;
+				border: 1px solid #1770FE;
+			}
+			
+			.did1 {
+				background-color: #1770FE;
+				color: #fff;
+			}
+			
+			.did0 {
+				background-color: #fff;
+				color: #000;
+				text-align: center;
+			}
+			
+			#questionGo {
+				margin-top: 40px;
+				text-align: right;
+				margin-right: 40px;
+			}
+			
+			#answer input {
+				vertical-align: middle;
+				line-height: 2px;
+				cursor: pointer;
+			}
+			
+			#answer label {
+				padding-left: 3px;
+				vertical-align: middle;
+				line-height: 2em;
+				cursor: pointer;
+			}
+			
+			.col-md-8,
+			.col-md-12,
+			.col-md-4 {
+				background: #fff;
+				height: 100%;
+			}
+			#qtr{
+				list-style: none;
+			}
+			#qtr li{
+				display: inline-block;
+				margin-left: 3px;
+				line-height: 30px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<div style="width: 60%;float: left;height:100%;margin-bottom: 10px;">
+				<div class="col-md-12" style="padding:0px;border-bottom:1px solid  #0A67FB ;height: 126px;">
+					<div id="title1">
+						<span id="P_PAPER_NAME" style="font-size: 32px;font-weight: 600px;"></span><br>
+						<span style="font-size: 18px;color: #985f5f;">卷面总分数:&nbsp;</span><span id="P_PAPER_SCORE" style="font-size: 18px;color:green;"></span><span style="font-size: 18px;color: #985f5f;">&nbsp;分，</span>
+						<span style="font-size: 18px;color: #985f5f;">考试时间:&nbsp;</span><span id="P_PAPER_SCORE_TIME" style="font-size: 18px;color:green;"></span><span style="font-size: 18px;color: #985f5f;">&nbsp;分钟</span>
+						<br>
+						<br>
+						<span style="color: green;"><span style="color:red;font-weight: 600;">考试需注意：</span>考试中需要注意，一旦点击交卷将不能再次进入考试页面，成绩的查看将在考试结束时间之后方可查看！</span>
+					</div>
+				</div>
+				<div class="col-md-12" style="padding:0px;height: 90%;" id="question_content">
+					<form id="examPaper">
+						<div id="question_name" style="margin-left:10%;padding-top:18px">
+							<!-- 题号 -->
+							<span id="question_no" name="question_no" style="font-size:16px;"></span>
+							<!-- 题目类型 -->
+							<span id="question_font" style="color:#3A5FCD;font-size:16px;"></span>
+							<!-- 题目名称 -->
+							<span id="p_question_name" style="font-size: 16px;"></span>
+							<!-- 题目分数 -->
+							<span id="question_score"></span>
+						</div>
+						<!-- 选项 -->
+						<div id="answer" style="margin-left:15%;padding-top:5px"></div>
+					</form>
+					<div id="questionGo">
+						<button id="last" class="btn btn-primary" type="button" onclick="pre()">上一题</button>
+						<button id="next" class="btn btn-primary" type="button" style="margin-left:50px;width:70px;" onclick="next()">下一题</button>
+					</div>
+				</div>
+			</div>
+			<div style="float:left;width: 39%;margin-left: 1%;height: 100%;">
+				<div class="col-md-12" style="height: 160px;">
+					<h2 style="color: rgb(59, 164, 255);">考试剩余时间:</h2>
+					<!-- 考试时间 -->
+					<div id="examtime">
+						<div id="time"></div>
+						<div id="timer">100:50</div>
+						<div style="margin-left: 15px;" id="tishi"></div>
+					</div>
+				</div>
+				<!-- 题目的题号 -->
+				<div class="col-md-12" style="margin-top: 20px;height: 500px;background: #fff;">
+					<h4>题目的题号</h4>
+					<ul style="margin:10px ;font-size:12px;margin-top:6px;text-align: center;" cellspacing="8%" id="qtr">
+					</ul>
+					<button type="button" onclick="submitPaper()" class="btn btn-primary" style="width: 200px;position: absolute;bottom: 20px;margin-left: 30%;">交卷</button>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript" src="../../../Lib/jquery-3.4.1.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+		<script type="text/javascript" src="../../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/bootstrap-table/dist/bootstrap-table.js"></script>
+		<script type="text/javascript" src="../../../Lib/bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/bootstrap-table/src/virtual-scroll/index.js"></script>
+		<script type="text/javascript" src="../../../Lib/public.js"></script>
+		<script type="text/javascript">
+			var P_PAPER_ID = $.url("P_ID");
+			var P_ID = "";
+			var ID = 1;
+			var total;
+			var maxtime;
+			$(document).ready(function() {
+				LoadInfo();
+				findQuestion(1);
+			});
+
+			function LoadInfo() {
+				$.ajax({
+					type: "post",
+					url: urlpath + '/exam/examPaper?r=' + Math.random(),
+					data: {
+						'P_ID': P_PAPER_ID
+					},
+					dataType: "json",
+					success: function(data) {
+						var html = "";
+						$("#P_PAPER_SCORE_TIME").html(data[0].TEST_TIME);
+						total = data.length;
+						for(var i = 0; i < data.length; i++) {
+							html +="<li class='bnum did" + data[i].IS_DONE + "' align='center' onclick='findQuestion(" + data[i].RID + ")' style='width:30px;height:30px;border: 1px solid #1770FE;cursor: pointer;'>" + data[i].RID + "</li>";
+						}
+						$("#qtr").html(html);
+						document.getElementById("P_PAPER_NAME").innerHTML = data[0].PAPER_NAME;
+						document.getElementById("P_PAPER_SCORE").innerHTML = data[0].TOTAL_SCORRE;
+					},
+					error: function(err) {
+						alert(err);
+
+					}
+				});
+			}
+
+			function findQuestion(rid) {
+				ID = rid;
+				$.ajax({
+					type: "post",
+					url: urlpath + '/exam/PaperInfo?r=' + Math.random(),
+					data: {
+						'P_PAPER_ID': P_PAPER_ID,
+						'P_RID': ID
+					},
+					dataType: "json",
+					success: function(data) {
+						var attrValue = data.data1[0].QUESTION_CLASS;
+						if(data.data1[0].RID == total) {
+							$("#next").val("提交");
+						} else {
+							$("#next").val("下一题");
+						}
+						document.getElementById("question_no").innerHTML = rid + "<font>、</font>";
+						document.getElementById("p_question_name").innerHTML = data.data1[0].QUESTION_NAME;
+						document.getElementById("question_score").innerHTML = "(" + data.data1[0].T_SCORE + "分" + ")";
+						if(attrValue == 1) {
+							document.getElementById("question_font").innerHTML = "[单选题]";
+							var html = "";
+							for(var i = 0; i < data.data2.length; i++) {
+								html += '<input class="danxuan" type="radio" value="' + data.data2[i].ID + '" id="' + data.data2[i].ID + '" name="answers">';
+								html += '<label for="' + data.data2[i].ID + '"  >' + data.data2[i].ANSWER_NAME + '</label>';
+								html += '<br>';
+							}
+							document.getElementById("answer").innerHTML = html;
+						}
+						if(attrValue == 2) {
+							document.getElementById("question_font").innerHTML = "[多选题](多选与少选均不得分)"
+							var html = "";
+							for(var i = 0; i < data.data2.length; i++) {
+								html += '<div class="checkbox-item"><input class="duoxuan" type="checkbox" value="' + data.data2[i].ID + '" id="' + data.data2[i].ID + '" name="answers">';
+								html += '<label for="' + data.data2[i].ID + '">' + data.data2[i].ANSWER_NAME + '</label></div>';
+								html += '<br/>';
+							}
+							document.getElementById("answer").innerHTML = html;
+						}
+						if(attrValue == 3) {
+							document.getElementById("question_font").innerHTML = "[判断题]";
+							var html = "<input type='radio'  value='1' id='1' name='answers' class='panduan'>";
+							html += "<label for='1' >正确</label>";
+							html += "<br/>";
+							html += "<input  type='radio' value='2' id='2' name='answers' class='panduan'>";
+							html += "<label for='2'>错误</label>";
+							document.getElementById("answer").innerHTML = html;
+						}
+						if(attrValue == 4) {
+							document.getElementById("question_font").innerHTML = "[填空题]";
+							var html = "";
+							for(var i = 0; i < data.data2.length; i++) {
+								html += '(' + (i + 1) + ')<input id="tk_' + data.data2[i].ID + '" class="tiankong" type="text" style="padding-left:10px;padding-top:10px;border-bottom:#4A708B 1px solid; border-left: 0px solid; border-right: 0px solid; border-top: 0px solid;onclick:outline:Blue Solid 1px;" name="answers_tiankong_' + data.data2[i].ID + '"/>';
+								html += '<br/>';
+							}
+							document.getElementById("answer").innerHTML = html;
+							//获取填空的答案
+							for(var z = 0; z < data.data3.length; z++) {
+								$("#tk_" + data.data3[z].ID).val(data.data3[z].ANSWER);
+							}
+						}
+						if(attrValue == 5) {
+							document.getElementById("question_font").innerHTML = "[简答题]";
+							var html = '<textarea id="jianda" rows="6" cols="80" style="border:#C1CDCD 1px solid;border-radius: 3px;" name="answers"></textarea>'
+							document.getElementById("answer").innerHTML = html;
+						}
+						var htmls = '<input id="TEST_TIME" name="TEST_TIMES" type="hidden" value="' + data.data1[0].TS_SECOND + '"/>';
+						document.getElementById("time").innerHTML = htmls;
+						maxtime = $("#TEST_TIME").val();
+						CountDown();
+						//获取单选题目的答案
+						if(data.data3.length > 0) {
+							$(":radio[class='danxuan'][value='" + data.data3[0].ANSWER + "']").prop("checked", "checked");
+							//获取多选题目的答案
+							for(var j = 0; j < data.data3.length; j++) {
+								$(":checkbox[class='duoxuan'][value='" + data.data3[j].ANSWER + "']").prop("checked", "checked");
+							}
+							//获取选择题的答案
+							$(":radio[class='panduan'][value='" + data.data3[0].ANSWER + "']").prop("checked", "checked");
+							//获取简答题的答案
+							$("#jianda").val(data.data3[0].ANSWER);
+						}
+					},
+					error: function(err) {
+						alert(err);
+					}
+				});
+			}
+
+			function next() {
+				if(ID == total) {
+					submitExam();
+					return;
+				}
+				submitExam();
+				ID++;
+				findQuestion(ID);
+			}
+
+			function pre() {
+				if(ID == 1) {
+					//alert("已经是第一题了!");
+					submitExam();
+					return;
+				}
+				submitExam();
+				ID--;
+				findQuestion(ID);
+			}
+
+			function submitExam() {
+				var data = $("#examPaper").serializeArray();
+				data.push({
+					name: 'P_QUESTION_ID',
+					value: ID
+				});
+				data.push({
+					name: 'P_ID',
+					value: P_PAPER_ID
+				});
+				$.ajax({
+					url: urlpath + '/exam/examPaperSubmit?r=' + Math.random(),
+					data: data,
+					type: "post",
+					success: function(data) {
+						if(data == "SUCCESS") {
+							LoadInfo();
+						} else {
+							parent.window.$.messager.alert('提示', '提交失败！');
+						}
+					}
+				});
+			}
+
+			function codefans(ss) {
+				var str = ss;
+				$("#tishi").html(str);
+				$("#tishi").show().delay(5000).fadeOut();
+			}
+
+			function CountDown() {
+				if(maxtime >= 0) {
+					window.name = maxtime;
+					minutes = Math.floor(maxtime / 60);
+					seconds = Math.floor(maxtime % 60);
+					msg = "<font >" + minutes + ":" + seconds + "</font>";
+					document.getElementById("timer").innerHTML = msg;
+					maxtime--;
+					if(maxtime == 1 * 60) {
+						var ss = "注意:距考试结束还有1分钟!";
+						codefans(ss);
+					}
+					if(maxtime == 15 * 60) {
+						var ss = "注意:距考试结束还有15分钟!";
+						codefans(ss);
+					}
+					if(maxtime == 30 * 60) {
+						var ss = "注意:距考试结束还有30分钟!";
+						codefans(ss);
+					}
+					if(maxtime == 0 * 60) {
+						var ss = "考试时间到，系统自动交卷!";
+						codefans(ss);
+						paperSubmit();
+					}
+				}
+			}
+			var timer = setInterval("CountDown()", 1000);
+
+			function tijiao() {
+				var msg = "你确定要交卷吗!";
+				if(confirm(msg) == true) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+
+			function submitPaper() {
+				var boolC = tijiao();
+				if(boolC == true) {
+					$.ajax({
+						url: urlpath + '/exam/submitPaperEndTime?r=' + Math.random(),
+						data: {
+							'P_PAPER_ID': P_PAPER_ID
+						},
+						type: "post",
+						success: function(data) {
+							if(data == "SUCCESS") {
+								window.close();
+								window.opener.location.reload(); //刷新父窗口
+							} else {
+								parent.window.$.messager.alert('提示', '提交失败！');
+							}
+						}
+					});
+				} else {
+					return;
+				}
+			}
+
+			function paperSubmit() {
+				$.ajax({
+					url: urlpath + '/exam/submitPaperEndTime.action?r=' + Math.random(),
+					data: {
+						'P_PAPER_ID': P_PAPER_ID
+					},
+					type: "post",
+					success: function(data) {
+						if(data == "SUCCESS") {
+							window.close();
+							window.opener.location.reload(); //刷新父窗口
+						} else {
+							parent.window.$.messager.alert('提示', '提交失败！');
+						}
+					}
+				});
+			}
+		</script>
+	</body>
+
+</html>

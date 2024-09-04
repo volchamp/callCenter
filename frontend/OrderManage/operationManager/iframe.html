@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>全部工单</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Static/Css/oprationList.css">
+		<link rel="stylesheet" href="../../Static/Css/changeManage.css">
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.css">
+		<link rel="stylesheet" href="../../Lib/select/css/select-mania.css" />
+<!--		<link rel="stylesheet" href="../../Lib/bootstrap-3.3.7-dist/css/bootstrap.min.css">-->
+		<style>
+			html,
+			body {
+				margin: 0px;
+				height: 100%;
+				width: 100%;
+				font-family: "微软雅黑";
+				overflow: auto;
+			}
+			
+			.fs_nav {
+				position: relative;
+				border-bottom: 1px solid #dddddd;
+				height: 56px;
+				color: #333333;
+				font-size: 12px "微软雅黑";
+				z-index: 0;
+				display: block;
+			}
+			
+			.fs_nav .fsnav_con {
+				padding: 0 15px;
+				position: absolute;
+				left: 0;
+				top: 0;
+				height: 57px;
+			}
+			
+			.container-fluid {
+				padding: 10px;
+				width: 100%;
+			}
+			
+			.fs_nav .fsnav_con h3 {
+				float: left;
+				margin-right: 50px;
+				color: #999999;
+				font-size: 19px !important;
+				font-weight: normal;
+				line-height: 55px;
+			}
+			
+			.click {
+				float: left;
+				margin: 0 10px;
+				border-bottom: 1px solid #dddddd;
+				display: block;
+				height: 56px;
+				line-height: 56px;
+				text-decoration: none;
+				cursor: pointer;
+			}
+			.select-mania-value-text {
+				line-height: 16px;
+			}
+			/*.fs_nav .fsnav_con a {*/
+			/*	float: left;*/
+			/*	margin: 0 10px;*/
+			/*	border-bottom: 1px solid #dddddd;*/
+			/*	display: block;*/
+			/*	height: 56px;*/
+			/*	line-height: 56px;*/
+			/*	text-decoration: none;*/
+			/*	cursor: pointer;*/
+			/*}*/
+			/*.last{*/
+			/*	padding: 0 20px 0;*/
+			/*	background: #25b6ed;*/
+			/*	border-radius: 3px;*/
+			/*	height: 67px;*/
+			/*	width: 100px!important;*/
+			/*	color: #fff;*/
+			/*	line-height: 18px;*/
+			/*	text-align: center;*/
+			/*}*/
+			.focus {
+				border-bottom: 0.1em solid #ff4902 !important;
+				color: #ff4902 !important;
+			}
+			.load-indicator:after {content: '\e97b'}
+			.new_event{
+				margin-top: 10px;
+				padding: 0 10px;
+				border: 1px solid #fff;
+				border-radius: 3px;
+				display: inline-block;
+				*zoom: 1;
+				*display: inline;
+				line-height: 20px;
+			}
+		</style>
+	</head>
+
+	<body >
+
+		<div class="container-fluid load-indicator" data-loading="正在加载..." id="load">
+			<div class="fs_nav" style="height:56px;">
+				<div class="fsnav_con">
+					<h3 style="margin: 0px;margin-right: 50px;">
+						<span class="dropdown dropdown-hover">
+							<a class="dropdown-toggle" data-toggle="dropdown" href="###" ><span id="otype">全部工单</span> <span class="caret"></span></a>
+							<ul class="dropdown-menu">
+								<li><a href="javascript:setOrderType()">全部工单</a></li>
+								<li><a href="javascript:setOrderType(1000)">问题工单</a></li>
+								<li><a href="javascript:setOrderType(1011)">发布工单</a></li>
+								<li><a href="javascript:setOrderType(1020)">事件工单</a></li>
+								<li><a href="javascript:setOrderType(1010)">需求工单</a></li>
+							</ul>
+						</span>
+
+					</h3>
+					<a href="javascript:void();" onclick="myInput()" class="focus click"><span>我的录单</span></a>
+					<a href="javascript:void();" onclick="myOrder()" class="click"><span>我的派单</span></a>
+					<a href="javascript:addOrder()" id="input" style="display: none" class="click">立即创建</a>
+				</div>
+			</div>
+			<div style="width: 100%;height: 84%;overflow: auto">
+				<div style="width: 100%;height: 100%;border: 0px">
+
+					<div id="top">
+						<table id="myInput">
+							<tbody>
+							<tr>
+								<td style="padding-left: 0px;">
+									<a onclick="changeParams('0',this)">
+										<img src="../../Static/Img/icon/banjie.png" height="34" width="34"/>
+										<em style="background: #d2d2e5;">
+											<b>全部</b>
+											<i id="total"></i>
+										</em>
+									</a>
+								</td>
+								<td>
+									<a onclick="changeParams('1',this)">
+										<img src="../../Static/Img/icon/order.png" height="34" width="34"/><em>
+										<b>暂存</b>
+										<i id="zc"></i>
+									</em>
+									</a>
+								</td>
+
+								<td>
+									<a onclick="changeParams('2',this)">
+
+										<img src="../../Static/Img/icon/order.png" height="34" width="34"/><em>
+										<b>工单池</b>
+										<i id="gdc"></i>
+									</em>
+									</a>
+								</td>
+								<td>
+									<a onclick="changeParams('3',this)">
+										<img src="../../Static/Img/icon/pingjia.png" height="34" width="34"/>
+										<em>
+											<b>处理中</b>
+											<i id="clz"></i>
+										</em>
+									</a>
+								</td>
+								<td>
+									<a onclick="changeParams('4',this)">
+										<img src="../../Static/Img/icon/tiaodu.png" height="34" width="34"/>
+										<em>
+											<b>待评分</b>
+											<i id="ycl"></i>
+										</em>
+									</a>
+								</td>
+								<td>
+									<a onclick="changeParams('5',this)">
+										<img src="../../Static/Img/icon/tiaodu.png" height="34" width="34"/>
+										<em>
+											<b>已办结</b>
+											<i id="ybj"></i>
+										</em>
+									</a>
+								</td>
+							</tr>
+							</tbody>
+						</table>
+
+						<table id="myOrder" style="display: none">
+							<tbody>
+							<tr>
+								<td style="padding-left: 0px;">
+									<a onclick="changeParams('0',this)">
+										<img src="../../Static/Img/icon/banjie.png" height="34" width="34"/>
+										<em style="background: #d2d2e5;">
+											<b>全部</b>
+											<i id="myOrderAll"></i>
+										</em>
+									</a>
+								</td>
+								<td>
+									<a onclick="changeParams('3',this)">
+										<img src="../../Static/Img/icon/pingjia.png" height="34" width="34"/>
+										<em>
+											<b>未处理</b>
+											<i id="wcl"></i>
+										</em>
+									</a>
+								</td>
+								<td>
+									<a onclick="changeParams('4',this)">
+										<img src="../../Static/Img/icon/tiaodu.png" height="34" width="34"/>
+										<em>
+											<b>已处理</b>
+											<i id="done"></i>
+										</em>
+									</a>
+								</td>
+							</tr>
+							</tbody>
+						</table>
+					</div>
+					<div id="center">
+						<table>
+							<tbody>
+							<tr>
+								<th width="85%">
+									<form id="from" >
+										<div class="formselect">
+											<label>工单编号</label>
+											<div style="display: inline-block;width: 80%;"><input type="text" class="form-control" id="P_DB_ID" name="P_DB_ID" placeholder="请输入编号" /></div>
+										</div>
+										<div class="formselect">
+											<label>工单名称</label>
+											<div style="display: inline-block;width: 80%;">
+												<input type="text" class="form-control" id="P_ORDER_NAME" name="P_ORDER_NAME" placeholder="请输入名称" />
+											</div>
+										</div>
+										<div class="formselect">
+											<label>系统</label>
+											<div style="display: inline-block;width: 80%;">
+												<select class="form-control" id="P_SYSTEM_NAME" name="P_SYSTEM_NAME" >
+													<option value="">全部</option>
+												</select>
+											</div>
+										</div>
+										<div class="formselect">
+											<label>问题来源</label>
+											<div style="display: inline-block;width: 80%;">
+												<select class="form-control" id="P_ORDER_SOURCE" name="P_ORDER_SOURCE" >
+													<option value="">全部</option>
+												</select>
+											</div>
+										</div>
+										<div class="formselect">
+											<label>紧急程度</label>
+											<div style="display: inline-block;width: 80%;">
+												<select class="form-control" id="P_EMER_LEVEL" name="P_EMER_LEVEL">
+													<option value="">全部</option>
+												</select>
+											</div>
+										</div>
+										<div class="formselect ">
+											<label>类型</label>
+											<div style="display: inline-block;width: 80%;">
+												<select class="form-control" id="P_ORDER_CLASS" name="P_ORDER_CLASS">
+													<option value="">全部</option>
+												</select>
+											</div>
+										</div>
+									</form>
+								</th>
+								<td width="15%">
+									<a class="retrievebtn" href="javascript:reset()" id="reset">重&nbsp;置</a>
+									<a class="retrievebtn" onclick="psearch()" href="javascript:void(0);">查&nbsp;询</a>
+								</td>
+							</tr>
+							</tbody>
+						</table>
+					</div>
+					<div id="bottom">
+						<div id="content" ></div>
+						<footer>
+							<ul class="pager" data-ride="pager" id="page">
+							</ul>
+						</footer>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript" src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script type="text/javascript" src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script type="text/javascript" src="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.js"></script>
+		<script type="text/javascript" src="../../Lib/public.js"></script>
+		<script type="text/javascript" src="../../Lib/select/js/select-mania.js"></script>
+		<script type="text/javascript" src="../../Static/Js/emLevel.js"></script>
+		<script type="text/javascript">
+			var P_TYPE = "1";
+			var P_EVENT_ID = "";
+			var P_COUNT_TYPE="0";
+			$(document).ready(function(){
+				$('#P_ORDER_CLASS').selectMania({
+					themes: ['green'],
+					placeholder: '请选择',
+					removable: false,
+					ajax: false,
+				});
+				$('#P_SYSTEM_NAME').selectMania({
+					themes: ['green'],
+					placeholder: '请选择',
+					removable: false,
+					ajax: false,
+				});
+				$('#P_ORDER_SOURCE').selectMania({
+					themes: ['green'],
+					placeholder: '请选择',
+					removable: false,
+					ajax: false,
+				});
+				$('#P_EMER_LEVEL').selectMania({
+					themes: ['green'],
+					placeholder: '请选择',
+					removable: false,
+					ajax: false,
+				});
+				$(".click").click(function(){
+					$(this).addClass("focus").siblings().removeClass("focus");
+				});
+				OperationStatistics();
+				GetProject();
+				getSelect('TR_BASE_APPLY_XX', 'TYPE', 'P_ORDER_CLASS');
+				getSelect('TR_BASE_APPLY_XX', 'SOURCE', 'P_ORDER_SOURCE');
+				// getSelect('TR_BASE_APPLY_XX', 'EM_LEVEL', 'P_EMER_LEVEL');
+				$.ajax({
+					type: 'get',
+					dataType: 'json',
+					url: urlpath + '/ProcessHandler/GetProcessType',
+					data: {
+						"P_TABLE": 'TR_BASE_APPLY_XX',
+						"P_COLUMN": 'EM_LEVEL'
+					},
+					success: function(res) {
+						if(res.length > 0) {
+							var opStr = "<option value=\"\"></option>";
+							$.each(res, function(i, item) {
+								opStr += "<option value=" + item.ID + ">" + item.TEXT + "</option>";
+							});
+							$("#P_EMER_LEVEL").html(opStr);
+							$('#P_EMER_LEVEL').selectMania('update');
+						}
+					},
+					error: function(err) {
+						alert("获取下拉数据错误,错误信息为" + err);
+					}
+				})
+				psearch();
+				$('#page').on('onPageChange', function(e, state, oldState) {
+						if(state.page !== oldState.page) {
+							var par = {
+								"P_TYPE":P_TYPE,
+								"P_COUNT_TYPE":P_COUNT_TYPE,
+								"P_EVENT_ID": P_EVENT_ID,
+								'P_DB_ID':$('#P_DB_ID').val(),
+								"P_ORDER_NAME":$('#P_ORDER_NAME').val(),
+								'P_SYSTEM_NAME':$('#P_SYSTEM_NAME').val(),
+								"P_ORDER_SOURCE":$('#P_ORDER_SOURCE').val(),
+								'P_ORDER_CLASS':$('#P_ORDER_CLASS').val(),
+								"P_EMER_LEVEL":$('#P_EMER_LEVEL').val(),
+								'PAGE':state.page,
+								'recPerPage': 10
+							};
+							webapi("/order/OperationQuery", par, function(res) {
+								if(res.result == 'success') {
+									$("#content").html("");
+									if(res.data.length==0){
+										$("#content").html("<div class='loadpos'>" +
+												"<span class='nodata'></span>" +
+												"</div>");
+									}else{
+										for(var i = 0; i < res.data.length; i++) {
+											conenter(res.data[i]);
+										}
+									}
+								}
+							});
+						}
+					});
+			});
+			function setOrderType(type){
+				switch (type) {
+					case 1000:
+						if (type != P_EVENT_ID){
+							$("#otype").text("问题工单");
+							P_EVENT_ID = "1000";
+							psearch();
+							OperationStatistics();
+							if(P_TYPE=="1")
+							$("#input").show();
+						}
+						break;
+					case 1011:
+						if (type != P_EVENT_ID) {
+							$("#otype").text("发布工单");
+							P_EVENT_ID = "1011";
+							psearch();
+							OperationStatistics();
+							if(P_TYPE=="1")
+								$("#input").show();
+						}
+						break;
+					case 1020:
+						if (type != P_EVENT_ID) {
+							$("#otype").text("事件工单");
+							P_EVENT_ID = "1020";
+							psearch();
+							OperationStatistics();
+							if(P_TYPE=="1")
+								$("#input").show();
+						}
+						break;
+					case 1010:
+						if (type != P_EVENT_ID) {
+							P_EVENT_ID = "1010";
+							$("#otype").text("需求工单");
+							psearch();
+							OperationStatistics();
+							if(P_TYPE=="1")
+								$("#input").show();
+						}
+						break;
+					default:
+						if (type != P_EVENT_ID) {
+							P_EVENT_ID = "";
+							$("#otype").text("全部工单");
+							psearch();
+							OperationStatistics();
+							$("#input").hide();
+						}
+						break;
+				}
+			}
+
+			function myInput() {
+				$("#myInput").show();
+				$("#myOrder").hide();
+				P_COUNT_TYPE="0";
+				P_TYPE = "1";
+				OperationStatistics();
+				psearch();
+			}
+
+			function myOrder() {
+				$("#myInput").hide();
+				$("#myOrder").show();
+				P_TYPE = "2";
+				P_COUNT_TYPE="0";
+				OperationStatistics();
+				psearch();
+			}
+
+			function changeParams(id,obj) {
+				P_COUNT_TYPE=id;
+				$(obj).children('em').css('background', '#d2d2e5');
+				$(obj).parent().siblings().find('a').find('em').css('background-color', '#e9eff1');
+				psearch();
+			}
+			//查询
+			function psearch(){
+				$('#load').addClass('loading');
+				var par = {
+				    "P_COUNT_TYPE":P_COUNT_TYPE,
+					"P_EVENT_ID": P_EVENT_ID,
+					"P_TYPE":P_TYPE,
+					'P_DB_ID':$('#P_DB_ID').val(),
+					"P_ORDER_NAME":$('#P_ORDER_NAME').val(),
+					'P_SYSTEM_NAME':$('#P_SYSTEM_NAME').val(),
+					"P_ORDER_SOURCE":$('#P_ORDER_SOURCE').val(),
+					'P_ORDER_CLASS':$('#P_ORDER_CLASS').val(),
+					"P_EMER_LEVEL":$('#P_EMER_LEVEL').val(),
+					'PAGE': 1,
+					'recPerPage': 10
+				};
+				webapi("/order/OperationQuery", par, function(res) {
+					if(res.result == 'success') {
+						$("#content").html("");
+						for(var i = 0; i < res.data.length; i++) {
+							conenter(res.data[i]);
+						}
+					}
+					var userListPage = $('#page').data('zui.pager');
+					userListPage.set(res.pager.page, res.pager.recTotal, res.pager.recPerPage);
+					$('#load').removeClass("loading");
+				},function (err) {
+					$('#load').removeClass("loading");
+					alert("加载数据错误")
+
+				});
+			}
+			//重置
+			function reset(){
+				$('#P_DB_ID').val("");
+				$('#P_ORDER_NAME').val("");
+				getSelect('TR_BASE_APPLY_XX', 'TYPE', 'P_ORDER_CLASS');
+				getSelect('TR_BASE_APPLY_XX', 'SOURCE', 'P_ORDER_SOURCE');
+				// getSelect('TR_BASE_APPLY_XX', 'EM_LEVEL', 'P_EMER_LEVEL');
+				$.ajax({
+					type: 'get',
+					dataType: 'json',
+					url: urlpath + '/ProcessHandler/GetProcessType',
+					data: {
+						"P_TABLE": 'TR_BASE_APPLY_XX',
+						"P_COLUMN": 'EM_LEVEL'
+					},
+					success: function(res) {
+						if(res.length > 0) {
+							var opStr = "<option value=\"\"></option>";
+							$.each(res, function(i, item) {
+								opStr += "<option value=" + item.ID + ">" + item.TEXT + "</option>";
+							});
+							$("#P_EMER_LEVEL").html(opStr);
+							$('#P_EMER_LEVEL').selectMania('update');
+						}
+					},
+					error: function(err) {
+						alert("获取下拉数据错误,错误信息为" + err);
+					}
+				})
+				GetProject();
+			}
+			
+			//获取系统下拉
+			function GetProject(){
+				$.ajax({
+					type: 'get',
+					dataType: 'json',
+					url: urlpath + '/ProcessHandler/GetProject',
+					success: function(res) {
+						if(res.length > 0) {
+							var opStr = "<option value=\"\"></option>";
+							$.each(res, function(i, item) {
+								opStr += "<option value=" + item.TEXT + ">" + item.TEXT + "</option>";
+							});
+							$("#P_SYSTEM_NAME").html(opStr);
+							$('#P_SYSTEM_NAME').selectMania('update');
+						}
+					},
+					error: function(err) {
+						alert("获取下拉数据错误,错误信息为" + err);
+					}
+				})
+			}
+
+			//下拉框获取数据
+			function getSelect(tableName, columnName, useId) {
+				$.ajax({
+					type: 'get',
+					dataType: 'json',
+					url: urlpath + '/ProcessHandler/GetProcessType',
+					data: {
+						"P_TABLE": tableName,
+						"P_COLUMN": columnName
+					},
+					success: function(res) {
+						if(res.length > 0) {
+							var opStr = "<option value=\"\"></option>";
+							$.each(res, function(i, item) {
+								opStr += "<option value=" + item.TEXT + ">" + item.TEXT + "</option>";
+							});
+							$("#" + useId).html(opStr);
+							$('#'+useId).selectMania('update');
+						}
+					},
+					error: function(err) {
+						alert("获取下拉数据错误,错误信息为" + err);
+					}
+				})
+			}
+
+			//拼接内容
+			function conenter(obj) {
+				var html = "";
+				if(obj.FORM_NAME=="事件管理"||obj.FORM_NAME=="发布管理"){
+					html = '<div class="order_list">' +
+						'<div class="ol_title">' +
+						'<h3>'+obj.FORM_NAME+' &nbsp;编号：'+obj.DB_ID+'</h3>' +
+						'<a href="javascript:toDetails('+obj.DB_ID+','+obj.EVENT_ID+')">查看详情</a>' +
+						'<a href="javascript:toDeal('+obj.DB_ID+','+obj.EVENT_ID+')">处理</a>'+
+						'</div>' +
+						'<div class="ol_con">' +
+						'<table>' +
+						'<tbody><tr style="background-color: rgb(255, 255, 255);">' +
+						'<th rowspan="3">' +
+						'<a>' +
+						'<img src="../../Static/Img/fixStart.gif" alt="">' +
+						'<span>'+obj.FORM_NAME+'</span>' +
+						'</a>' +
+						'</th>' +
+						'<td>' +
+						'<em>系统名称：</em>' +
+						'<span class="olc_txt yellow_txt ">'+obj.SYSTEM_NAME+'</span>' +
+						'<em>来源：</em>' +
+						'<span class="olc_txt">'+obj.ORDER_SOURCE+'</span>' +
+						'<em>类型：</em>' +
+						'<span class="olc_txt">'+obj.ORDER_CLASS+'</span>' +
+						'<em>当前节点：</em>' +
+						'<span class="olc_txt" style="color:#F4E60D;">'+obj.STEP_NAME+'</span>' +
+						'<em>创建时间：</em>' +
+						'<span class="olc_txt">' +obj.CREATE_TIME+'</span>' +
+						'<em>创建人名称：</em>' +
+						'<span class="olc_txt last">'+obj.CREATE_USER+'</span>' +
+						'</td>' +
+						'</tr>' +
+						'<tr style="background-color: rgb(255, 255, 255);"><td><em>名称：</em>'+obj.ORDER_NAME+'</td></tr>' +
+						'<tr style="background-color: rgb(255, 255, 255);"><td><em>内容概述：</em>'+obj.ORDER_DSC+'</td></tr>' +
+						'</tbody></table>' +
+						'</div>' +
+						'</div>';
+				}else{
+					html = '<div class="order_list">' +
+						'<div class="ol_title">' +
+						'<h3>'+obj.FORM_NAME+' &nbsp;编号：'+obj.DB_ID+'</h3>' +
+						'<a href="javascript:toDetails('+obj.DB_ID+','+obj.EVENT_ID+')">查看详情</a>' +
+						'<a href="javascript:toDeal('+obj.DB_ID+','+obj.EVENT_ID+')">处理</a>'+
+						'</div>' +
+						'<div class="ol_con">' +
+						'<table>' +
+						'<tbody><tr style="background-color: rgb(255, 255, 255);">' +
+						'<th rowspan="3">' +
+						'<a>' +
+						'<img src="../../Static/Img/fixStart.gif" alt="">' +
+						'<span>'+obj.FORM_NAME+'</span>' +
+						'</a>' +
+						'</th>' +
+						'<td>' +
+						'<em>系统名称：</em>' +
+						'<span class="olc_txt yellow_txt ">'+obj.SYSTEM_NAME+'</span>' +
+						'<em>来源：</em>' +
+						'<span class="olc_txt">'+obj.ORDER_SOURCE+'</span>' +
+						'<em>类型：</em>' +
+						'<span class="olc_txt">'+obj.ORDER_CLASS+'</span>' +
+						'<em>紧急程度：</em>' +
+						'<span class="olc_txt">'+setEmLevel(obj.EMER_LEVEL)+'</span>' +
+						'<em>当前节点：</em>' +
+						'<span class="olc_txt" style="color:#F4E60D;">'+obj.STEP_NAME+'</span>' +
+						'<em>创建时间：</em>' +
+						'<span class="olc_txt">' +obj.CREATE_TIME+'</span>' +
+						'<em>创建人名称：</em>' +
+						'<span class="olc_txt last">'+obj.CREATE_USER+'</span>' +
+						'</td>' +
+						'</tr>' +
+						'<tr style="background-color: rgb(255, 255, 255);"><td><em>名称：</em>'+obj.ORDER_NAME+'</td></tr>' +
+						'<tr style="background-color: rgb(255, 255, 255);"><td><em>内容概述：</em>'+obj.ORDER_DSC+'</td></tr>' +
+						'</tbody></table>' +
+						'</div>' +
+						'</div>';
+				}
+				$("#content").append(html);
+			}
+
+
+			//跳转到详情
+			function toDetails(dbid,eventid){
+				switch (eventid) {
+					case 1000:
+						window.location="../QuestionManage/QuestionInfo.html?P_DB_ID="+dbid+"&P_EVENT_ID="+eventid;
+						break;
+					case 1011:
+						window.location='../ReleaseManage/ReleaseDetail.html?P_DB_ID='+dbid+"&P_EVENT_ID="+eventid;
+						break;
+					case 1020:
+						window.location="../EventManage/EventBaseInfo.html?P_DB_ID="+dbid+"&P_EVENT_ID="+eventid;
+						break;
+					case 1010:
+						window.location="../ChanageManage/ChangeBaseInfo.html?P_DB_ID="+dbid+"&P_EVENT_ID="+eventid;
+						break;
+				}
+			}
+
+			function toDeal(dbid,eventid) {
+				switch (eventid) {
+					case 1000:
+						window.location="../QuestionManage/QuestionDeal.html?P_DB_ID="+dbid+"&P_EVENT_ID="+eventid;
+						break;
+					case 1011:
+						window.location="../ReleaseManage/ReleaseDeal.html?P_DB_ID="+dbid+"&P_EVENT_ID="+eventid;
+						break;
+					case 1020:
+						window.location="../EventManage/EventDeal.html?P_DB_ID="+dbid+"&P_EVENT_ID="+eventid;
+						break;
+                    case 1010:
+                        window.location="../ChanageManage/ChangeDeal.html?P_DB_ID="+dbid+"&P_EVENT_ID="+eventid;
+                        break;
+				}
+			}
+
+			function addOrder() {
+				switch (P_EVENT_ID) {
+					case "1000":
+						window.location="../QuestionManage/QuestionManageForm.html?EVENT_ID="+P_EVENT_ID;
+						break;
+					case "1011":
+						window.location="../ReleaseManage/ReleaseManageForm.html?EVENT_ID="+P_EVENT_ID;
+						break;
+					case "1020":
+						window.location="../EventManage/EventManageForm.html?EVENT_ID="+P_EVENT_ID;
+						break;
+					case "1010":
+						window.location="../ChanageManage/ChangeManageForm.html?EVENT_ID="+P_EVENT_ID;
+						break;
+				}
+			}
+
+			//获取统计数据
+			function OperationStatistics(){
+				$.ajax({
+					type: 'get',
+					dataType: 'json',
+					data:{
+						"P_EVENT_ID":P_EVENT_ID,
+						"P_TYPE":P_TYPE
+					},
+					url: urlpath + '/order/OperationStatistics',
+					success: function(res) {
+						if (P_TYPE=="1"){
+							$('#total').html(res[0].V_WDLD_ALL);
+							$('#gdc').html(res[0].V_WDLD_GDC);
+							$("#zc").html(res[0].V_WDLD_ZCD);
+							$('#clz').html(res[0].V_WDLD_CLZ);
+							$('#ycl').html(res[0].V_WDLD_DPF);
+							$('#ybj').html(res[0].V_WDLD_YBJ);
+						}else{
+							$("#myOrderAll").html(res[0].V_WDDB_ALL);
+							$("#wcl").html(res[0].V_WDDB_WCL);
+							$("#done").html(res[0].V_WDDB_YCL);
+						}
+					},
+					error: function(err) {
+						alert("获取下拉数据错误,错误信息为" + err);
+					}
+				})
+			}
+		</script>
+	</body>
+
+</html>

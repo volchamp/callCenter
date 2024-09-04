@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>退回工单至调度池</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<style>
+			html,body{
+				margin: 0px;
+				width: 100%;
+				height: 100%;
+			}
+			.container-fluid{
+				padding: 10px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container-fluid">
+			<form class="form-horizontal" >
+				<div class="form-group">
+					 <label for="P_DSC" class="col-sm-3 required">备注</label>
+					 <div class="col-sm-9">
+					 	<textarea id="P_DSC" name="P_DSC" class="form-control" placeholder="请填写退回备注"></textarea>
+					 </div>
+				</div>
+			</form>
+		</div>
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/layer/layer.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script type="text/javascript" src="../../Lib/public.js"></script>
+		<script src="../../Lib/all.js"></script>
+		<script type="text/javascript">
+			var id=$.url("ID");
+			var operid=$.url("PERID");
+			function formValidator(){
+				if($("#P_DSC").val()==""){
+					layer.alert("请填写备注！");
+					return false;					
+				}
+				firm("确定退回吗？","",$("#P_DSC").val(),"",id,operid,"");
+			}
+		</script>
+	</body>
+</html>

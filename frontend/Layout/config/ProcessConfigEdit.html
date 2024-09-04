@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <title>流程配置</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+    <link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/chosen/chosen.min.css">
+    <link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.css">
+    <link rel="stylesheet" href="../../Lib/jsTree/style.min.css">
+
+    <style>
+        .container-fluid {
+            padding: 10px;
+        }
+
+        .tips {
+            color: red;
+            font-size: 12px;
+            float: right;
+        }
+
+        #factory_text {
+            display: none;
+        }
+
+        html,
+        body {
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        input {
+            border: 1px solid #95b8e7;
+            border-radius: 5px;
+        }
+
+        .font {
+            font-family: "微软雅黑";
+            font-size: 12px;
+            width: 100px;
+        }
+
+        .pwd_level {
+            float: left;
+            width: 50px;
+            height: 23px;
+            margin-right: 10px;
+            background-color: #eeeeee;
+            text-align: center;
+            color: #fff;
+            line-height: 23px;
+        }
+        .treeject {
+            position: absolute;
+            border: 1px solid #3BA4FF;
+            border-radius: 3px;
+            border-top: 0px;
+            -moz-border-radius-topleft: 0px;
+            -moz-border-radius-topright: 0px;
+            overflow: auto;
+            display: none;
+            background: #fff;
+            z-index: 9999;
+            max-height: 230px;
+            width: 96%;
+            font-size: 10px;
+        }
+    </style>
+
+</head>
+
+<body>
+
+<div class="container-fluid" >
+    <div class="row">
+        <div class="col-md-2">
+            <div class="panel" style="width: 100%;">
+                <div class="panel-body">
+                    <form  class="form-horizontal" id="form">
+                        <div class="form-group">
+                            <label for="P_TYPE" class="col-sm-2 required">类型</label>
+                            <div class="col-sm-10">
+                                <select id="P_TYPE" name="P_TYPE" class="form-control">
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="col-sm-3">角色:</label>
+                            <div class="col-sm-8" id="project_select">
+                                <input id="project_text" type="text" readonly class="form-control search-input" placeholder="请选择类型">
+                                <input id="project_id" type="hidden">
+                                <div id="treeproject" class="treeject"></div>
+                            </div>
+                        </div>
+
+<!--                        <div class="form-group">-->
+<!--                            <label for="P_ROLE_ID" class="col-sm-2 required">角色</label>-->
+<!--                            <div class="col-sm-10">-->
+<!--                                <select id="P_ROLE_ID" name="P_ROLE_ID" class="form-control">-->
+<!--                                    <option value=""></option>-->
+<!--                                </select>-->
+<!--                            </div>-->
+<!--                        </div>-->
+
+                        <div class="form-group">
+                            <label for="P_NOW_STATE" class="col-sm-2 required">当前状态</label>
+                            <div class="col-sm-10">
+                                <select id="P_NOW_STATE" name="P_NOW_STATE" class="form-control">
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="P_OP" class="col-sm-2 required">操作</label>
+                            <div class="col-sm-10">
+                                <select id="P_OP" name="P_OP" class="form-control">
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="P_OP" class="col-sm-2 required">下一状态</label>
+                            <div class="col-sm-10">
+                                <select id="P_NEXT_STATE" name="P_NEXT_STATE" class="form-control">
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="P_NEXT_LC_ID" class="col-sm-2 required">下一环节</label>
+                            <div class="col-sm-10">
+                                <select id="P_NEXT_LC_ID" name="P_NEXT_LC_ID" class="form-control">
+                                    <option value=""></option>
+                                </select>
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="P_START_CONDITION" class="col-sm-2">限制条件开始信息</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="P_START_CONDITION" name="P_START_CONDITION">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="P_END_CONDITION" class="col-sm-2">限制条件结束信息</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="P_END_CONDITION" name="P_END_CONDITION">
+                            </div>
+                        </div>
+
+
+                        <div class="form-group">
+                            <label for="P_CONDITION_COL" class="col-sm-2">限制字段</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="P_CONDITION_COL" name="P_CONDITION_COL">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="P_LC_COMPLETE_TIME" class="col-sm-2">步骤处理时限</label>
+                            <div class="col-sm-10">
+                                <input type="text" class="form-control" id="P_LC_COMPLETE_TIME" name="P_LC_COMPLETE_TIME">
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+
+                            <label for="P_START_CONDITION" class="col-sm-2 required">是否共享</label>
+                            <div class="col-sm-10" style="display: inline-block;">
+                                <div class="radio-primary" style="float: left;"><input type="radio" name="P_IS_SHARE" checked="checked" id="P_IS_SHARE" value="1"><label>共享</label></div>
+                                <div class="radio-primary" style="margin-left: 10px;float: left;"><input type="radio" name="P_IS_SHARE" id="P_IS_NO_SHARE" value="0"><label>私有</label></div>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary" style="float:left;margin-left: 35%;margin-top: 15px;width: 200px;margin-bottom: 10px" onclick="submitBtn()" type="button" data-loading-text="正在提交...">提交</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<script src="../../Lib/jquery-3.4.1.min.js"></script>
+<script src="../../Lib/jsTree/jstree.js"></script>
+<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+<script src="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js"></script>
+<script src="../../Lib/public.js"></script>
+<script src="../../Lib/jsTree/jstree.js"></script>
+
+<script type="text/javascript">
+    var P_ID = $.url("P_ID");
+    var TEXTs = "";
+    var IDs = "";
+    $(function() {
+        getSelectjquery('TR_BASE_APPLY','TYPE_ID','P_TYPE');
+        getSelectjquery('TR_APPLY_STATE_TO_NEXT','OP','P_OP');
+        getStateQuery('P_NOW_STATE');
+        getStateQuery('P_NEXT_STATE');
+        ProcessGetSteps();
+
+        var $tree = $('#treeproject').jstree({
+            'core': {
+                "multiple": false,
+                'data': {
+                    "url": urlpath + "/RoleHander/getNRoleTree",
+                    "data": function(node) {
+                        return {
+                            "id": node.id
+                        };
+                    }
+                }
+            }
+        });
+        $tree.bind('activate_node.jstree', function(obj, e) {
+            var ref = $("#treeproject").jstree(true);
+            sel = ref.get_selected();
+            var nodes = $("#treeproject").jstree("get_checked");
+            var text = $("#treeproject").jstree("get_text", nodes);
+            var id = nodes;
+            $("#project_id").val(e.node.id);
+            $("#project_text").val(e.node.text);
+
+        })
+
+        $("#project_select").on("blur", "#project_text", function(e) {
+            setTimeout(function() {
+                $("#treeproject").hide();
+            }, 200)
+        });
+        $("#project_select").on("click", "#project_text", function() {
+            if($("#treeproject")[0].style.display == "none" || $("#treeproject")[0].style.display == "") {
+                $("#treeproject")[0].style.display = "block";
+            } else if($("#treeproject")[0].style.display == "block") {
+                $("#treeproject")[0].style.display = "none";
+            }
+        });
+
+
+
+
+
+
+
+        $('#P_TYPE_ID').on('change', function(e, params) {
+            var selectID = $("#P_TYPE_ID").find("option:selected").val();
+            getValSelect(selectID);
+        });
+
+
+
+    });
+
+    function getSelectjquery(tableName, columnName, useId) {
+        $.ajax({
+            type: 'get',
+            dataType: 'json',
+            url: urlpath + '/ProcessHandler/GetProcessType',
+            data: {
+                "P_TABLE": tableName,
+                "P_COLUMN": columnName
+            },
+            success: function(res) {
+                var str = "";
+                if(res.length > 0) {
+                    $.each(res, function(i, item) {
+                        str += "<option  value=" + item.ID + ">" + item.TEXT + "</option>";
+                    });
+                    $("#" + useId).append(str);
+                    // var sele = $('#' + useId).selectMania({
+                    //     themes: ['green'],
+                    //     placeholder: '请选择',
+                    //     removable: false,
+                    //     ajax: false,
+                    // });
+                }
+            },
+            error: function(err) {
+                alert("获取下拉数据错误,错误信息为" + err);
+            }
+        })
+    }
+
+    function getStateQuery(state){
+        $.ajax({
+            type: 'get',
+            dataType: 'json',
+            url: urlpath + '/ProcessHandler/ProcessGetStates',
+            success: function(res) {
+
+                var str = "";
+                if(res.length > 0) {
+                    $.each(res, function(i, item) {
+                        str += "<option  value=" + item.ID + ">" + item.TEXT + "</option>";
+                    });
+                    $("#"+state).append(str);
+                    // var sele = $('#'+state).selectMania({
+                    //     themes: ['green'],
+                    //     placeholder: '请选择',
+                    //     removable: false,
+                    //     ajax: false,
+                    // });
+                }
+            },
+            error: function(err) {
+                alert("获取下拉数据错误,错误信息为" + err);
+            }
+        })
+
+    }
+
+    function ProcessGetSteps(){
+        $.ajax({
+            type: 'get',
+            dataType: 'json',
+            url: urlpath + '/ProcessHandler/ProcessGetSteps',
+            success: function(res) {
+
+                var str = "";
+                if(res.length > 0) {
+                    $.each(res, function(i, item) {
+                        str += "<option  value=" + item.ID + ">" + item.TEXT + "</option>";
+                    });
+                    $("#P_NEXT_LC_ID").append(str);
+                    // var sele = $('#P_NEXT_LC_ID').selectMania({
+                    //     themes: ['green'],
+                    //     placeholder: '请选择',
+                    //     removable: false,
+                    //     ajax: false,
+                    // });
+                }
+                if(P_ID){
+            loadInfo();
+        }
+            },
+            error: function(err) {
+                alert("获取下拉数据错误,错误信息为" + err);
+            }
+        })
+    }
+
+
+    //修改时加载数据
+    function loadInfo() {//
+        $.ajax({
+            type: 'get',
+            url: urlpath +"/ProcessHandler/GetProcessConfigById.action",
+            dataType: 'json',
+            data: {
+                P_ID: P_ID
+            },
+            xhrFields: {
+                withCredentials: true
+            },
+            crossDomain: true == !(document.all),
+            success: function(data) {
+                var name=decodeURI($.url("operation"));
+                setTimeout(() => {
+                    $('#P_TYPE').val(data[0].TYPE_ID);
+                $('#project_id').val(data[0].ROLE_ID);
+                $('#project_text').val(name);
+                $('#P_NOW_STATE').val(data[0].NOW_STATE);
+                $('#P_OP').val(data[0].OP);
+                $('#P_NEXT_STATE').val(data[0].NEXT_STATE);
+                $('#P_NEXT_LC_ID').val(data[0].NEXT_LC_ID);
+                $('#P_START_CONDITION').val(data[0].START_CONDITION);
+                $('#P_END_CONDITION').val(data[0].END_CONDITION);
+                $('#P_CONDITION_COL').val(data[0].CONDITION_COL);
+                $('#P_LC_COMPLETE_TIME').val(data[0].LC_COMPLETE_TIME);
+                $("input[name='P_IS_SHARE'][value="+data[0].IS_SHARE+"]").attr("checked",true);
+                }, 500);
+                
+
+            }
+        })
+    }
+
+    function submitBtn(){
+        var type=$("#P_TYPE").val();
+        var role=$("#project_id").val();
+        var P_NOW_STATE=$("#P_NOW_STATE").val();
+        var P_OP=$("#P_OP").val();
+        var P_NEXT_STATE=$("#P_NEXT_STATE").val();
+        var P_NEXT_LC_ID=$("#P_NEXT_LC_ID").val();
+        var P_START_CONDITION=$("#P_START_CONDITION").val();
+        var P_CONDITION_COL=$("#P_CONDITION_COL").val();
+        var P_LC_COMPLETE_TIME=$("#P_LC_COMPLETE_TIME").val();
+        var pat=/^[1-9]\d*$/;
+        if(type=="")
+        {
+            new $.zui.Messager('提示消息：请选择类型', {
+                        type: 'danger',
+                        placement: 'center'
+                    }).show();
+        }
+        else if(role=="")
+        {
+            new $.zui.Messager('提示消息：请选择角色', {
+                        type: 'danger',
+                        placement: 'center'
+                    }).show();
+        }
+        else if(P_NOW_STATE=="")
+        {
+            new $.zui.Messager('提示消息：请选择当前状态', {
+                        type: 'danger',
+                        placement: 'center'
+                    }).show();
+        }
+        else if(P_OP=="")
+        {
+            new $.zui.Messager('提示消息：请选择操作', {
+                        type: 'danger',
+                        placement: 'center'
+                    }).show();
+        }
+        else if(P_NEXT_STATE=="")
+        {
+            new $.zui.Messager('提示消息：请选择下一状态', {
+                        type: 'danger',
+                        placement: 'center'
+                    }).show();
+        }
+        else if(P_NEXT_LC_ID=="")
+        {
+            new $.zui.Messager('提示消息：请选择下一环节', {
+                        type: 'danger',
+                        placement: 'center'
+                    }).show();
+        }
+        // else if(P_START_CONDITION=="")
+        // {
+        //     new $.zui.Messager('提示消息：请填写限制条件开始信息', {
+        //                 type: 'danger',
+        //                 placement: 'center'
+        //             }).show();
+        // }
+        // else if(P_CONDITION_COL=="")
+        // {
+        //     new $.zui.Messager('提示消息：请填写限制字段', {
+        //                 type: 'danger',
+        //                 placement: 'center'
+        //             }).show();
+        // }
+        // else if(P_LC_COMPLETE_TIME=="")
+        // {
+        //     new $.zui.Messager('提示消息：请填写步骤处理时限', {
+        //                 type: 'danger',
+        //                 placement: 'center'
+        //             }).show();
+        // }
+        else if(P_LC_COMPLETE_TIME!=""&&!pat.test(P_LC_COMPLETE_TIME))
+        {
+            new $.zui.Messager('提示消息：请填写正确的步骤处理时限', {
+                        type: 'danger',
+                        placement: 'center'
+                    }).show();
+        }
+        else
+        {
+            var data = $("#form").serializeArray();
+        var url = "/ProcessHandler/ProcessConfigAdd";
+        if(P_ID!=""){
+            url="/ProcessHandler/ProcessConfigUpdate";
+            data.push({
+                name:"P_ID",
+                value: P_ID
+            })
+        }
+        data.push({
+            name:'P_ROLE',
+            value:role
+        });
+        $.ajax({
+            type:"post",
+            url:urlpath+url,
+            data:data,
+            xhrFields: {
+                withCredentials: true
+            },
+            crossDomain: true == !(document.all), //兼容ie
+            dataType:'text',
+            success:function (res) {
+                if(res == "SUCCESS"){
+                    new $.zui.Messager('提示消息：提交成功', {
+                        type: 'success',
+                        placement: 'center'
+                    }).show();
+                    window.parent.closeTrigger();
+                    window.parent.updateGrid(); //刷新列表数据
+                }else if(res.substring(0,res.indexOf(","))=="EXISTED"){
+                    var role_name = res.substring(res.indexOf(",")+1);
+                    new $.zui.Messager('提示消息：角色名为：'+role_name+'已经存在流程配置项，请确认后再提交', {
+                        type: 'success',
+                        placement: 'center'
+                    }).show();
+                }else if(data == "FAILE") {
+                    new $.zui.Messager('提示消息：这些角色已经存在相关配置', {
+                        type: 'danger',
+                        placement: 'center'
+                    }).show();
+                    window.parent.closeTrigger();
+                }else{
+                    new $.zui.Messager('提示消息：提交失败', {
+                        type: 'danger',
+                        placement: 'center'
+                    }).show();
+                }
+            },
+            error:function (err) {
+
+            }
+        });
+        }
+
+    }
+
+
+
+
+</script>
+</body>
+
+</html>

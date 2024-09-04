@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>转派工单到一、二、三处理人</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Lib/jsTree/style.min.css">
+		<style>
+			html,
+			body {
+				margin: 0px;
+				width: 100%;
+				height: 100%;
+			}
+			
+			.container-fluid {
+				padding: 10px;
+			}
+			.treeject {
+				position: absolute;
+				border: 1px solid #3BA4FF;
+				border-radius: 3px;
+				border-top: 0px;
+				-moz-border-radius-topleft: 0px;
+				-moz-border-radius-topright: 0px;
+				overflow: auto;
+				display: none;
+				background: #fff;
+				z-index: 9999;
+				max-height: 230px;
+				width: 95.5%;
+				font-size: 10px;
+			}
+			.urgent {
+				display: inline-block;
+				width: 23%;
+				cursor: pointer;
+			}
+			
+			.urgent .label:empty {
+				display: inline-block;
+				width: 65px;
+				height: 15px;
+				position: absolute;
+				background: #E4E4E4;
+				margin-top: 5px;
+			}
+			
+			.urgent span:first-child {
+				font-size: 12px;
+				margin-left: 18px;
+				margin-top: 8px;
+			}
+			
+		</style>
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<form class="form-horizontal">
+				<div class="form-group">
+					<label for="role_id" class="col-sm-3 required">选择人</label>
+					<div class="col-sm-6" id="role_select">
+						<input id="role_text" type="text" readonly class="form-control search-input" placeholder="请选择类型">
+						<input id="role_id" type="hidden">
+						<div id="jsTree" class="treeject"></div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label for="P_DSC" class="col-sm-3 required">备注</label>
+					<div class="col-sm-6">
+						<textarea id="P_DSC" name="P_DSC"  class="form-control" placeholder="请填备注"></textarea>
+					</div>
+				</div>
+				<div id="urgent" class="form-group">
+					<label class="col-sm-3 control-label"><span class="required">优先级</span></label>
+						<div class="col-sm-6">
+							<div>
+								<div id="id-4" onclick="urgent(4,this)" class="urgent EM_LEVEL"><span>&nbsp;&nbsp;低 </span><br><span class="label label-badge"></span></div>
+								<div id="id-3" onclick="urgent(3,this)" class="urgent EM_LEVEL"><span>&nbsp;&nbsp;中</span><br><span class="label label-badge"></span></div>
+								<div id="id-2" onclick="urgent(2,this)" class="urgent EM_LEVEL"><span>&nbsp;&nbsp;高</span><br><span class="label label-badge"></span></div>
+								<div id="id-1" onclick="urgent(1,this)" class="urgent EM_LEVEL"><span>紧急</span><br><span class="label label-badge"></span></div>
+								<input value="4" type="hidden" id="EMER_LEVEL" name="EMER_LEVEL" class="urgent_input">
+							</div>
+						</div>
+				</div>
+			</form>
+		</div>
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/layer/layer.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script type="text/javascript" src="../../Lib/jsTree/jstree.js"></script>
+		<script src="../../Lib/public.js"></script>
+		<script src="../../Lib/all.js"></script>
+		<script type="text/javascript">
+			var id=$.url("ID");
+			var operid=$.url("PERID");
+			var Emergency=parseInt($.url("Emergency"));
+			$(document).ready(function() {
+				if(Emergency==0){
+					$('#urgent').css("display","none");
+				}
+				urgent(Emergency, $("#id-"+Emergency));
+				$('#jsTree').jstree({
+					'core': {
+						"multiple": false,
+						'data': {
+							"url": urlpath + "/order/getOrderDealUserTree",
+							"data": function(node) {
+								return {
+									"P_DB_ID":id,
+									"P_OPER_ID":operid
+								};
+							}
+						}
+					},
+					"plugins": ["checkbox"]
+				}).bind('activate_node.jstree', function(obj, e) {
+					var ref = $("#jsTree").jstree(true);
+					sel = ref.get_selected();
+					var nodes = $("#jsTree").jstree("get_checked");
+					$("#role_id").val(e.node.id);
+					$("#role_text").val(e.node.text);
+				});
+				$("#role_select").on("blur", "#role_text", function(e) {
+					setTimeout(function() {
+						$("#jsTree").hide();
+					}, 200)
+				});
+				$("#role_select").on("click", "#role_text", function() {
+					if($("#jsTree")[0].style.display == "none" || $("#jsTree")[0].style.display == "") {
+						$("#jsTree")[0].style.display = "block";
+					} else if($("#jsTree")[0].style.display == "block") {
+						$("#jsTree")[0].style.display = "none";
+					}
+				});
+				
+			});
+			function formValidator(){
+				if($("#role_text").val()==""){
+					layer.alert("请选择处理人！");
+					return false;					
+				}else{
+					if(Emergency==$("#EMER_LEVEL").val()){
+						Emergency="";
+					}else{
+						Emergency=$("#EMER_LEVEL").val();
+					}
+					firm("确定提交吗？",$("#role_id").val(),$("#P_DSC").val(),"",id,operid,Emergency);
+				}
+			}
+			function urgent(num, obj) {
+				$(".col-sm-6 span").css("color", "black");
+				$('.urgent').css("color", "#353535");
+				$('.urgent .label').css("background", "#E4E4E4");
+				var color = "";
+				switch(num) {
+					case 4:
+						color = "#11bae1";
+						break;
+					case 3:
+						color = "orange";
+						break;
+					case 2:
+						color = "#f4e60d";
+						break;
+					case 1:
+						color = "red";
+						break;
+				}
+				console.log(obj);
+				$(obj).children(".label").css("background", color);
+				$("#EMER_LEVEL").val(num);
+			}
+
+		</script>
+	</body>
+
+</html>

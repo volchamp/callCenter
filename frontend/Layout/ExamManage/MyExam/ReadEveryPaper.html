@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<title>我的试卷</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<link rel="stylesheet" href="../../../Lib/bootstrap-3.3.7-dist/css/bootstrap.css" />
+		<link rel="stylesheet" href="../../../Lib/bootstrap-table/dist/bootstrap-table.css" />
+		<style>
+			html,
+			body {
+				height: 100%;
+				width: 100%;
+				background: #F5F6F7;
+				overflow: hidden;
+			}
+			
+			.container-fluid {
+				height: 100%;
+				overflow: auto;
+				padding: 10px 12% 0;
+			}
+			
+			.col-md-12 {
+				height: 10%;
+				overflow: hidden;
+			}
+			
+			.col-md-4,
+			.col-md-8 {
+				height: 90%;
+				overflow: hidden;
+			}
+			
+			.quesTitle {
+				font-size: 20px;
+			}
+			
+			.tiul {
+				list-style: none;
+				overflow: hidden;
+				padding: 0
+			}
+			
+			.tiul li {
+				float: left;
+				height: 29px;
+				width: 30px;
+				text-align: center;
+				padding: 5px 0;
+				vertical-align: middle;
+				margin-right: 5px;
+				border: 1px solid #CCCCFF;
+				background-color: #CCCCFF;
+				cursor: pointer;
+			}
+		    #unlicoid li{
+		    	color: #fff;
+		    	border: 1px solid #F5F5F5;
+		    	background: black;
+		    }
+		</style>
+	</head>
+
+	<body>
+		<div style="width: 90%;height: 100%;background: #fff;margin: auto;">
+		<div class="container-fluid">
+			<div class="col-md-12 " style="height: 95%">
+				<div class="panel panel-default" style="height: 100%;overflow: auto;border: 0px;border-radius:0px ;">
+					<div class="panel-heading" style="text-align: center;color: #fff;background: #2680EB;">
+						<span id="P_PAPER_NAME" style="font-size: 30px;"></span>
+						<br>
+						<br>
+						<span><label>评分提示：</label>评分时，把本题的得分填上，点击下一份即可评分下一个人，同时提交该题的评分！</span>
+					</div>
+					<div style="background: #fff;padding: 5px;">
+						<div style="overflow: hidden;clear: both;">
+							<div style="float: left;width: 70%;min-height: 100px;border-right:1px solid #C8C8C8 ;">
+								<div id="question_number">
+								</div>
+							</div>
+							<div  style="float:left;width: 10%;min-height: 100px;">
+								<h2 style="text-align: right;color: #7b7979;">第<span id="TiHao"></span>题</h2>
+							</div>
+							<div style="float: right;width: 20%;">
+								<div style="width: 100%;color: #7b7979;">
+									<h3 style="margin-top: 0px;text-align: center;">共有<label style="color: #7c44ea;" id="num">0</label>份需评分</h3>
+									<h5 style="margin-top: 0px;margin-bottom: 2px;width: 100%;padding-left: 28%;"><b >待评:</b><label style="color:red;margin-left: 10px;" id="num2">0</label>&nbsp;<span>份</span></h5>
+									<h5 style="margin-top: 0px;margin-bottom: 2px;width: 100%;padding-left: 28%;"><b >已评:</b><label style="color: #7c44ea;margin-left: 10px;" id="num1">0</label>&nbsp;<span>份</span></h5>
+								</div>
+							</div>
+						</div>
+					</div>
+					
+					<div  style="background: #F5F5F5;overflow: auto;min-height: 100px;max-height: 200px;">
+						<div style="margin:10px 10px 0;color: #7b7979;font-size: 16px;"><label>试卷编号</label>
+							<ul style="float: right;" class="tiul">
+								<li style="background: #F5F5F5;border: 0px;width: 40px;height: 20px;line-height: 10px;">已评</li>
+								<li style="background:green;border: 0px;width: 20px;height: 20px;"></li>
+								<li style="background: #F5F5F5;border: 0px;width: 40px;height: 20px;line-height: 10px;">待评</li>
+								<li style="background:black;border: 0px;width: 20px;height: 20px;"></li>
+							</ul>
+						</div>
+						<ul style="font-size:12px;min-height: 100px;padding: 5px;" class="tiul" id="unlicoid">
+							
+						</ul>
+					</div>
+					<div class="panel-body">
+						<div id="question_content">
+							<form id="examPaper">
+								<div>
+									<div id="question_name" style="margin-left:34px;">
+										<!-- 题号 -->
+										<font id="question_no" class="quesTitle" name="question_no"></font>
+										<!-- 题目类型 -->
+										<font id="question_font" class="quesTitle"></font>
+										<!-- 题目名称 -->
+										<span id="p_question_name" class="quesTitle"></span>
+										<!-- 题目分数 -->
+										<font id="question_score" class="quesTitle"></font>
+										<font id="paper_all" class="quesTitle"></font>
+									</div>
+									<!-- 选项 -->
+									<div id="answer" style="padding-left:64px;margin-bottom: 20px">
+									</div>
+								</div>
+								<div style="padding-left:54px;">
+									<font id="trueAnswers"></font><br>
+								</div>
+								<div id="pingfen" style="margin-top:20px;margin-right: 20px;float: left"></div>
+								<div id="questionGo" style="float: left;margin-top: 20px"></div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		</div>
+		<script type="text/javascript" src="../../../Lib/jquery-3.4.1.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+		<script type="text/javascript" src="../../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/bootstrap-table/dist/bootstrap-table.js"></script>
+		<script type="text/javascript" src="../../../Lib/bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/bootstrap-table/src/virtual-scroll/index.js"></script>
+		<!--弹框-->
+		<script type="text/javascript" src="../../../Lib/layer/layer.js"></script>
+		<script type="text/javascript" src="../../../Lib/public.js"></script>
+		<script type="text/javascript">
+			var P_PAPER_ID = $.url("P_ID");
+			var RID = 1;
+			var ALLNUM = "";
+			var T_score1;
+			var ID="";
+			$(document).ready(function() {
+				getExamPaper();
+			});
+			
+			function getExamPaper() {
+				$.ajax({
+					type: "post",
+					url: urlpath + "/exam/readExamPaper",
+					data: {
+						'P_ID': P_PAPER_ID
+					},
+					dataType: "json",
+					success: function(data) {
+						var nhtml = "";
+						var tiankong = "<div style='color: #7b7979;font-weight: 600;'>填空题</div><ul class='tiul'>";
+						var jianda = "<div style='color: #7b7979;font-weight: 600;'>简答题</div><ul class='tiul'>";
+						for(var i = 0; i < data.length; i++) {
+							$("#TiHao").html(data[0].GID);
+							if(data[i].QUESTION_CLASS == 4) {
+								if(i==0){
+									tiankong += "<li style='background-color: rgb(48, 136, 254); color: white;' value='"+data[i].GID+"' onclick=findQuestion(" + data[i].ID + ",this)><span>" + data[i].GID + "</span></li>";
+								}else{
+									tiankong += "<li value='"+data[i].GID+"' onclick=findQuestion(" + data[i].ID + ",this)><span>" + data[i].GID + "</span></li>";
+								}
+								
+							} else if(data[i].QUESTION_CLASS == 5) {
+								if(i==0){
+									jianda += "<li value='"+data[i].GID+"' style='background-color: rgb(48, 136, 254); color: white;' onclick=findQuestion(" + data[i].ID + ",this)><span>" + data[i].GID + "</span></li>";
+								}else{
+									jianda += "<li value='"+data[i].GID+"' onclick=findQuestion(" + data[i].ID + ",this)><span>" + data[i].GID + "</span></li>";
+								}
+								
+							} else {
+							}
+						}
+						tiankong += "</ul>";
+						jianda += "</ul>";
+						nhtml += tiankong + jianda;
+						$('#P_PAPER_NAME').html(data[0].PAPER_NAME);
+						findQuestion(data[0].ID);
+						ExamNumer(data[0].ID);
+						document.getElementById("question_number").innerHTML = nhtml;
+						
+					},
+					error: function(err) {
+						layer.alert(err);
+					}
+				});
+			}
+
+			function findQuestion(questionId, Object) {
+				$(Object).css({
+					"background-color": "#3088FE"
+				});
+				$(Object).css({
+					"color": "white"
+				});
+				$(Object).siblings().css({
+					"background-color": "#CCCCFF",
+					"color": "#000000"
+				})
+				$(Object).parent().siblings("ul").find("li").css({
+					"background-color": "#CCCCFF",
+					"color": "#000000"
+				})
+				$("#TiHao").html($(Object).val());
+				ID = questionId;
+				ExamNumer(questionId);
+				$.ajax({
+					type: "post",
+					url: urlpath + "/exam/PaperInfoByQuestionID?r=" + Math.random(),
+					data: {
+						'P_PAPER_ID': P_PAPER_ID,
+						'P_QUESTION_ID': ID,
+						'P_RID': RID
+					},
+					dataType: "json",
+					success: function(data) {
+						T_score1 = data.data1[0].T_SCORE;
+						var qgo = "<input class='btn btn-primary btn-sm' id='last' type='button' onclick='pre()' value='上一份试卷'/>";
+						qgo += "<input class='btn btn-primary btn-sm' type='button' id='next' style='margin-left:50px;' onclick='nextN()' value='下一份试卷'/>";
+						document.getElementById("questionGo").innerHTML = qgo;
+						var pf = "<font style='margin-left:60px;margin-top:30px;'font-size:10px >评分:&nbsp;</font>";
+						pf += "<input id='store' style='padding-left:10px;color:red;border-bottom:#4A708B 1px solid; border-left: 0px solid; border-right: 0px solid; border-top: 0px solid;onclick:outline:Blue Solid 1px;width:60px;'/>";
+						pf += "<input type='hidden' style='margin-top:20px;mergin-left:40px' id='hidd'/>";
+						document.getElementById("pingfen").innerHTML = pf;
+						ALLNUM = data.data1[0].NUM;
+						var type = data.data1[0].QUESTION_CLASS;
+						document.getElementById("question_font").innerHTML = "" + data.data1[0].KID + "、&nbsp;";
+						document.getElementById("p_question_name").innerHTML = data.data1[0].QUESTION_NAME;
+						document.getElementById("question_score").innerHTML = data.data1[0].T_SCORE + "(分)";
+						document.getElementById("paper_all").innerHTML = "(" + data.data1[0].NUM + "份)";
+						document.getElementById("hidd").setAttribute("value", data.data2[0].SCORE_ID);
+						if(data.data2[0].SCORE != null) {
+							document.getElementById("store").setAttribute("value", data.data2[0].SCORE);
+						}
+						var userAnswer = "";
+						//填空题
+						if(type == 4) {
+							var html = "<div style='color:green;font-weight: 600;'>考生答案：</div>";
+							var htmls = "<div style='margin-left: 60px'>"
+							for(var i = 0; i < data.data2.length; i++) {
+								if(data.data2[i].USER_ANSWER) {
+									userAnswer = data.data2[i].USER_ANSWER;
+								}
+								html += '(' + (i + 1) + ')&nbsp;&nbsp;<input readonly id="tk_' + data.data2[i].ID + '" value="' + userAnswer + '" class="tiankong" type="text" style="padding-left:10px;border-bottom:#4A708B 1px solid; border-left: 0px solid; border-right: 0px solid; border-top: 0px solid;onclick:outline:Blue Solid 1px;" name="answers_tiankong_' + data.data2[i].ID + '"/>';
+								html += '<br/>';
+								htmls += data.data2[i].ANSWER==undefined?"":data.data2[i].ANSWER + ' ,';
+							}
+							htmls += "</div>"
+							document.getElementById("answer").innerHTML = html;
+							document.getElementById("trueAnswers").innerHTML = "<div style='margin-left:60px;padding: 10px 0'>参考答案:</div>" + htmls;
+						}
+						//简答题
+						if(type == 5) {
+							if(data.data2[0].USER_ANSWER) {
+								userAnswer = data.data2[0].USER_ANSWER;
+							}
+							var html = "<div style='color:green;font-weight: 600;'>考生答案：</div>" +
+								"<div id='jianda' style='padding: 10px;'  name='answers'>" + userAnswer + "</div>";
+							document.getElementById("answer").innerHTML = html;
+							document.getElementById("trueAnswers").innerHTML = "<div style='padding: 10px;color:#70ABF2;font-weight: 600;'>参考答案:</div>" +
+								"<div style='margin-left: 50px;color:#70ABF2;'>" + data.data2[0].ANSWER==undefined?"":data.data2[0].ANSWER + "</div>";
+						}
+                        $("#num").html(data.totalScore);
+                        $("#num1").html(data.alreadyScore);
+                        $("#num2").html(data.waitScore);
+						var numstr = "";
+					},
+					error: function(err) {
+						layer.alert(err);
+					}
+				});
+			}
+
+			function nextN() {
+				var result = scorecomparison();
+				if(result == 0) {
+					return;
+				} else {
+					submitExam();
+					if(RID == ALLNUM) {
+						layer.alert("已经是最后一份了!")
+					} else {
+						RID = RID + 1;
+					}
+				}
+			}
+
+			function pre() {
+				var result = scorecomparison();
+				if(result == 0) {
+					return;
+				} else {
+					submitExam();
+					if(RID == 1) {
+						layer.alert("已经是第一份了!")
+					} else {
+						RID = RID - 1;
+					}
+				}
+			}
+
+			function scorecomparison() {
+				var currentscore = $('#store').val();
+				if(T_score1 < currentscore) {
+					alert("评分错误，您的评分大于本题最大分值");
+					return 0;
+				} else {
+					return 1;
+				}
+			}
+
+			function submitExam() {
+				var data = $("#examPaper").serializeArray();
+				var t_scoreid = $("#hidd").val();
+				var Q_Score = $("#store").val();
+				var Is_Done = 0;
+				var User_Answer = $("#jianda").val();
+				var User_Answers = $(".tiankong").val();
+				if(User_Answer || User_Answers) {
+					Is_Done = 1;
+				}
+				data.push({
+					name: 'Q_SCORE',
+					value: Q_Score
+				});
+				data.push({
+					name: 'SCORE_ID',
+					value: t_scoreid
+				});
+				data.push({
+					name: 'IS_DONE',
+					value: Is_Done
+				});
+				data.push({
+					name: 'P_QUESTION_ID',
+					value: ID
+				});
+				data.push({
+					name: 'P_ID',
+					value: P_PAPER_ID
+				});
+				$.ajax({
+					url: urlpath + "/exam/submitPaperTscore?r=" + Math.random(),
+					data: data,
+					type: "post",
+					success: function(data) {
+						if(data == "SUCCESS") {
+							findQuestion(ID);
+							ExamNumer(ID)
+						} else {
+							parent.window.$.messager.alert('提示', '提交失败！');
+						}
+					}
+
+				});
+			}
+			$("body").keydown(function(event) {
+				if(event.keyCode == "13") { //keyCode=13是回车键
+					next();
+				}
+			});
+			 function ExamNumer(id){
+            	$.ajax({
+					type: "post",
+					url: urlpath + "/exam/getPFQK",
+					data: {
+						'P_PAPER_ID':P_PAPER_ID ,
+						"P_QUESTION_ID":id  
+					},
+					dataType: "json",
+					success: function(data) {
+						var html="";
+						if(data.length>0){
+							for(var i=0;i<data.length;i++){
+								if(data.length<10){
+									if(data[i].ISPF==1){
+										html +='<li onclick="personNext(\''+data[i].RID+'\')" style="background:green;"  value="'+data[i].RID+'">00'+data[i].RID+'</li>';
+									}else{
+										html +='<li onclick="personNext(\''+data[i].RID+'\')" value="'+data[i].RID+'">00'+data[i].RID+'</li>';
+									}
+								}else if(data.length<100){
+									if(data[i].ISPF==1){
+									html +='<li onclick="personNext(\''+data[i].RID+'\')" style="background:green;" value="'+data[i].RID+'">0'+data[i].RID+'</li>';
+									}else{
+									html +='<li onclick="personNext(\''+data[i].RID+'\')" value="'+data[i].RID+'">0'+data[i].RID+'</li>';
+									}
+								}else{
+									if(data[i].ISPF==1){
+										html +='<li onclick="personNext(\''+data[i].RID+'\')" style="background:green;" value="'+data[i].RID+'">'+data[i].RID+'</li>';
+									}else{
+										html +='<li onclick="personNext(\''+data[i].RID+'\')" value="'+data[i].RID+'">'+data[i].RID+'</li>';
+									}
+								}
+							}
+							$("#unlicoid").html(html);
+						}else{
+							return;
+						}
+					},
+					error: function(err) {
+						layer.alert(err);
+					}
+				});
+            }
+			 function personNext(num) {
+			 	RID=parseInt(num);
+				findQuestion(ID);
+			}
+		</script>
+
+	</body>
+
+</html>

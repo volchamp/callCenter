@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+	<html xmlns:v-bind="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>知识库信息</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.css">
+		<!--    <link href="../../Lib/zui-1.9.1-dist/lib/datetimepicker/datetimepicker.min.css" rel="stylesheet">-->
+		<style>
+			html,
+			body {
+				font-family: "微软雅黑";
+				font-size: 14px;
+				background: #F9F9F9;
+				height: 100%;
+				overflow: hidden;
+			}
+			
+			#TAG_ID dd {
+				margin-left: 10px;
+			}
+			
+			.article {
+				padding-top: 0px;
+			}
+			
+			.item-heading h4 a {
+				text-decoration: none;
+			}
+			
+			.list {
+				height: 100%;
+				overflow: hidden;
+			}
+			/* 设置滚动条的样式 */
+			
+			 ::-webkit-scrollbar {
+				width: 8px;
+				/*background-color: aqua;*/
+			}
+			/* 滚动槽 */
+			
+			 ::-webkit-scrollbar-track {
+				border-radius: 10px;
+			}
+			/* 滚动条滑块 */
+			
+			 ::-webkit-scrollbar-thumb {
+				width: 2px;
+				border-radius: 10px;
+				background: #C1C1C1;
+			}
+			
+			.Collection {
+				float: right;
+				cursor: pointer;
+				display: none;
+				margin-top: 10px;
+			}
+			
+			.lefttitle {
+				float: left;
+				width: auto;
+			}
+			
+			.lefttitle>h3 {
+				margin-top: 10px;
+			}
+			
+			.spandel {
+				margin-right: 10px;
+				width: 50px;
+				height: 80%;
+				background-color: #f54949;
+				border-radius: 0.25em;
+				font-size: 85.71428571%;
+				cursor: pointer;
+				color: #FFFFFF;
+				padding: 1px 5px;
+			}
+			
+			.header {
+				padding-bottom: 0px;
+			}
+			
+			.header:after {
+				content: "";
+				display: block;
+				height: 0;
+				clear: both;
+				visibility: hidden;
+			}
+			
+			dl {
+				margin-bottom: 0px;
+				margin-top: 6px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="list">
+			<header class="header">
+				<span class="Collection" id="cancelCollect" onclick="doCollect();"><i class="icon icon-heart" style="font-size: 18px;color:red"></i><span>&nbsp;取消收藏</span></span>
+				<span class="Collection" id="collect" onclick="doCollect();"><i class="icon icon-heart-empty" style="font-size: 18px;color:red"></i><span>&nbsp;收藏</span></span>
+				<div class="lefttitle">
+					<h3 id="P_TITLE"><i class="icon-list-ul"></i> 解决办法 <small>0条</small>
+					</h3>
+				</div>
+				<div class="lefttitle" style="margin-left: 10px;">
+					<dl class="dl-inline">
+						<dd class="pull" id="TAG_ID">
+					</dl>
+					<dl class="dl-inline" id="infoId" style="display: none">
+						<dt style="font-size: 14px;">问题详情：</dt>
+						</dd>
+						<dd class="pull" id="TITLE_INFO"></dd>
+					</dl>
+				</div>
+			</header>
+
+			<div id="bottom_right_top" style="height: 90%;">
+				<ul class="nav nav-tabs">
+					<li class="active">
+						<a href="#contentAll" onclick="getKnowledgeInfo()" data-toggle="tab">知识库</a>
+					</li>
+					<li>
+						<a href="#knowledge" onclick="getOrderInfo()" data-toggle="tab">关联事件</a>
+					</li>
+				</ul>
+				<div class="tab-content" style="height: 100%;overflow:auto;">
+					<div class="tab-pane fade in active" id="contentAll">
+						<div class="item">
+							<div class="item-heading">
+								<div class="pull-right"><span class="text-muted">2013-11-11 16:14:37</span> &nbsp;
+									<a href="#" class="text-muted"><i class="icon-comments"></i> 243</a>
+								</div>
+								<h4><a href="###"></a></h4>
+							</div>
+							<div class="item-content">
+								<div class="text">无内容</div>
+							</div>
+						</div>
+					</div>
+					<div class="tab-pane fade" id="knowledge" style="height: 96%;">
+						<div class="item">
+							<div class="item-heading">
+								<div class="pull-right"><span class="text-muted">2013-11-11 16:14:37</span> &nbsp;
+									<a href="#" class="text-muted"><i class="icon-comments"></i> 243</a>
+								</div>
+								<h4><a href="###"></a></h4>
+							</div>
+							<div class="item-content">
+								<div class="text">无内容</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<!--<script src="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js"></script>-->
+		<script src="../../Lib/public.js"></script>
+		<script src="../../Lib/vue.js"></script>
+		<script>
+			var newTrigger = new $.zui.ModalTrigger();
+			P_ID = $.url("PID");
+			P_TOTAL = $.url("P_TOTAL");
+			var std = "";
+			$(function() {
+				getKnowledgeInfo();
+				getCollectState();
+			});
+
+			// 根据knowledgeid查询附件信息,目前该方法没有采用
+			function getFjInfo() {
+				$.ajax({
+					type: "post",
+					url: urlpath + "/approval/getFjInfoById",
+					data: {
+						'P_KNOWLEDGE_ID': P_ID
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'json',
+					success: function(res) {
+						var str = "";
+						if(res[0] != null) {
+							var FJ = res[0].FJ_INFO;
+							// console.log(FJ);
+							var FJ_PATH = FJ.replace(/PP_PATH/g, urlpath);
+							str += "<div class='item-heading'>" +
+								"<h4><a href='###'>" + "相关附件" + "</a></h4></div>" +
+								"<div class='item-content'>" +
+								"<div class='text'>" + FJ_PATH + "</div></div></div>";
+							$("#contentfj").html(str);
+						}
+					},
+					error: function(res) {
+						// console.log("err");
+					}
+				});
+			}
+			//根据knowledgeid查询知识库详情
+			function getKnowledgeInfo() {
+				var arr = ["label label-success", "label label-warning", "label label-info", "label label-danger"];
+				$.ajax({
+					type: "post",
+					url: urlpath + "/approval/getContentInfoById",
+					data: {
+						'P_KNOWLEDGE_ID': P_ID
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'json',
+					success: function(res) {
+						var str = "";
+						var str1 = "";
+						var str2 = "";
+						var str3 = "";
+						str2 += "<i class='con-list-ul'></i>" + res[0].TITLE + " <small>解决办法(" + P_TOTAL +
+							"种)</small>";
+						$("#P_TITLE").html(str2);
+						if(res[0].TITLE_INFO != null && res[0].TITLE_INFO != 'undefine') {
+							str3 = "<span>" + res[0].TITLE_INFO + "</span> ";
+							$("#infoId").css("display", "inline-block");
+							$("#TITLE_INFO").html(str3);
+						}
+						var NAMES = res[0].TAG_NAME.split(',');
+						var P_TAG = "";
+						for(var i = 0; i < NAMES.length; i++) {
+							P_TAG = "P_TAG_" + i;
+							str += "<span id='" + P_TAG + "' class='" + arr[Math.floor(Math.random() * arr
+								.length)] + "'>" + NAMES[i] + "</span> ";
+						}
+						$("#TAG_ID").html(str);
+						for(var k = 0; k < res.length; k++) {
+							//                      var FJ_PATH = res[k].FJ_INFO.replace(/PP_PATH/g, urlpath);
+							var FJ_PATH = res[k].FJ_INFO;
+							str1 += "<div class='item'>" +
+								"<div class='item-heading'>" +
+								"<div class='pull-right'><span class='text-muted'>" + res[k].CREATE_TIME +
+								"&nbsp;&nbsp;&nbsp;&nbsp;" +
+								"<span class='spandel' onclick='delJJFA(" + res[k].ID + ")'>删&nbsp;除</span>" +
+								"<span class='spandel' style='background-color: #38b03f;' onclick='updateJJFA(\"" + res[k].ID + "\",\"" + res[k].KNOWLEDGE_ID + "\")'>修&nbsp;改</span></div>" +
+								"<h4><a href='###'>" + res[k].USER_NAME + "</a></h4></div>" +
+								"<div class='item-content'>" +
+								"<div style='margin-right: 10px;' class='text'>" + res[k].CONTENT + "</div>" +
+								"<div>" + FJ_PATH + "</div></div></div>";
+						}
+						$("#contentAll").html(str1);
+					},
+					error: function(res) {
+						// console.log("err");
+					}
+				});
+			}
+
+			function getOrderInfo() {
+				$.ajax({
+					type: "post",
+					url: urlpath + "/approval/listKnowledgeToApply",
+					data: {
+						'P_KNOWLEDGE_ID': P_ID
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'json',
+					success: function(res) {
+						console.log(res);
+						var str = "";
+						var str1 = "";
+						var str2 = "";
+						var str3 = "";
+						str2 += "<i class='con-list-ul'></i>" + "关联事件信息" + " <small></small>";
+						$("#P_TITLE").html(str2);
+						str = "<span class='label label-info' style='color:#fff;'>知识库关联事件</span>"
+						$("#TAG_ID").html(str);
+						for(var k = 0; k < res.length; k++) {
+							str1 += "<div class='item'>" +
+								"<div class='item-heading'>" +
+								"<div class='pull-right'><span class='text-muted'>" + res[k].CREATE_TIME +
+								"&nbsp;&nbsp;&nbsp;&nbsp;" +
+								"<span style='margin-right: 10px;width: 50px;height: 80%;background-color:#f54949;border-radius: .25em;font-size: 85.71428571%;;cursor: pointer;color: #FFFFFF;padding:1px 5px;'" +
+								"onclick='delOrder(" + res[k].ORDER_ID + ")'>删&nbsp;除</span></span></div>" +
+								"<h4><a  href='javascript:openwindow1(" + res[k].APPLY_ID + ");'>" +
+								res[k].COLUMN_VALUE + "</a></h4></div>" +
+								"<div class='item-content'>" +
+								"</div></div>";
+
+						}
+						$("#knowledge").html(str1);
+					},
+					error: function(res) {
+						// console.log("err");
+					}
+				});
+			}
+
+			function delJJFA(ID) {
+				$.ajax({
+					type: "post",
+					url: urlpath + "/approval/knowledgeContentDel",
+					data: {
+						'P_ID': ID
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'json',
+					success: function(data) {
+						if(data == 'SUCCESS') {
+							new $.zui.Messager('删除成功！', {
+								type: 'success',
+								placement: 'center'
+							}).show();
+							getKnowledgeInfo();
+						} else {
+							new $.zui.Messager('删除失败！', {
+								type: 'danger',
+								placement: 'center'
+							}).show();
+						}
+					},
+					error: function(res) {
+						new $.zui.Messager('后台链接出错！', {
+							type: 'danger',
+							placement: 'center'
+						}).show();
+					}
+				});
+			}
+
+			function updateJJFA(id, typeid) {
+				newTrigger.show({
+					iframe: 'knowledgeDeta.html?ID=' + id + '&TABID=' + typeid,
+					height: $('body').height() * 0.95,
+					width: $('body').width() * 0.70,
+					title: "修改解决方案"
+				});
+			}
+
+			function getCollectState() {
+				$.ajax({
+					type: "post",
+					url: urlpath + "/approval/getKnowledgeCollectCount",
+					data: {
+						'P_KNOWLEDGE_ID': P_ID
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'json',
+					success: function(res) {
+						std = res;
+						if(res == 0) {
+							$("#collect").show();
+						} else {
+							$("#cancelCollect").show();
+						}
+					},
+					error: function(res) {
+						new $.zui.Messager('获取收藏状态失败！', {
+							icon: 'frown',
+							placement: 'center' // 定义显示位置
+						}).show();
+					}
+				});
+			}
+
+			function doCollect() {
+				$.ajax({
+					type: "post",
+					url: urlpath + "/approval/updateCollection",
+					data: {
+						'P_KNOWLEDGE_ID': P_ID
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'json',
+					success: function(res) {
+						if(res.result == "SUCCESS") {
+							if(std > 0) {
+								$("#cancelCollect").hide();
+								$("#collect").show();
+								std = 0;
+							} else {
+								$("#collect").hide();
+								$("#cancelCollect").show();
+								std = 1;
+							}
+							new $.zui.Messager('操作成功！', {
+								icon: 'info-sign',
+								placement: 'center' // 定义显示位置
+							}).show();
+						} else {
+							new $.zui.Messager('操作失败！', {
+								icon: 'frown',
+								placement: 'center' // 定义显示位置
+							}).show();
+						}
+					},
+					error: function(res) {
+						new $.zui.Messager('操作失败！', {
+							icon: 'frown',
+							placement: 'center' // 定义显示位置
+						}).show();
+					}
+				});
+			}
+
+			function delOrder(ID) {
+				$.ajax({
+					type: "post",
+					url: urlpath + "/approval/knowledgeAppleDel",
+					data: {
+						'P_ORDER_ID': ID
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'json',
+					success: function(data) {
+						if(data == 'SUCCESS') {
+							new $.zui.Messager('删除成功！', {
+								type: 'SUCCESS',
+								placement: 'center'
+							}).show();
+							getOrderInfo();
+						} else {
+							new $.zui.Messager('删除失败！', {
+								type: 'danger',
+								placement: 'center'
+							}).show();
+						}
+					},
+					error: function(res) {
+						new $.zui.Messager('后台链接出错！', {
+							type: 'danger',
+							placement: 'center'
+						}).show();
+					}
+				});
+			}
+
+			function openwindow1(orderid) {
+				loadwindow1('', '', '事件查看', 'cogs', '../../Layout/adminUsers/orderDetails.html?p_apply_id=' + orderid +
+					'&P_OP=' + 108, 'fullscreen')
+			}
+
+			function loadwindow1(size, wsize, title, icon, url, isrue) {
+				var _height = window.parent.parent.outerHeight;
+				var _width = 600;
+				if(size != '') {
+					_height = size;
+				}
+				if(wsize != '') {
+					_width = wsize;
+				}
+				window.parent.$.zui.modalTrigger.show({
+					title: title,
+					icon: icon,
+					size: 'fullscreen',
+					type: 'iframe',
+					height: _height,
+					width: _width,
+					iframe: url
+				});
+			}
+		</script>
+	</body>
+
+	</html>

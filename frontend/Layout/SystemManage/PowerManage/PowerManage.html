@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>权限管理</title>
+		<link rel="stylesheet" href="../../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.css">
+		<link rel="stylesheet" href="../../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.css">
+		<link rel="stylesheet" href="../../../Lib/select/css/select-mania.css" />
+		<link rel="stylesheet" href="../../../Lib/jsTree/style.min.css">
+		<style>
+			html,
+			body {
+				height: 100%;
+				margin: 0px;
+				overflow: hidden;
+			}
+			
+			.container-fluid {
+				padding: 10px;
+			}
+		</style>
+	</head>
+
+	<body onkeydown="keySave()">
+		<div class="container-fluid">
+			<div class="row" style="height: 100%;">
+				<!-- 职位树 -->
+				<div class="col-md-3 role" style="height: 100%;">
+					<div class="panel panel-default" style="height: 94%;">
+						<div class="panel-heading">角色</div>
+						<!-- 主体部分插入树 -->
+						<div class="panel-body" style="height: 94%;overflow: auto;">
+							<div id="roleTree"></div>
+						</div>
+					</div>
+				</div>
+
+				<!-- 权限 -->
+				<div class="col-md-9 power" style="height: 100%;">
+					<div class="panel panel-default" style="height: 94%;">
+						<div class="panel-heading" id="btAdd">
+							<span class="firstSpan">权限</span>
+							<button class="btn btn-primary" onclick="save()" style="float: right;margin-right:10px;margin-top: -6px;">保存</button>
+						</div>
+						<div class="panel-body" style="height: 94%;overflow: auto;">
+							<div id="powerTree"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="../../../Lib/jquery-3.4.1.min.js" type="text/javascript"></script>
+		<script src="../../../Lib/zui-1.9.1-dist/dist/js/zui.min.js" type="text/javascript"></script>
+		<script src="../../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js" type="text/javascript"></script>
+		<script src="../../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.js" type="text/javascript"></script>
+		<script src="../../../Lib/public.js" type="text/javascript"></script>
+		<!--弹框-->
+		<script type="text/javascript" src="../../../Lib/layer/layer.js"></script>
+		<script src="../../../Lib/select/js/select-mania.js"></script>
+		<script src="../../../Lib/jsTree/jstree.js"></script>
+		<script type="text/javascript">
+			var treeDiv = $("#roleTree");
+			var powerTree = $("#powerTree");
+			var ROLE_ID = "";
+			var powerTreeid = "";
+			var $treepower;
+			var ID = 0;
+			$(function() {
+				var $tree = $('#roleTree').jstree({
+					'core': {
+						"multiple": false,
+						'data': {
+							"url": urlpath + "/RoleHander/getNRoleTree",
+							"data": function(node) {
+								return {
+									"id": node.id
+								};
+							}
+						}
+					}
+				});
+				treeViewOption(ID);
+				$tree.bind('activate_node.jstree', function(obj, e) {
+					ROLE_ID = e.node.id;
+					$("#powerTree").jstree("destroy");
+					$('#powerTree').data('jstree', false).empty();
+					treeViewOption(e.node.id);
+				});
+			});
+
+			function treeViewOption(nodeId) {
+				$treepower = $('#powerTree').jstree({
+					'core': {
+						"multiple": true,
+						'data': {
+							"url": urlpath + "/MenuHander/getNMenuTree",
+							"data": function(node) {
+								return {
+									"id": node.id,
+									"P_ROLE_ID": nodeId,
+									"P_KEYWORD": 0
+								};
+							}
+						}
+					},
+					checkbox: {
+						tie_selection: false,
+						whole_node: false
+					},
+					plugins: ["checkbox", "wholerow"]
+				}).bind('activate_node.jstree', function(obj, e) {
+					powerTreeid = "";
+					var ref = $("#powerTree").jstree(true);
+					sel = ref.get_selected();
+					var nodes = $("#powerTree").jstree("get_checked");
+					for(var i = 0; i < nodes.length; i++) {
+						powerTreeid += nodes[i] + ",";
+					}
+					$.each($("#powerTree").jstree("get_undetermined"), function(index, item) { //获取所有半选节点
+						powerTreeid += item+',';
+					});
+				})
+			}
+			//保存权限
+			function save() {
+				if(ROLE_ID == "") {
+					layer.msg("请选择角色", {
+						time: 1000
+					});
+					return false;
+				}
+				var saveLoad = layer.load(1, {
+					shade: 0.3
+				});
+				var Parms = {
+					"P_USERROLE": ROLE_ID,
+					"P_MENUANDBUTTON": powerTreeid
+				}
+				webapi("/RoleHander/editRolePowerNew", Parms, function(res) {
+					layer.close(saveLoad);
+					if(res == "OK") {
+						layer.msg("权限修改成功", {
+							time: 1000
+						});
+						treeViewOption(ROLE_ID);
+					} else {
+						layer.alert("修改失败");
+					}
+				}, function() {
+					layer.close(saveLoad);
+					layer.alert("修改失败");
+				});
+			}
+			//回车保存
+			function keySave() {
+				event.keyCode == 13 ? save() : '';
+			}
+		</script>
+	</body>
+
+</html>

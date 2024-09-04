@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>题库列表</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<link rel="stylesheet" href="../../../Lib/bootstrap-3.3.7-dist/css/bootstrap.css" />
+		<link rel="stylesheet" href="../../../Lib/bootstrap-table/dist/bootstrap-table.css" />
+		<style>
+			html,
+			body {
+				height: 100%;
+				width: 100%;
+				overflow: hidden;
+			}
+			
+			.container-fluid {
+				padding: 5px;
+			}
+			
+			.row {
+				margin-top: 10px;
+				margin-bottom: 5px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-4">
+					<div class="form-inline">
+						<div class="input-group">
+							<span class="input-group-btn">
+                            <button class="btn btn-default" type="button"><span
+                                    class="glyphicon glyphicon-search"></span></button>
+							</span>
+							<input type="text" class="form-control" id="searchString" placeholder="请输入题目名称">
+						</div>
+						<button type="button" class="btn btn-primary" id="queryBtn">查 询</button>
+					</div>
+				</div>
+				<div class="col-md-8" id="btAdd" style="text-align: right;">
+					<button type="button" class="btn btn-primary" onclick="addanswer()">添加答案</button>
+					<button type="button" class="btn btn-primary" onclick="updata()">编辑</button>
+					<button type="button" class="btn btn-primary" onclick="del()">删除</button>
+				</div>
+			</div>
+			<!-- 主体数据表格等内容部分 -->
+			<div class="mainBody row">
+				<div class="col-md-12">
+					<table id="table"></table>
+				</div>
+			</div>
+		</div>
+		<script type="text/javascript" src="../../../Lib/jquery-3.4.1.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+		<script type="text/javascript" src="../../../Lib/bootstrap-table/dist/bootstrap-table.js"></script>
+		<script type="text/javascript" src="../../../Lib/bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<!--弹框-->
+		<script type="text/javascript" src="../../../Lib/layer/layer.js"></script>
+		<script type="text/javascript" src="../../../Lib/colResizable-1.6.js"></script>
+		<script type="text/javascript" src="../../../Lib/public.js"></script>
+		<script type="text/javascript">
+			var Trigger = new $.zui.ModalTrigger();
+			var ID = $.url("ID");
+			var type = $.url("type");
+			var TITLE = $.url("TITLE");
+			var NUM=0;
+			$(function() {
+				getTable();
+				$("#queryBtn").click(function() {
+					getTable();
+				});
+				$("#table").colResizable({
+					liveDrag: true, //实时显示滑动位置
+					resizeMode: 'overflow', //mode can be 'fit', 'flex' or 'overflow'
+					minWidth: 15, //minimum width value in pixels allowed for a column 
+					gripInnerHtml: "<div class='grip'></div>",
+					disabledColumns: [0]
+				});
+			})
+
+			function getTable() {
+				$('#table').bootstrapTable('destroy');
+				g = $('#table').bootstrapTable({
+					url: urlpath + '/exam/answerQueryA',
+					method: 'get',
+					contentType: "text/json; charset=UTF-8",
+					queryParamsType: "",
+					sidePagination: 'server', //指定服务器端分页
+					dataType: "json",
+					sortable: true, //是否启用排序
+					sortOrder: "asc", //排序方式
+					sortName: "",
+					pagination: true,
+					pageNumber: 1,
+					pageSize: 10, //单页记录数
+					pageList: [10, 15, 20, 30], //分页步进值
+					clickToSelect: true, //点击选中
+					responseHandler: responseHandler,
+					//得到查询的参数
+					queryParams: function(params) {
+						//这里的键的名字和控制器的变量名必须一致，这边改动，控制器也需要改成一样的
+						var temp = {
+							page: params.pageNumber, //初始化加载第一页，默认第一页
+							rows: params.pageSize, //每页的记录行数
+							sort: params.sortName,
+							order: params.sortOrder,
+							KEYWORD: $("#searchString").val(),
+							P_QUESTION_ID: ID
+						};
+						return temp;
+					},
+					columns: [{
+							checkbox: true
+						},
+						{
+							field: "QUESTION_NAME",
+							title: "题目内容",
+							align: 'left',
+							sortable: true,
+							width: 300
+						},
+						{
+							field: "ANSWER",
+							title: "答案内容",
+							align: 'left',
+							width: 200
+						},
+						{
+							field: "CREATE_USER",
+							title: "创建人",
+							align: 'left',
+							width: 110
+						},
+						{
+							field: "CREATE_TIME",
+							title: "创建时间",
+							align: 'left',
+							width: 350
+						}
+					]
+				});
+			};
+
+			function responseHandler(result) {
+				//如果没有错误则返回数据，渲染表格
+				NUM=result.total;
+				return result;
+			}
+
+			function updata() {
+				var select = $('#table').bootstrapTable('getSelections');
+				if(select.length < 1) {
+					layer.alert("请选择需要设置的数据！");
+					return false;
+				} else if(select.length > 1) {
+					layer.alert("只能选择一条数据！");
+					return false;
+				} else {
+					var urlstr = "";
+					if(type == 1) {
+						urlstr = "settinsJudgeAnswer.html";
+					} else if(type == 2) {
+						urlstr = "settinsFillBlanksAnswer.html";
+					}
+					Trigger.show({
+						title: "修改答案",
+						iframe: urlstr + "?option=update" + "&A_ID=" + select[0]["ID"] + "&TITLE=" + escape(TITLE) + "&ID=" + ID,
+						height: $('body').height() * 0.60,
+						width: $('body').width() * 0.40
+					});
+				}
+			}
+
+			function addanswer() {
+				if(NUM>0){
+					layer.alert("已有答案，只能修改！");
+					return false;
+				}else{
+					url = "settinsJudgeAnswer.html?ID=" + ID + "&TITLE=" + escape(TITLE);
+				Tigger(url, 0.6, 0.45);
+				}
+			}
+
+			function Tigger(url, mu1, mu2) {
+				Trigger.show({
+					title: "添加答案",
+					iframe: url,
+					height: $('body').height() * mu1,
+					width: $('body').width() * mu2
+				});
+			}
+
+			function del() {
+				var select = $('#table').bootstrapTable('getSelections');
+				if(select.length < 1) {
+					layer.alert("请选择需要删除的数据！");
+					return false;
+				} else {
+					//把要删除的id拼接起来
+					var ID = '';
+					for(var i = 0; i < select.length; i++) {
+						if(select[i] == null) {
+							ID = ID;
+						} else {
+							ID += select[i].ID + ',';
+						}
+					}
+					layer.confirm("确定要删除这" + select.length + "条数据吗？", {
+						btn: ['确定', '取消'] //按钮
+					}, function() {
+						$.ajax({
+							type: "post",
+							url: urlpath + '/exam/answerDel',
+							data: {
+								'IDS': ID
+							},
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true == !(document.all), //兼容ie
+							dataType: 'json',
+							success: function(res) {
+								if(res == "SUCCESS") {
+									layer.msg("删除" + select.length + "条数据成功", {
+										icon: 6,
+										time: 1000
+									});
+									setTimeout(function() {
+										$("#table").bootstrapTable('refresh');
+									}, 500);
+								} else {
+									layer.msg("删除失败", {
+										icon: 5,
+										time: 1000
+									});
+								}
+							}
+						});
+					});
+				}
+			};
+			function tableRefresh() {
+				$("#table").bootstrapTable('refresh');
+			}
+		</script>
+	</body>
+
+</html>

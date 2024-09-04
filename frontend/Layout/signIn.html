@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>签到</title>
+		<link rel="stylesheet" href="../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<style>
+			html,
+			body {
+				overflow: hidden;
+				height: 100%;
+				width: 100%;
+			}
+			
+			#app {
+				height: 100%;
+			}
+			
+			.userInfo {
+				width: 350px;
+				border-radius: 3px;
+				background-color: white;
+				margin-left: 16px
+			}
+			
+			.signInfo {
+				width: 100%;
+				border-radius: 3px;
+				background-color: white;
+			}
+			
+			.center-type {
+				color: #3BA4FF;
+				letter-spacing: 2px;
+				border-left: 5px solid #3BA4FF;
+				padding-left: 25px;
+				height: 9%;
+				font-size: 20px;
+				line-height: 100%;
+			}
+			
+			.center-report {
+				height: 89%;
+				padding: 1%;
+				clear: both;
+				content: '';
+				text-align: center;
+			}
+			
+			.report {
+				height: 100px;
+				width: 100px;
+				display: inline-block;
+				border: 1px solid #EFEFEF;
+				cursor: pointer;
+				background: #EFEFEF;
+				color: #fff;
+				padding: 5px;
+				border-radius: 50%;
+			}
+			
+			.report-y {
+				height: 100%;
+				width: 100%;
+				line-height: 24px;
+				cursor: pointer;
+				color: #fff;
+				border-radius: 50%;
+				font-size: 16px;
+				text-align: center;
+				padding-top: 16px;
+				background: #3BA4FF;
+				border: 1px solid #3BA4FF;
+			}
+			
+			#lcul li {
+				border-left: 2px solid #CCCCCC;
+				padding-left: 10px;
+				list-style: none;
+				position: relative;
+				font-size: 16px;
+			}
+			
+			#lcul li i {
+				position: absolute;
+				width: 10px;
+				height: 10px;
+				border-radius: 50%;
+				background: #3AA1F6;
+				top: 7px;
+				left: -6px;
+			}
+			
+			#lcul li i:last-child {
+				position: absolute;
+				width: 10px;
+				height: 10px;
+				border-radius: 50%;
+				background: red;
+				top: 4px;
+				left: -6px;
+			}
+			
+			.time {
+				color: #3BA4FF;
+				font-weight: 600;
+			}
+			
+			.waicl {
+				display: inline-block;
+				margin-left: 10px;
+				border: 2px solid #78ca78;
+				padding: 0px 5px;
+				height: 22px;
+				line-height: 22px;
+				font-weight: 600;
+				font-size: 13px;
+				color: #78ca78;
+				border-radius: 3px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="app" style="padding: 20px;padding-top: 0px;">
+			<div class="userInfo">
+				<div class="track-rcol list">
+					<div id="strweek" class="track-list" style="padding:16px;color:#0066CC;font-size:20px;font-weight: 600;"></div>
+					<div class="track-list">
+						<ul id="lcul">
+
+						</ul>
+					</div>
+				</div>
+			</div>
+			<div class="signInfo">
+				<div class="center-title">
+					<div class="center-report">
+						<div class="report">
+							<div id="sx" class="report-y" onclick="addWork(1,this)">
+								上线<span class="addWorktime"></span>
+							</div>
+						</div>
+						<div class="report">
+							<div id="lx" class="report-y" onclick="addWork(3,this)">
+								离线<span class="addWorktime"></span>
+							</div>
+						</div>
+						<div class="report">
+							<div id="wc" class="report-y" onclick="addWork(2,this)">
+								外出<span class="addWorktime"></span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script src="../Lib/public.js"></script>
+		<script>
+			//创建一个函数来增加月日时小于10在前面加0
+			var padaDate = function(value) {
+				return value < 10 ? '0' + value : value;
+			};
+			var beginSignTime;
+			var outSignTime;
+			var endSignTime;
+			$(function() {
+				setInterval(function() {
+					formaDate();
+				}, 1000);
+				nowTimes();
+				getWorkTime();
+			})
+
+			function formaDate(value) {
+				//创建一个时间日期对象
+				var date = new Date();
+				var year = date.getFullYear(); //存储年
+				var month = padaDate(date.getMonth() + 1); //存储月份
+				var day = padaDate(date.getDate()); //存储日期
+				var hh = padaDate(date.getHours()); //存储时
+				var mm = padaDate(date.getMinutes()); //存储分
+				var ss = padaDate(date.getSeconds()); //存储秒
+				//返回格式化后的日期
+				$(".addWorktime").html(hh + ':' + mm + ':' + ss);
+			}
+
+			function timeFormate(timeStamp) {
+				var year = new Date(timeStamp).getFullYear();
+				var month = new Date(timeStamp).getMonth() + 1 < 10 ? "0" + (new Date(timeStamp).getMonth() + 1) : new Date(timeStamp).getMonth() + 1;
+				var date = new Date(timeStamp).getDate() < 10 ? "0" + new Date(timeStamp).getDate() : new Date(timeStamp).getDate();
+				var hh = new Date(timeStamp).getHours() < 10 ? "0" + new Date(timeStamp).getHours() : new Date(timeStamp).getHours();
+				var mm = new Date(timeStamp).getMinutes() < 10 ? "0" + new Date(timeStamp).getMinutes() : new Date(timeStamp).getMinutes();
+				var ss = new Date(timeStamp).getSeconds() < 10 ? "0" + new Date(timeStamp).getSeconds() : new Date(timeStamp).getSeconds();
+				var nowdate = year + "-" + month + "-" + date;
+				var a = ["日", "一", "二", "三", "四", "五", "六"];
+				var week = new Date().getDay();
+				$("#strweek").html("星期" + a[week] + "&nbsp;&nbsp;&nbsp;" + nowdate);
+			}
+
+			function nowTimes() {
+				timeFormate(new Date());
+			}
+
+			function getMessageNum() {
+				webapi("/newsController/newsCount", "", function(res) {
+					console.log(res);
+				});
+			}
+
+			function addWork(signType, event) {
+				getType(signType);
+				$.ajax({
+					type: "post",
+					url: urlpath + '/WorkTimeController/userSignWork',
+					data: {
+						"P_SIGN_TYPE": signType
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all),
+					dataType: 'json',
+					success: function(res) {
+						if(res == "SUCCESS" && signType == 1) {
+							beginSignTime = res.date;
+							new $.zui.Messager('提示消息：上线打卡成功', {
+								type: 'success',
+								placement: 'top'
+							}).show();
+							getWorkTime();
+						} else if(res == "SUCCESS" && signType == 2) {
+							endSignTime = res.date;
+							new $.zui.Messager('提示消息：外出打卡成功', {
+								type: 'success',
+								placement: 'top'
+							}).show();
+							getWorkTime();
+						} else if(res == "SUCCESS" && signType == 3) {
+							endSignTime = res.date;
+							new $.zui.Messager('提示消息：下线打卡成功', {
+								type: 'success',
+								placement: 'top'
+							}).show();
+							getWorkTime();
+						} else {
+							new $.zui.Messager('提示消息：打卡失败', {
+								type: 'danger',
+								placement: 'top'
+							}).show();
+						}
+					}
+				});
+			}
+
+			function getType(type) {
+				// 1上线  2外出 3离线
+				if(type == 1) {
+					$("#sx").css({
+						"border": "1px solid #BFBFBF",
+						"background": "#BFBFBF"
+					});
+					$("#wc").css({
+						"border": "1px solid #3BA4FF",
+						"background": "#3BA4FF"
+					})
+					$("#lx").css({
+						"border": "1px solid #3BA4FF",
+						"background": "#3BA4FF"
+					})
+				} else if(type == 2) {
+					$("#wc").css({
+						"border": "1px solid #BFBFBF",
+						"background": "#BFBFBF"
+					});
+					$("#sx").css({
+						"border": "1px solid #3BA4FF",
+						"background": "#3BA4FF"
+					})
+					$("#lx").css({
+						"border": "1px solid #3BA4FF",
+						"background": "#3BA4FF"
+					})
+				} else if(type == 3) {
+					$("#lx").css({
+						"border": "1px solid #BFBFBF",
+						"background": "#BFBFBF"
+					});
+					$("#wc").css({
+						"border": "1px solid #3BA4FF",
+						"background": "#3BA4FF"
+					})
+					$("#sx").css({
+						"border": "1px solid #3BA4FF",
+						"background": "#3BA4FF"
+					})
+				}
+			}
+			function getWorkTime() {
+				$.ajax({
+					type: "post",
+					url: urlpath + '/WorkTimeController/getSignInfo',
+					data: {},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all),
+					dataType: 'json',
+					success: function(res) {
+						if(res[0].SIGN_STATE == 1) {
+							$("#lcul").html('<li><i class="node-icon-on"></i>' +
+								'<span class="time">上线时间' + res[0].SIGN_TIME + '</span>' +
+								"</li>");
+							$("#sx").css({
+								"border": "1px solid #BFBFBF",
+								"background": "#BFBFBF"
+							});
+						}
+						if(res[0].SIGN_STATE == 2) {
+							$("#lcul").html('<li><i class="node-icon-on"></i>' +
+								'<span class="time">外出时间' + res[0].SIGN_TIME + '</span><span class="waicl">外勤</span>' +
+								"</li>");
+							$("#wc").css({
+								"border": "1px solid #BFBFBF",
+								"background": "#BFBFBF"
+							});
+						}
+						if(res[0].SIGN_STATE == 3) {
+							$("#lcul").html('<li><i class="node-icon-on"></i>' +
+								'<span class="time">离线时间' + res[0].SIGN_TIME + '</span>' +
+								"</li>");
+							$("#lx").css({
+								"border": "1px solid #BFBFBF",
+								"background": "#BFBFBF"
+							});
+						}
+					}
+				});
+			}
+
+			function getWorkInfo() {
+				var srcurl = '../Layout/ordinaryUsers/signLook.html?USERNAME=' + window.localStorage.getItem("username");
+				loadwindow('600', '600', '打卡信息', 'cogs', '../Layout/ordinaryUsers/signLook.html?USERNAME=' + window.localStorage.getItem("username"), 'fullscreen');
+			}
+		</script>
+	</body>
+
+</html>

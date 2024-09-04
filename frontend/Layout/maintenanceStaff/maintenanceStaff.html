@@ -1,0 +1,1048 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>首页</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.css">
+		<link rel="stylesheet" href="../../Lib/select/css/select-mania.css" />
+		<style>
+			html,
+			body {
+				background: #F9F9F9;
+				overflow: hidden;
+			}
+			
+			.row {
+				margin-top: 1.5%;
+				height: calc(100% - 1%);
+			}
+			
+			.userInfo {
+				padding: 0;
+			}
+			
+			.userInfo table {
+				width: 100%;
+			}
+			
+			.userInfo table tr:first-child {
+				border-bottom: 1px solid #DDD;
+			}
+			
+			.userInfo table tr td {
+				height: 65px;
+				width: 50%;
+				padding: 0 0 0 15px;
+			}
+			
+			.userInfo table tr:first-child td {
+				padding-bottom: 15px;
+			}
+			
+			.userInfo .user {
+				display: inline-block;
+				position: relative;
+				top: 15px;
+				left: 20px;
+			}
+			
+			.userInfo .user span:first-child {
+				font-size: 18px;
+			}
+			
+			.userInfo .user span:last-child {
+				font-size: 12px;
+				color: #C9C9C9;
+			}
+			
+			.task td:nth-child[1] {
+				padding-right: 15px;
+			}
+			
+			.userInfo .task td {
+				padding-top: 3%;
+			}
+			
+			.userInfo .task p {
+				color: #fff;
+			}
+			
+			.userInfo .task span {
+				font-size: 28px;
+			}
+			
+			.userInfo .task .progress {
+				height: 5px;
+				width: 70%;
+				margin-bottom: 0;
+				margin: auto;
+			}
+			
+			.score {
+				padding: 2% 1% 1% 1% !important;
+			}
+			
+			.score p {
+				text-align: center;
+				margin: 0;
+				font-size: 18px;
+				color: #f1b684;
+			}
+			
+			.score .icon {
+				/*font-size: 22px;*/
+				color: #D6D4D4;
+			}
+			
+			.score .icon-star {
+				color: #FFE45B;
+			}
+			
+			.myPanel div {
+				width: 40px;
+				height: 40px;
+				line-height: 50px;
+				text-align: center;
+				border-radius: 20px;
+				background: #39A5FE;
+				color: #fff;
+				display: inline-block;
+				position: relative;
+				top: 3px;
+			}
+			
+			.myPanel .label-badge {
+				padding: 3px;
+				font-size: 10px;
+				position: relative;
+				bottom: 10px;
+			}
+			
+			.tipMessage {
+				font-size: 18px;
+				padding: 10px 15px;
+				height: 45px;
+				overflow: hidden;
+			}
+			
+			.tipMessage .icon {
+				font-size: 25px;
+				color: #3BA4FF;
+				position: absolute;
+				top: 1%;
+			}
+			
+			.card {
+				padding: 1%;
+				background: #fff;
+			}
+			
+			.clearfix {
+				height: 38px;
+				line-height: 38px;
+			}
+			
+			.clearfix span {
+				font-size: 16px;
+			}
+			
+			.clearfix a {
+				float: right;
+			}
+			
+			.datagrid-row {
+				line-height: 34px;
+			}
+			
+			.task td .task-td {
+				cursor: pointer;
+				text-align: center;
+			}
+			
+			#scollNotice {
+				margin-bottom: 0;
+				list-style: none;
+				margin-left: 40px;
+			}
+			
+			#scollNotice li {
+				height: 45px;
+				cursor: pointer;
+			}
+			
+			#scollNotice .createTime {
+				float: right;
+				color: #D6D4D4;
+				font-size: 15px;
+			}
+			
+			.modal-dialog {
+				overflow: hidden;
+			}
+			
+			#collectNum {
+				display: inline-block;
+			}
+			
+			.btn-primary-new {
+				background-color: #fff;
+				border-color: #1970fc;
+				color: #3280fc;
+			}
+			
+			.btn-primary-new.active,
+			.btn-primary-new:active,
+			.btn-primary-new:focus,
+			.btn-primary-new:hover {
+				color: #fff;
+				background-color: #0a67fb;
+				border-color: #0354d4;
+				-webkit-box-shadow: 0 2px 1px rgba(0, 0, 0, .1);
+				box-shadow: 0 2px 1px rgba(0, 0, 0, .1)
+			}
+			
+			.datagrid-cell-head {
+				padding: 0 8px;
+			}
+			
+			.datagrid-sorter {
+				right: 8px;
+			}
+			
+			.modal-dialog {
+				border: 1px solid rgb(59, 164, 255);
+			}
+			
+			#wtdapply {
+				position: absolute;
+				right: 35px;
+				top: 5px;
+				font-size: 15px;
+			}
+			
+			#ladeCount {
+				color: red;
+			}
+			
+			#form1 {
+				display: inline-flex;
+				width: 85%;
+				margin-left: 30px;
+			}
+			
+			#form1 select {
+				width: 20%;
+				margin: 5px 20px 0px 5px;
+			}
+			
+			a:hover {
+				text-decoration: none;
+			}
+			
+			.task-td {
+				width: 40%;
+				height: 47%;
+				border-radius: 5px;
+				padding: 2%;
+ 				float: left;
+				margin-left: 5%;
+				margin-bottom: 2%;
+				text-align: left;
+				cursor: pointer;
+				font-weight: bold;
+				font-size: 14px;
+			}
+			
+			.task-td:hover {
+				border: 1px solid #3BA4FF;
+				background: #3BA4FF;
+				box-shadow: 3px 3px 3px 3px #3BA4FF;
+				color: #ffffff;
+				font-weight: bold;
+			}
+			
+			#scollNotice li {
+				cursor: pointer;
+			}
+			
+			#scollNotice li:hover {
+				color: #3BA4FF;
+			}
+			
+			.task-td < p {
+				color: #fff;
+			}
+			
+			.panel {
+				margin-bottom: 3%;
+				height: 8%;
+				min-height: 66px;
+			}
+			
+			.panel-body {
+				padding: 2% 4% 4% 4%;
+			}
+			
+			.userInfo {
+				padding: 0px;
+			}
+			
+			.myPanel {
+				height: 100%;
+				line-height: 100%;
+				/*				padding: 0% 8%;*/
+				font-size: 18px;
+			}
+			
+			.panell {
+				background-color: #fff;
+				border: 1px solid transparent;
+				border-color: #ddd;
+				border-radius: 4px;
+				-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+				box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+				height: 36%;
+				margin-bottom: 4%;
+				min-height: 260px;
+			}
+			
+			.col-md-3 {
+				height: 98%;
+			}
+			
+			.progress {
+				height: 8px!important;
+				margin-bottom: 0px !important;
+			}
+			
+			.boday-top {
+				border-bottom: 1px solid #ddd;
+				padding: 2% 2% 2% 1px;
+				height: 28%;
+			}
+			
+			.container-fluid {
+				padding: 0% 5%;
+			}
+			
+			.formselect {
+				float: left;
+				width: 23%;
+			}
+			
+			.select-mania {
+				width: 24%!important;
+				margin: 0px 3px;
+			}
+			
+			.select-mania-values,
+			.select-mania-inner,
+			.select-mania-value,
+			.select-mania-text,
+			.select-mania-value-text {
+				height: 38px!important;
+			}
+			
+			.select-mania-value {
+				margin-top: -10px;
+			}
+			.icon-img {
+				width: 30px;
+				height: 30px;
+				margin-top: -12px;
+				margin-left: 4px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-3">
+					<div class="panell">
+						<div class="boday-top">
+							<div style="float: left;height: 100%;width: 16%;margin: 5px;">
+								<img style="margin-left: 10px;height: 80%;width: 80%;cursor: pointer;" :src="img_url?img_url:img"  onclick="getUserInfo1()" class="img-circle">
+							</div>
+							<div class="user" style="float: left;margin-left: 2%;padding-top: 3%;font-size: 14px;font-weight: bold;">
+								<span>{{name}}</span><br>
+								<span>{{rolename}}</span>
+							</div>
+							<div class="score" style="float: right;margin-top: 10px;">
+								<p>评分：
+									<span id="SCORE_AVG">
+                                            <!--<i class="icon icon-star"></i>
+                                            <i class="icon icon-star"></i>
+                                            <i class="icon icon-star-empty"></i>
+                                            <i class="icon icon-star-empty"></i>
+                                            <i class="icon icon-star-empty"></i>-->
+                                        </span>
+							</div>
+						</div>
+
+						<div class="panel-body userInfo" style="height: 70%;padding-top: 2%;">
+							<div class="task-td" onclick="lookList(2,'任务列表')">
+								<p class="task-p">任务总数</p>
+								<span class="task-span" id="totalNum">16</span>
+								<div class="progress">
+									<div class="progress-bar-info" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+									</div>
+								</div>
+							</div>
+							<div class="task-td" onclick="lookList(3,'我的已办')">
+								<p class="task-p">已办</p>
+								<span class="task-span" id="alreadyNum">2</span>
+								<div class="progress">
+									<div id="success" class="progress-bar progress-bar-success" role="progressbar" aria-valuenow="12.5" aria-valuemin="0" aria-valuemax="100" style="width: 12.5%">
+									</div>
+								</div>
+							</div>
+							<div class="task-td" onclick="lookList(4,'我的待办')">
+								<p class="task-p">待办</p>
+								<span class="task-span" id="waitNum">4</span>
+								<div class="progress">
+									<div id="warning" class="progress-bar progress-bar-warning" role="progressbar" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100" style="width: 25%">
+									</div>
+								</div>
+							</div>
+							<div class="task-td" onclick="lookList(5,'超时任务')">
+								<p class="task-p">超时</p>
+								<span class="task-span" id="overtimeNum">0</span>
+								<div class="progress">
+									<div id="danger" class="progress-bar progress-bar-danger" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 10%">
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+					<div style="height: 55%;overflow: auto;">
+						<div class="panel">
+							<div class="myPanel" style="cursor: pointer;padding: 1.5% 7%!important;" onclick="lookList(7,'我的系统')">
+								<div><i class="icon icon-star icon-2x"></i></div>&nbsp;&nbsp;我的系统
+							</div>
+						</div>
+						<div class="panel">
+							<div class="myPanel" style="cursor: pointer;padding: 1.5% 7%!important;" onclick="lookList(8,'我的收藏')">
+								<div style="background: #F1B684;"><i class=" icon icon-heart icon-2x"></i></div>
+								&nbsp;&nbsp;我的收藏<span id="collectNum" class="label label-badge label-danger"></span>
+							</div>
+						</div>
+						<div class="panel">
+							<div class="myPanel" style="cursor: pointer;padding: 1.5% 7%!important;" onclick="look_lisi('../ordinaryUsers/knowledgeBase.html','运维知识库')">
+								<div style="background: #3CC9FF;"><i class="icon icon-book icon-2x"></i></div>
+								&nbsp;
+								<span>运维知识库</span>
+							</div>
+						</div>
+						<div class="panel">
+							<div class="myPanel" style="cursor: pointer;padding: 1.5% 7%!important;" onclick="look_lisi('../statistical.html','事件统计')">
+								<div style="background: #F1B684;"><img class="icon-img" style="margin-left:-1px;" src="../../Static/Img/count.png"></img></div>
+								&nbsp;
+								<span>事件统计</span>
+							</div>
+						</div>
+						
+						<div class="panel">
+							<div class="myPanel" style="cursor: pointer;padding: 1.5% 7%!important;" onclick="look_lisi('../ordinaryUsers/myhistoryJobs.html','我的事件')">
+								<div style="background: #AC6CFF;"><img class="icon-img" src="../../Static/Img/Normal.png"></img></div>
+								&nbsp;
+								<span>我的事件</span>
+							</div>
+						</div>
+						<div class="panel">
+							<div class="myPanel" style="cursor: pointer;padding: 1.5% 7%!important;" onclick="look_lisi('../ordinaryUsers/ordinaryCopy.html','事件登记')">
+								<div style="background: #F1B684;"><i class=" icon icon-question icon-2x"></i></div>
+								&nbsp;
+								<span>事件登记</span>
+							</div>
+						</div>
+						<div class="panel">
+							<div class="myPanel" style="cursor: pointer;padding: 1.5% 7%!important;" onclick="look_lisi('../../OrderManage/EventManage/EventManage.html','工单录入')">
+								<div style="background: #F1B684;"><i class=" icon icon-question icon-2x"></i></div>
+								&nbsp;
+								<span>事件录入</span>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-9" style="height: 100%">
+					<img src="../../Static/Img/welcome_bg.jpg" style="width: 100%;height: 20%;min-height:100px;" class="img-rounded" alt="圆角图片">
+					<div class="row" style="margin-top:1%;height:78%">
+						<div class="col-md-12" style="height: 100%;">
+							<div class="panel tipMessage" style="border-radius: 3px;min-height: auto;height: 40px;margin-bottom: 1%;">
+								<i class="icon icon-volume-up"></i>
+								<ul id="scollNotice" style="margin-top: -0.3%;">
+								</ul>
+							</div>
+							<div class="card" style="height:90%;min-height: 300px;padding-top: 5px;padding-bottom: 0px;">
+								<header class="clearfix" style="display: inline;">
+									<label style="font-size: 18px;color:#3BA4FF;float: left;">我的待办</label>
+									<div id="wtdapply" style="color: #f1b684;">部门未提单数量：<span id="ladeCount"></span></div>
+									<form id="form1">
+										<label style="margin-bottom: 0px;font-size: 14px;font-weight: 100;float: left;">事件分类:</label>
+										<select style="float: left;" class="form-control" id="selectchose">
+											<option value="0">全部</option>
+											<option value="1">未提单</option>
+											<option value="2">我的待办</option>
+										</select>
+									</form>
+								</header>
+								<div style="height: 85%;overflow: auto;">
+									<div id="daiban" class="datagrid datagrid-borderless">
+										<div class="datagrid-container"></div>
+										<div style="margin-bottom: 0px;" class="pager"></div>
+									</div>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.js"></script>
+		<script src="../../Lib/select/js/select-mania.js"></script>
+		<script src="../../Lib/public.js"></script>
+		<script src="../../Lib/vue.js"></script>
+		<script type="text/javascript">
+			//创建一个数组来存放表头信息
+			var column_data = [];
+			var applyTrigger = new $.zui.ModalTrigger();
+
+			$(document).ready(function() {
+				var sele = $('#selectchose').selectMania({
+					themes: ['green'],
+					placeholder: '请选择',
+					removable: false,
+					ajax: false,
+				});
+				if($('body').height() <= 657) {
+					$('.task-p').css({
+						'font-size': '10px'
+					})
+					$('.task-span').css({
+						'font-size': '20px'
+					})
+					$('.myPanel').css({
+						'padding': '0% 8%'
+					})
+					$('.score p').css({
+						'font-size': '14px'
+					})
+
+				} else if($('body').height() <= 719) {
+					$('.task-p').css({
+						'font-size': '11px'
+					})
+					$('.task-span').css({
+						'font-size': '22px'
+					})
+					$('.myPanel').css({
+						'padding': '1% 8%'
+					})
+					$('.score p').css({
+						'font-size': '15px'
+					})
+
+				} else if($('body').height() <= 869) {
+					$('.task-p').css({
+						'font-size': '12px'
+					})
+					$('.task-span').css({
+						'font-size': '24px'
+					})
+					$('.myPanel').css({
+						'padding': '2% 8%'
+					})
+					$('.score p').css({
+						'font-size': '16px'
+					})
+
+				} else if($('body').height() <= 898) {
+					$('.task-p').css({
+						'font-size': '12px'
+					})
+					$('.task-span').css({
+						'font-size': '25px'
+					})
+					$('.myPanel').css({
+						'padding': '2% 8%'
+					})
+					$('.score p').css({
+						'font-size': '18px'
+					})
+
+				} else {
+					$('.task-p').css({
+						'font-size': '14px'
+					})
+					$('.task-span').css({
+						'font-size': '28px'
+					})
+					$('.myPanel').css({
+						'padding': '2% 8%'
+					})
+					$('.score p').css({
+						'font-size': '18px'
+					})
+				}
+				getScollNotice();
+
+				$('#selectchose').on('change', function(e, params) {
+					var selectID = $("#selectchose").find("option:selected").val();
+					console.log(selectID);
+					myDataGrid.search(selectID);
+				});
+
+				column_data.push({
+					label: 'ID',
+					name: "APPLY_ID",
+					width: 60
+				});
+				column_data.push({
+					name: 'OP_TYPE',
+					label: '操作',
+					html: true,
+					width: 350,
+					sort: false,
+					valueOperator: {
+						getter: function(dataValue, cell, dataGrid) {
+							var apply_id = cell.config.data.APPLY_ID;
+							var button_id = cell.config.data.OP_TYPE;
+							var button_type = cell.config.data.APPLY_STATUS;
+							var jjcd = cell.config.data.EM_LEVEL;
+							switch(jjcd){
+								case "特急":
+								case "紧急":
+									jjcd = 1;
+									break;
+								case "加急":
+								case "高":
+									jjcd = 2;
+									break;
+								case "较急":
+								case "中":
+									jjcd = 3;
+									break;
+								case "一般":
+								case "低":
+									jjcd = 4;
+									break;
+								default:0
+									break;
+							}
+							if(button_id) 
+							{
+								var res = dataValue.replace(/openwindow\(101,PP_APPLY_ID/g, 
+								"openwindowByzp(101,"+apply_id + "," + button_type + "," + jjcd)
+								.replace(/PP_APPLY_ID/g, apply_id + "," + button_type);
+								return res;
+							}
+						}
+					}
+				});
+				//获取要显示的表格信息
+				$.ajax({
+					url: urlpath + "/approval/getApprovalColumn",
+					dataType: 'json',
+					type: "POST",
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					success: function(data) {
+						if(data != null && data.length > 0) {
+							//利用循环拼接表头信息
+							$.each(data, function(i, item) {
+								if(item.name == 'EM_LEVEL') {
+									column_data.push({
+										'name': item.name,
+										'label': item.label,
+										'width': Number(item.width),
+										'html': true,
+										'sort': true,
+										'valueOperator': {
+											getter: function(dataValue, cell, dataGrid) {
+												if(dataValue == "特急" || dataValue == "紧急") {
+													return "<span style='color:red;'>紧急</span>";
+												} else if(dataValue == "加急"|| dataValue == "高") {
+													return "<span style='color:#f4e60d;'>高</span>";
+												} else if(dataValue == "较急" || dataValue == "中") {
+													return "<span style='color:orange;'>中</span>";
+												} else if(dataValue == "一般" || dataValue == "低") {
+													return "<span style='color:#11bae1;'>低</span>";
+												} else {
+													return dataValue;
+												}
+											}
+										}
+									});
+								} else {
+									column_data.push({
+										'name': item.name,
+										'label': item.label,
+										'width': Number(item.width)
+									});
+								}
+
+							});
+							//向表头中加入发起时间，停留时间，和操作
+							column_data.push({
+								name: 'APPLY_STATE',
+								label: '事件状态',
+								sort: true,
+								width: 120
+							});
+							column_data.push({
+								name: 'RESEND_NUM',
+								label: '重发次数',
+								html: true,
+								sort: false,
+								width: 100,
+								valueOperator: {
+									getter: function(dataValue, cell, datagrid) {
+										if(dataValue == "0") {
+											return "<span style='color: #65CA4B'>无重发记录</span>";
+										} else {
+											return "<span style='color:#de1c31;'>重发" + dataValue + "次</span>";
+										}
+									}
+								}
+							});
+							column_data.push({
+								name: 'CREATE_TIME',
+								label: '发起时间',
+								html: true,
+								width: 180
+							});
+							column_data.push({
+								name: 'STAY_TIME',
+								label: '停留时间',
+								html: true,
+								width: 120
+							});
+
+							//生成datagrid
+							setGrid(column_data);
+						}
+					},
+					error: function(err) {
+						alert('链接后台错误');
+					}
+				});
+
+				//事件数量统计
+				$.ajax({
+					type: "post",
+					url: urlpath + '/approval/getApplyCount',
+					data: {},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'json',
+					success: function(res) {
+						var unDoNum = 0;
+						var haveDoneNum = 0;
+						var overtimeNum = 0;
+						$("#totalNum").text(res.totalNum);
+						$("#waitNum").text(res.unDoNum);
+						$("#alreadyNum").text(res.haveDoneNum);
+						$("#overtimeNum").text(res.overTimeNum);
+						if(res.totalNum > 0) {
+							unDoNum = parseInt(res.unDoNum) / parseInt(res.totalNum);
+							haveDoneNum = parseInt(res.haveDoneNum) / parseInt(res.totalNum);
+							overtimeNum = parseInt(res.overTimeNum) / parseInt(res.totalNum);
+						} else {
+							unDoNum = 1;
+							haveDoneNum = 1;
+							overtimeNum = 1;
+						}
+
+						$("#warning").attr('aria-valuenow', unDoNum * 100);
+						$("#warning").css({
+							width: unDoNum * 100 + '%'
+						})
+						$("#success").attr('aria-valuenow', haveDoneNum * 100);
+						$("#success").css({
+							width: haveDoneNum * 100 + '%'
+						})
+						$("#danger").attr('aria-valuenow', overtimeNum * 100);
+						$("#danger").css({
+							width: overtimeNum * 100 + '%'
+						})
+						if(res.collectNum > 0) {
+							$('#collectNum').show();
+							$('#collectNum').text(res.collectNum);
+						} else {
+							$('#collectNum').hide();
+						}
+						var scoreNum = Math.round(res.V_SCORE);
+						var scoreStr = "";
+						if(scoreNum > 0) {
+							if($('body').height() <= 869) {
+								for(var i = 0; i < scoreNum; i++) {
+									scoreStr += '<i style="font-size:16px;" class="icon icon-star"></i>';
+								}
+								for(var j = 0; j < 5 - scoreNum; j++) {
+									scoreStr += '<i style="font-size:16px;" class="icon icon-star-empty"></i>';
+								}
+							} else {
+								for(var i = 0; i < scoreNum; i++) {
+									scoreStr += '<i style="font-size:22px;" class="icon icon-star"></i>';
+								}
+								for(var j = 0; j < 5 - scoreNum; j++) {
+									scoreStr += '<i style="font-size:22px;" class="icon icon-star-empty"></i>';
+								}
+							}
+
+						} else {
+							scoreStr += '<i class="icon icon-star-empty"></i>' +
+								'<i class="icon icon-star-empty"></i>' +
+								'<i class="icon icon-star-empty"></i>' +
+								'<i class="icon icon-star-empty"></i>' +
+								'<i class="icon icon-star-empty"></i>';
+						}
+						$("#SCORE_AVG").html(scoreStr);
+					}
+				});
+
+				//获取未提单数量
+				$.ajax({
+					type: "post",
+					url: urlpath + '/approval/applyLadeCount',
+					data: {},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'json',
+					success: function(res) {
+						$("#ladeCount").text(res);
+					}
+				});
+			});
+
+			//获取滚动通知
+			function getScollNotice() {
+				webapi("/CommonHander/getIndexNote", "", function(res) {
+					for(var i in res) {
+						$("#scollNotice").append('<li data-height="500px" data-iframe="../ordinaryUsers/noteDetail.html?pType=1&noteid=' + res[i]["NOTE_ID"] +
+							'" data-toggle="modal" data-title="通知详情">' + res[i]["TITLE"] + '<span class="createTime">' + res[i]["CREATE_TIME"] + '</span></li>');
+					}
+					noticeScoll("#scollNotice", res.length);
+				});
+			}
+
+			function noticeScoll(node, num) {
+				//信息滚动，获取ul的dom元素
+				var news_move = document.querySelector(node);
+
+				//获取li的高度
+				if(news_move.children[0] == undefined) {
+					return;
+				}
+				var li_height = news_move.children[0].offsetHeight;
+				var index = 0;
+				/*添加过渡*/
+				function addMove() {
+					news_move.style.transition = "all 1s ease-out";
+					news_move.style.webkitTransition = "all 1s ease-out";
+				}
+				/*移除过渡*/
+				function removeMove() {
+					news_move.style.transition = "";
+					news_move.style.webkitTransition = "";
+				}
+				/*设置位移*/
+				function setMove(index) {
+					news_move.style.transform = "translateY(" + (index * li_height) + "px)";
+					news_move.style.webkitTransform = "translateY(" + (index * li_height) + "px)";
+				}
+				/*定时器*/
+				function intervalCallBack() {
+					addMove();
+					index++;
+					if(index > (num - 1)) {
+						index = 0;
+						removeMove();
+						setMove(-index);
+					}
+					setMove(-index);
+				}
+				var timer = setInterval(intervalCallBack, 2500);
+				/*鼠标移入移除定时器*/
+				$(node).mouseover(function() {
+					clearInterval(timer);
+				})
+				/*鼠标移出继续滚动*/
+				$(node).mouseout(function() {
+					/*定时器*/
+					timer = setInterval(intervalCallBack, 2500);
+				})
+			}
+
+			function setGrid(data1) {
+				$('#daiban').datagrid({
+					rowDefaultHeight: 50,
+					showRowIndex: false,
+					height: 'page',
+					sortable: true,
+					checkByClickRow: false,
+					dataSource: {
+						cols: data1,
+						remote: function(params) {
+							return {
+								url: urlpath + '/approval/getApplyDborderList',
+								type: 'POST',
+								dataType: 'json',
+								xhrFields: {
+									withCredentials: true
+								},
+								crossDomain: true == !(document.all), //兼容ie
+							}
+						}
+					},
+					states: {
+						pager: { // 分页
+							page: 1,
+							recPerPage: 7
+						},
+						sortBy: {}
+					}
+				});
+				// 获取数据表格实例
+				myDataGrid = $('#daiban').data('zui.datagrid');
+			}
+
+			function turnsend(id) {
+				applyTrigger.show({
+					height: 600,
+					width: 600,
+					title: '事件转派',
+					iframe: '../ordinaryUsers/turnsendorder.html?p_apply_id=' + id
+				});
+			}
+
+			//关闭对话框
+			function closeDialog() {
+				$.zui.modalTrigger.close();
+				reload();
+			}
+
+			function reload() {
+				//重新设置数据源信息
+				myDataGrid.setDataSource({
+					cols: column_data,
+					remote: function(params) {
+						return {
+							// 请求地址
+							url: urlpath + '/approval/getApplyDborderList',
+							// 请求类型
+							type: 'GET',
+							// 数据类型
+							dataType: 'json',
+							data:{
+								
+							},
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true == !(document.all), //兼容ie
+						};
+					}
+				});
+				myDataGrid.render();
+			}
+
+			function turnsend(id) {
+				applyTrigger.show({
+					height: 600,
+					width: 600,
+					title: '事件转派',
+					iframe: '../ordinaryUsers/turnsendorder.html?p_apply_id=' + id
+				});
+			}
+
+			//查看任务列表信息
+			function lookList(P_STATE, P_TITLE) {
+				if(P_STATE == 8) {
+					applyTrigger.show({
+						iframe: "../ordinaryUsers/myCollect2.html",
+						height: $('body').height() * 0.90,
+						width: $('body').width() * 0.90,
+						title: P_TITLE
+					});
+				} else {
+					applyTrigger.show({
+						iframe: "orderList.html?P_STATE=" + P_STATE,
+						height: $('body').height() * 0.90,
+						width: $('body').width() * 0.90,
+						title: P_TITLE
+					});
+				}
+			}
+
+			function look_lisi(url, P_TITLE) {
+				applyTrigger.show({
+					iframe: url,
+					height: $('body').height(),
+					width: $('body').width(),
+					title: P_TITLE
+				});
+			}
+			var vm = new Vue({
+				el: '.container-fluid',
+				data: {
+					name: window.localStorage.getItem("username"),
+					rolename: window.localStorage.getItem("rolename"),
+					img_url: "",
+					urlPath: urlpath,
+					img: "../../Static/Img/photo.jpg",
+				},
+				created: function() {
+					this.getUserInfo();
+				},
+				methods: {
+					getUserInfo: function() {
+						var _this = this;
+						$.ajax({
+							type: "post",
+							url: urlpath + '/UserHander/getUserInfo',
+							data: {},
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true == !(document.all),
+							dataType: 'json',
+							success: function(res) {
+								_this.img_url = res[0].IMG_URL;
+							}
+						});
+					}
+				}
+			})
+			function getUserInfo1() {
+				applyTrigger.show({
+					iframe: '../../Layout/userInfo.html',
+					height: 390,
+					width: 400,
+					title: '头像修改'
+				});
+			}
+
+			function closeTrigger() {
+				applyTrigger.close();
+			}
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>转派页面</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Lib/jsTree/style.min.css">
+		<style>
+			html,
+			body {
+				font-family: "微软雅黑";
+				font-size: 14px;
+				background: #F9F9F9;
+				height: 100%;
+				width: 100%;
+				overflow: auto;
+			}
+			
+			.container-fluid {
+				padding: 20px;
+			}
+			
+			btn_class {
+				height: 98%;
+			}
+			
+			#loadingBtn:hover {
+				background-color: #0000F1;
+				border: #0000F1;
+			}
+			
+			.urgent {
+				display: inline-block;
+				width:18%;
+				cursor: pointer;
+			}
+			
+			.urgent .label:empty {
+				display: inline-block;
+				width: 65px;
+				height: 15px;
+				position: absolute;
+				background: #E4E4E4;
+				margin-top: 5px;
+			}
+			
+			.urgent span:first-child {
+				font-size: 12px;
+				margin-left: 18px;
+				margin-top: 8px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container-fluid" style="height: 90%;">
+			<div class="row" style="height: 100%;">
+				<div class="col-md-2" style="height: 100%;">
+					<div class="panel" style="width: 438px;height: 95%;">
+						<div class="panel-body" style="height: 100%;">
+							<div class="input-control search-box has-icon-right" id="searchbox"></div>
+							<div style=" margin-top:10px" class="input-group">
+								<div class="input-control search-box search-box has-icon-left has-icon-right search-example" id="searchboxExample">
+									<input id="inputSearchExample" type="search" class="form-control search-input" placeholder="请输入姓名">
+									<label for="inputSearchExample" class="input-control-icon-left search-icon"><i
+                                    class="icon icon-search"></i></label>
+								</div>
+								<span class="input-group-btn">
+                            <button id="inputSearch" class="btn btn-primary" type="button">查询</button>
+                        </span>
+							</div>
+
+							<div class="wrapper wrapper-content " style="max-height: 400px;overflow: auto;margin-top: 10px;">
+								<div style="" id="jsTree"></div>
+							</div>
+
+							<div>
+								<div class="form-group">
+									<div style="height: 10px;"></div>
+									<label style="font-size: 18px;" for="jobsState" class="col-sm-4 control-label required">转派原因:</label>
+									<textarea style="height: 100px; width: 96%; margin:10px 10px 10px 10px ;" id="P_TRANSFER_DSC" name="P_TRANSFER_DSC" type="text" class="form-control" placeholder="请输入转派原因"></textarea>
+								</div>
+							</div>
+
+							<div>
+								<div class="form-group">
+									<label style="font-size: 18px;" class="col-sm-4 control-label required">紧急程度</label>
+									<div>
+										<div class="col-sm-8">
+											<div onclick="urgent(4,this)" class="urgent EM_LEVEL"><span id="NAME-4">&nbsp;&nbsp;低</span><br><span id="SPAN-4" class="label label-badge"></span></div>
+											<div onclick="urgent(3,this)" class="urgent EM_LEVEL"><span id="NAME-3">&nbsp;&nbsp;中</span><br><span id="SPAN-3" class="label label-badge"></span></div>
+											<div onclick="urgent(2,this)" class="urgent EM_LEVEL"><span id="NAME-2">&nbsp;&nbsp;高</span><br><span id="SPAN-2" class="label label-badge"></span></div>
+											<div onclick="urgent(1,this)" class="urgent EM_LEVEL"><span id="NAME-1">紧急</span><br><span id="SPAN-1" class="label label-badge"></span></div>
+										</div>
+										<input type="hidden" id="urgent" name="EM_LEVEL" class="urgent_input"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div style="position: absolute;margin-left: 40%;">
+			<button style="  font-size:18px ;" type="button" class="btn btn-primary" data-position="center" data-toggle="modal" id="sendbtn" data-target="#myModal">&#12288;转派&#12288;
+    </button>
+		</div>
+		<!--消息对话框-->
+		<div class="modal fade" id="myModal">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header" style="background: #469AFD;">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
+                        class="sr-only">关闭</span></button>
+						<h2 style="color: #FFFFFF;" class="modal-title">提示</h2>
+					</div>
+					<div class="modal-body" style="display: inline-flex;height: 200px;padding: 11% 32%;">
+						<img src="../../Static/Img/a.png" width="60px" height="55px" class="img-circle" alt="圆形图片">
+						<div style="font-size:20px; margin: 15px;">确认转派？</div>
+					</div>
+					<div class="modal-footer">
+						<button style="margin-right: 20%;" type="button" class="btn btn-default" data-dismiss="modal">&#12288;&#12288;取消&#12288;&#12288;</button>
+						<button style="margin-right: 20%;" id="submitturnsend" onclick="submitturnsend()" type="button" class="btn btn-primary">&#12288;&#12288;确认&#12288;&#12288;
+                </button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js"></script>
+		<script src="../../Lib/public.js"></script>
+		<script src="../../Lib/jsTree/jstree.js"></script>
+		<script>
+			var apply_id = $.url("p_apply_id");
+			var jjcd = $.url("jjcd");
+			$(function() {
+				$("#urgent").val(jjcd);
+				var color = "";
+				switch(jjcd){
+					case "4":
+						color="#11bae1";
+						break;
+					case "3":
+						color="orange";
+						break;
+					case "2":
+						color="#f4e60d";
+						break;
+					case "1":
+						color="red";
+						break;
+				}
+				$("#SPAN-"+jjcd).css("background",color);
+				$("#NAME-"+jjcd).css("color","red");
+				loadTree();
+			});
+
+			function submitturnsend() {
+				var userIds;
+				var str1 = "";
+				var ref = $('#jsTree').jstree(true); // 获得整个树
+				userIds = ref.get_bottom_selected();
+				if(userIds.length > 1) {
+					new $.zui.Messager('只能选择一个转派人员', {
+						type: 'danger',
+						placement: 'top'
+					}).show();
+					return;
+				}
+				if(userIds != null) {
+					str1 = userIds;
+				} else {
+					$("input[name='P_USER']:checkbox").each(function() {
+						if($(this).is(":checked")) {
+							str1 += $(this).attr("value") + ",";
+						}
+					});
+				}
+				if(str1.length == 0) {
+					new $.zui.Messager('请选择转派人员', {
+						type: 'danger',
+						placement: 'top'
+					}).show();
+					return;
+				}
+				if($('#P_TRANSFER_DSC').val() == null || $('#P_TRANSFER_DSC').val() == '') {
+					new $.zui.Messager('请填写转派原因', {
+						type: 'danger',
+						placement: 'top'
+					}).show();
+					return;
+				}
+				var data1 = $("#form").serializeArray();
+				data1.push({
+					name: "P_TRANSFER_USER",
+					value: str1
+				});
+				data1.push({
+					name: "P_ID",
+					value: apply_id
+				});
+				data1.push({
+					name: "P_TRANSFER_DSC",
+					value: $('#P_TRANSFER_DSC').val()
+				});
+				data1.push({
+					name: "P_EM_LEVEL",
+					value: $('#urgent').val()
+				});
+				$('#sendbtn').toggleClass('loading');
+				$.ajax({
+					type: "post",
+					url: urlpath + "/approval/OrderTransfer",
+					data: data1,
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'json',
+					success: function(res) {
+						if(res == "SUCCESS") {
+							new $.zui.Messager('消息提示：转派成功', {
+								type: 'success',
+								placement: 'center'
+							}).show();
+							window.parent.reload();
+							window.parent.closeDialog();
+						} else {
+							new $.zui.Messager('提示消息：转派失败', {
+								type: 'danger',
+								placement: 'center'
+							}).show();
+						}
+					},
+					error: function(res) {
+						// console.log("err");
+					}
+				});
+			}
+
+			// 初始化搜索框，并在选项中指定搜索文本变更事件回调函数，这样当搜索框文本发送变化时获得通知。
+			$('#searchboxExample').searchBox({
+				escToClear: true, // 设置点击 ESC 键清空搜索框
+			});
+
+			// 查询按钮
+			$('#inputSearch').on('click', function() {
+				var to = false;
+				if(to) {
+					clearTimeout(to);
+				}
+				to = setTimeout(function() {
+					var v = $('#inputSearchExample').val();
+					$('#jsTree').jstree(true).search(v);
+				}, 250);
+
+				var USERNAME = $("#inputSearchExample").val();
+				if(USERNAME == null || USERNAME == "") {
+					new $.zui.Messager('提示消息：请输入姓名', {
+						type: 'danger',
+						placement: 'top'
+					}).show();
+					return;
+				}
+				$.ajax({
+					type: "post",
+					url: urlpath + "/approval/getTransferUserInfo",
+					data: {
+						'P_USER_NAME': USERNAME,
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true,
+					dataType: 'json',
+					success: function(res) {
+						if(res.length > 0) {
+							var str = "";
+							for(var i = 0; i < res.length; i++) {
+								str += '<div style="float:left; margin-left:12px;"><input style="margin-left=5px;"  type="radio" name="P_USER" value="' + res[i].USER_ID + '"/>' + res[i].USER_NAME + '</div>'
+							}
+							$("#P_USERLIST").html(str);
+						} else {
+							//                  new $.zui.Messager('提示消息：暂无查询数据', {
+							//                      type: 'danger',
+							//                      placement: 'top'
+							//                  }).show();
+						}
+					},
+					error: function(res) {
+						// console.log("err");
+					}
+				});
+			});
+
+			function loadTree() {
+				$('#jsTree').bind("activate_node.jstree", function(obj, e) {
+					var currentNode = e.node;
+					if(!e.instance.is_leaf(currentNode)) {
+						e.instance.deselect_node(currentNode)
+					};
+				});
+				$('#jsTree').jstree({
+					'core': {
+						"multiple": false,
+						'data': {
+							"url": urlpath + "/CommonHander/getDutyTree",
+							"data": function(node) {
+								return {
+									"id": node.id
+								};
+							}
+						}
+					},
+					"plugins": ["checkbox", "search", 'state'],
+					'state': {
+						"opened": true,
+					},
+					"search": {
+						"show_only_matches": true,
+						"show_only_matches_children": true
+					}
+				});
+				$('#jsTree').bind("loaded.jstree", function(e, data) {
+					$('#jsTree').jstree('open_all');
+				});
+			}
+			
+			function urgent(num, obj) {
+				$(".col-sm-8 span").css("color","black");
+				$('.urgent').css("color", "#353535");
+				$('.urgent .label').css("background", "#E4E4E4");
+				$("#NAME-"+num).css("color","red");
+				var color = "";
+				switch(num){
+					case 4:
+						color="#11bae1";
+						break;
+					case 3:
+						color="orange";
+						break;
+					case 2:
+						color="#f4e60d";
+						break;
+					case 1:
+						color="red";
+						break;
+				}
+				$(obj).children(".label").css("background",color);
+				$("#urgent").val(num);
+			}
+		</script>
+	</body>
+
+</html>

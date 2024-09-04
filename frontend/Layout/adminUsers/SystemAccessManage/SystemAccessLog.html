@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>任务列表</title>
+    <link rel="stylesheet" href="../../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+    <link rel="stylesheet" href="../../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.css">
+    <style>
+        html,
+        body {
+            background: #F9F9F9;
+        }
+
+        .panel-body {
+            overflow: auto;
+            padding: 0 15px;
+        }
+
+        .row {
+            margin-top: 0px;
+        }
+
+        .container-fluid {
+            padding: 10px;
+        }
+
+        .clearfix {
+            height: 70px;
+            line-height: 70px;
+        }
+
+        .clearfix h2 {
+            display: inline-block;
+            margin: 0;
+        }
+
+        #score .icon {
+            font-size: 18px;
+            color: #D6D4D4;
+        }
+
+        #score .icon-star {
+            color: #FFE45B;
+        }
+
+        .clearfix {
+            line-height: 32px;
+            padding-top: 2%;
+        }
+
+        #form1 {
+            display: inline-flex;
+            width: 85%;
+            margin-left: 30px;
+        }
+
+        #form1 select {
+            width: 20%;
+            margin: 0px 20px 0px 5px;
+        }
+
+        #form1 input {
+            width: 30%;
+        }
+
+        /*.btn{
+            color: #fff;
+            background-color: #3280fc;
+            border-color: #1970fc;
+        }
+
+        .btn.active,
+        .btn:active,
+        .btn:focus,
+        .btn:hover,
+        .open .dropdown-toggle.btn-primary {
+            color: #fff;
+            background-color: #0a67fb;
+            border-color: #0354d4;
+            -webkit-box-shadow: 0 2px 1px rgba(0, 0, 0, .1);
+            box-shadow: 0 2px 1px rgba(0, 0, 0, .1)
+        }*/
+
+        .datagrid-cell{
+            padding-top: 4px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel">
+                <div class="panel-body">
+                    <div id="myJobsDG" class="datagrid datagrid-borderless">
+<!--                        <header class="clearfix">-->
+<!--                            <h2 id='titleName'>系统权限管理</h2>-->
+<!--                            <div style="float: right;">-->
+<!--                                <button class="btn btn-primary" type="button" onclick="addNote()" >添加</button>-->
+<!--                                &nbsp;&nbsp;<button class='btn btn-primary' type='button' onclick='editNote()'>修改</button>-->
+<!--                                &nbsp;&nbsp;<button class='btn btn-danger' type='button' onclick='delNote()'>删除</button>-->
+<!--                            </div>-->
+<!--                        </header>-->
+                        <div class="datagrid-container"></div>
+                        <div class="pager"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../../../Lib/jquery-3.4.1.min.js" type="text/javascript"></script>
+<script src="../../../Lib/zui-1.9.1-dist/dist/js/zui.min.js" type="text/javascript"></script>
+<script src="../../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.js" type="text/javascript"></script>
+<script src="../../../Lib/zui-1.9.1-dist/dist/lib/selectable/zui.selectable.min.js"></script>
+<script src="../../../Lib/public.js" type="text/javascript"></script>
+<script>
+    var myDataGrid;
+    P_AUT_CODE = $.url("P_AUT_CODE");
+
+    $(function () {
+        setTimeout(function(){
+            getDataGrid2222();
+        },100);
+
+    });
+
+    function getDataGrid2222() {
+        $('#myJobsDG').datagrid({
+            rowDefaultHeight: 45,
+            height: 'page',
+            showRowIndex: false,//不显示序号
+            sortable: true,
+            dataSource: {
+                cols: [{
+                    name: 'AUT_CODE',
+                    label: '授权码',
+                    width: 0.2
+                },
+                    {
+                        name: 'ACCESS_USER',
+                        label: '访问人',
+                        width: 0.2
+                    },
+                    {
+                        name: 'ACCESS_TIME',
+                        label: '访问时间',
+                        width: 0.2
+                    },
+                    {
+                        name: 'ACCESS_IP',
+                        label: '访问IP',
+                        width: 200
+                    },
+                    {
+                        name: 'RESULT',
+                        label: '访问结果',
+                        width: 200,
+                        html:true,
+                        valueOperator:{
+                            getter:function (dataValue, cell, dataGrid) {
+                                if(dataValue=="成功"){
+                                    return '<span style="color: #65CA4B">成功</span>'
+                                }else{
+                                    return '<span style="color: red">失败</span>'
+                                }
+                            }
+                        }
+                    },
+                    {
+                        name: 'MESSAGE',
+                        label: '访问信息',
+                        width:200
+                    }
+
+                ],
+                remote: function (params) {
+                    return {
+                        url: urlpath + '/approval/sysAccessLogList?P_AUT_CODE='+P_AUT_CODE ,
+                        type: 'get',
+                        dataType: 'json',
+                        xhrFields: {
+                            withCredentials: true
+                        },
+                         crossDomain: true == !(document.all),
+                    };
+                }
+            },
+            states: {
+                pager: {
+                    page: 1,
+                    recPerPage: 9
+                },
+                sortBy: {
+                    //							sortBy:'CREATE_TIME',
+                    //							order:'desc'
+                }
+            }
+        });
+
+        // // 获取数据表格实例
+        myDataGrid = $('#myJobsDG').data('zui.datagrid');
+    }
+
+</script>
+</body>
+
+</html>

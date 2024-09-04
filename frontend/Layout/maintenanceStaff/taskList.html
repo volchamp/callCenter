@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>任务列表</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.css">
+		<link rel="stylesheet" href="../../Lib/select/css/select-mania.css" />
+
+		<style>
+			html,
+			body {
+				background: #F9F9F9;
+				overflow: hidden;
+			}
+			
+			.panel-body {
+				height: 98%;
+				overflow: hidden;
+			}
+			
+			.row,
+			.col-md-2,
+			.col-md-12,
+			.panel,
+			.panel-body {
+				height: 100%;
+			}
+			
+			.panel-body {
+				overflow: auto!important;
+				padding: 0 15px;
+			}
+			
+			.row {
+				margin-top: 0px;
+			}
+			
+			.container-fluid {
+				padding: 10px;
+				height: 100%;
+			}
+			
+			.clearfix {
+				height: 45px;
+				line-height: 45px;
+			}
+			
+			.clearfix h2 {
+				display: inline-block;
+				margin: 0;
+			}
+			
+			#score .icon {
+				font-size: 18px;
+				color: #D6D4D4;
+			}
+			
+			#score .icon-star {
+				color: #FFE45B;
+			}
+			
+			.clearfix {
+				line-height: 32px;
+				padding-top: 0.5%;
+			}
+			
+			#form1 {
+				display: inline-flex;
+				width: 85%;
+				margin-left: 30px;
+			}
+			
+			#form1 select {
+				width: 20%;
+				margin: 0px 20px 0px 5px;
+			}
+			
+			#form1 input {
+				width: 90%;
+			}
+			
+			.datagrid-cell {
+				padding-top: 4px;
+			}
+			
+			#batchRating {
+				display: none;
+			}
+			
+			.formselect {
+				float: left;
+				width: 23%;
+			}
+			
+			.select-mania {
+				width: 70%!important;
+			}
+			
+			.select-mania-values,
+			.select-mania-inner,
+			.select-mania-value,
+			.select-mania-text,
+			.select-mania-value-text {
+				height: 32px!important;
+			}
+			
+			.select-mania-value {
+				margin-top: -10px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-12">
+					<div class="panel">
+						<div class="panel-body">
+							<div id="myJobsDG" class="datagrid datagrid-borderless">
+								<header class="clearfix">
+									<form id="form1">
+										<div class="formselect">
+											<label>事件类型</label>
+											<select class="form-control" id="PTYPE" name="PTYPE">
+												<option value="">全部</option>
+											</select>
+										</div>
+										<div class="formselect">
+											<label>问题来源</label>
+											<select class="form-control" id="PSOURCE" name="PSOURCE" placeholder="请选择问题来源">
+												<option value="">全部</option>
+											</select>
+										</div>
+										<div class="formselect">
+											<input type="text" class="form-control" id="exampleInputAccount1" name="PTITLE" placeholder="请输入问题名称">
+											<input type="text" style="display: none;" />
+											<!--如果只有一个input框回车就会刷新整个页面-->
+										</div>
+										<div class="formselect">
+											<button style="float:left;margin-left: 5px;" type="button" id="searchBtn" class="btn btn-primary">查询</button>
+											<button style="margin-right: 20px;float: right;" class="btn btn-primary" type="button" id="batchRating" onclick="plpf()">批量评分</button>
+										</div>
+									</form>
+								</header>
+								<div class="datagrid-container" style="margin-top: 5px;"></div>
+								<div class="pager"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="../../Lib/jquery-3.4.1.min.js" type="text/javascript"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js" type="text/javascript"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.js" type="text/javascript"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/selectable/zui.selectable.min.js"></script>
+		<script src="../../Lib/select/js/select-mania.js"></script>
+		<script src="../../Lib/public.js" type="text/javascript"></script>
+		<script>
+			var column_data = [];
+			var Vsearch;
+			var newTrigger = new $.zui.ModalTrigger();
+			var myDataGrid;
+			P_STATE = $.url("P_STATE");
+			var depart_id = $.url("P_DEPART_ID");
+			$(document).ready(function() {
+				if(P_STATE == 6) {
+					$('#batchRating').css({
+						"display": "block"
+					});
+				} else {
+					$('#batchRating').css({
+						"display": "nnone"
+					});
+				}
+			});
+			var dataInfo = {
+				cols: [{
+						name: '',
+						label: '',
+						width: 0.06,
+						checkbox: true,
+						sort: false
+					},
+					{
+						name: 'TITLE',
+						label: '问题名称',
+						width: 0.12
+					},
+					{
+						name: 'TYPE',
+						label: '类型',
+						width: 0.08
+					},
+					// {
+					// 	name: 'SOURCE',
+					// 	label: '来源',
+					// 	width: 0.08
+					// },
+					{
+						name: 'DETAIL',
+						label: '问题详情',
+						width: 0.25,
+						sort: false
+					},
+					{
+						name: 'EM_LEVEL',
+						label: '紧急程度',
+						width: 0.1,
+						html: true,
+						valueOperator: {
+							getter: function(dataValue, cell, dataGrid) {
+								if(dataValue == "特急" || dataValue == "紧急") {
+									return "<span style='color:red;'>紧急</span>";
+								} else if(dataValue == "加急" || dataValue == "高") {
+									return "<span style='color:#f4e60d;'>高</span>";
+								} else if(dataValue == "较急" || dataValue == "中") {
+									return "<span style='color:orange;'>中</span>";
+								} else if(dataValue == "一般" || dataValue == "低") {
+									return "<span style='color:#11bae1;'>低</span>";
+								} else {
+									return dataValue;
+								}
+							}
+						}
+					},
+					{
+						name: 'CREATE_TIME',
+						label: '发起时间',
+						width: 0.1
+					},
+					{
+						name: 'APPLY_STATE',
+						label: '事件状态',
+						width: 0.1
+					},
+					// {
+					// 	name: 'DEAL_USER',
+					// 	label: '处理人',
+					// 	width: 0.15
+					// },
+					{
+						name: 'RESEND_NUM',
+						label: '重发次数',
+						width: 0.1,
+						html: true,
+						sort: false,
+						valueOperator: {
+							getter: function(dataValue, cell, datagrid) {
+								if(dataValue == "0") {
+									//return "<span style='color: #65CA4B'>无重发记录</span>";
+									return "<span></span>";
+								} else {
+									return "<span style='color:#de1c31;'>" + dataValue + "</span>";
+								}
+							}
+						}
+					},
+					{
+						name: 'SCORE',
+						label: '评分',
+						width: 0.1,
+						html: true,
+						sort: false,
+						valueOperator: {
+							getter: function(dataValue, cell, dataGrid) {
+								var SCORE = cell.config.data.SCORE;
+								var apply_id = cell.config.data.APPLY_ID;
+								var str = "";
+								if(SCORE) {
+									str = "<span style='cursor: pointer' id='score' onclick='seeScore(" + apply_id + ")'>";
+									for(var i = 0; i < SCORE; i++) {
+										str += "<i class='icon icon-star'></i>";
+									}
+								} else {
+									str = "<span id='score' >";
+									str += "未评分";
+								}
+								str += "</span>";
+								return str;
+							}
+						}
+					},
+					{
+						name: 'CZ',
+						label: '操作',
+						width: 180,
+						html: true,
+						sort: false,
+						valueOperator: {
+							getter: function(dataValue, cell, dataGrid) {
+								// var apply_id = cell.config.data.APPLY_ID;
+								// console.log(apply_id);
+								// var btn="<button class='btn btn-primary-new'onclick='javascript:openwindow(108,PP_APPLY_ID)'>详情</button>";
+								// return btn;
+
+								if(P_STATE == 7 || P_STATE == 8) {
+									var apply_id = cell.config.data.APPLY_ID;
+									var btn = "<button class='btn btn-primary-new'onclick='javascript:openwindow(108,PP_APPLY_ID)'>详情</button>";
+									var res = btn.replace(/PP_APPLY_ID/g, apply_id);
+									return res;
+								} else {
+									var apply_id = cell.config.data.APPLY_ID;
+									var OP_TYPE = cell.config.data.OP_TYPE;
+									if(OP_TYPE) {
+										var res = OP_TYPE.replace(/PP_APPLY_ID/g, apply_id);
+										return res;
+									}
+								}
+							}
+						}
+						//								valueOperator: {
+						//									getter: function(dataValue, cell, dataGrid) {
+						//										var OP_TYPE = cell.config.data.OP_TYPE;
+						//										if(OP_TYPE) {
+						//											return OP_TYPE;
+						//										} else {
+						//											return "";
+						//										}
+						//									}
+						//								}
+					}
+				],
+				remote: function(params) {
+					return {
+						url: urlpath + '/approval/getApplyList?P_PASS=' + P_STATE + '&P_DEPART_ID=' + depart_id,
+						type: 'get',
+						dataType: 'json',
+						xhrFields: {
+							withCredentials: true
+						},
+						crossDomain: true == !(document.all), //兼容ie
+					};
+				}
+			}
+			$(function() {
+				$.ajax({
+					type: "post",
+					url: urlpath + "/ProcessHandler/GetProcessType",
+					data: {
+						'P_TABLE': 'TR_BASE_APPLY_XX',
+						'P_COLUMN': 'TYPE'
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'json',
+					success: function(res) {
+						for(var i = 0; i < res.length; i++) {
+							var option = document.createElement("option");
+							$(option).val(res[i].ID);
+							$(option).text(res[i].TEXT);
+							$("#PTYPE").append(option);
+						}
+						var sele = $('#PTYPE').selectMania({
+							themes: ['green'],
+							placeholder: '请选择',
+							removable: false,
+							ajax: false,
+						});
+					},
+					error: function(res) {
+						//console.log("err");
+					}
+				});
+				$.ajax({
+					type: "post",
+					url: urlpath + "/ProcessHandler/GetProcessType",
+					data: {
+						'P_TABLE': 'TR_BASE_APPLY_XX',
+						'P_COLUMN': 'SOURCE'
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'json',
+					success: function(res) {
+						for(var i = 0; i < res.length; i++) {
+							var option = document.createElement("option");
+							$(option).val(res[i].ID);
+							$(option).text(res[i].TEXT);
+							$("#PSOURCE").append(option);
+						}
+						var sele = $('#PSOURCE').selectMania({
+							themes: ['green'],
+							placeholder: '请选择',
+							removable: false,
+							ajax: false,
+						});
+					},
+					error: function(res) {
+						//console.log("err");
+					}
+				});
+
+				setTimeout(function() {
+					getDataGrid();
+				}, 100);
+
+				$('#searchBtn').on('click', function() {
+					var data1 = $("#form1").serializeArray();
+					var P_TYPE = "";
+					var P_SOURCE = "";
+					var P_TITLE = "";
+					for(var i = 0; i < data1.length; i++) {
+						if(data1[i].name == "PTITLE") {
+							P_TITLE = data1[i].value;
+						}
+					}
+					if($("#PTYPE option:selected").text() != '全部') {
+						P_TYPE = $("#PTYPE option:selected").text();
+					}
+					if($("#PSOURCE option:selected").text() != '全部') {
+						P_SOURCE = $("#PSOURCE option:selected").text();
+					}
+					//					console.log(P_TITLE+","+P_TYPE+","+P_SOURCE);
+					myDataGrid.setDataSource({
+						remote: function(params) {
+							return {
+								url: urlpath + '/approval/getApplyList?P_PASS=' + P_STATE + '&P_TYPE_ID=' + P_TYPE +
+									'&P_SOURCE_TYPE=' + P_SOURCE + '&KEYWORD=' + P_TITLE + '&P_DEPART_ID=' + depart_id,
+								type: 'POST',
+								dataType: 'json',
+								xhrFields: {
+									withCredentials: true
+								},
+								crossDomain: true == !(document.all), //兼容ie
+							};
+						},
+						states: {
+							pager: {
+								page: 1,
+								recPerPage: 9
+							}
+						}
+					});
+					//					myDataGrid.search(P_TYPE + " " + P_SOURCE + " " + P_TITLE);
+					myDataGrid.render();
+				});
+			});
+
+			function getDataGrid() {
+				$('#myJobsDG').datagrid({
+					rowDefaultHeight: 45,
+					height: 'page',
+					showRowIndex: false, //不显示序号
+					sortable: true,
+					dataSource: dataInfo,
+					checkable: true,
+					checkByClickRow: false,
+					states: {
+						pager: {
+							page: 1,
+							recPerPage: 14
+						},
+						sortBy: {
+							//							sortBy:'CREATE_TIME',
+							//							order:'desc'
+						}
+					}
+				});
+				// 获取数据表格实例
+				myDataGrid = $('#myJobsDG').data('zui.datagrid');
+			}
+			//关闭对话框
+			function closeDialog() {
+				// myDataGrid.setDataSource(dataSourceObj);
+				// myDataGrid.render();
+				$.zui.modalTrigger.close();
+				// applyTrigger.close();
+				reload();
+			}
+
+			function reload() {
+				//重新设置数据源信息
+				myDataGrid.setDataSource(dataInfo);
+				myDataGrid.render();
+				// window.parent.reload();
+			}
+
+			function plpf() {
+				var check = myDataGrid.getCheckItems();
+				var ids = "";
+				if(check.length < 1) {
+					new $.zui.Messager('请选择需要评分的数据！', {
+						type: 'warning'
+					}).show();
+				} else {
+					for(var i = 0; i < check.length; i++) {
+						ids += check[i].APPLY_ID + ",";
+					}
+					loadwindow(400, 400, '批量评分', 'cogs', '../../Layout/ordinaryUsers/BatchRating.html?P_APPLY_ID=' + ids);
+				}
+
+			}
+
+			function seeScore(apply_id) {
+				loadwindow(300, 400, '评分详情', 'cogs', '../../Layout/maintenanceStaff/ScoreDtail.html?P_ID=' + apply_id, '');
+			}
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>工单审核</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Lib/jsTree/style.min.css">
+		<style>
+			html,body{
+				margin: 0px;
+				width: 100%;
+				height: 100%;
+			}
+			.container-fluid{
+				padding: 10px;
+			}
+			.treeject {
+				position: absolute;
+				border: 1px solid #3BA4FF;
+				border-radius: 3px;
+				border-top: 0px;
+				-moz-border-radius-topleft: 0px;
+				-moz-border-radius-topright: 0px;
+				overflow: auto;
+				display: none;
+				background: #fff;
+				z-index: 9999;
+				max-height: 230px;
+				width: 95.5%;
+				font-size: 10px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container-fluid">
+			<form class="form-horizontal" >
+				<div class="form-group" id="roel">
+					<label for="role_id" class="col-sm-3 required">选择处理人</label>
+					<div class="col-sm-6" id="role_select">
+						<input id="role_text" type="text" readonly class="form-control search-input" placeholder="请选择类型">
+						<input id="role_id" type="hidden">
+						<div id="jsTree" class="treeject"></div>
+					</div>
+				</div>
+				<div class="form-group">
+					 <label for="P_DSC" class="col-sm-3 required">通过原因</label>
+					 <div class="col-sm-6">
+					 	<textarea id="P_DSC" name="P_DSC" class="form-control" placeholder="请填写催办原因"></textarea>
+					 </div>
+				</div>
+			</form>
+		</div>
+		<script type="text/javascript" src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script type="text/javascript" src="../../Lib/layer/layer.js"></script>
+		<script type="text/javascript" src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script type="text/javascript" src="../../Lib/jsTree/jstree.js"></script>
+		<script type="text/javascript" src="../../Lib/public.js"></script>
+		<script type="text/javascript" src="../../Lib/all.js"></script>
+		<script type="text/javascript">
+			var id=$.url("ID");
+			var operid=$.url("PERID");
+			var type=$.url("type");
+			$(document).ready(function(){
+				if(type==2){
+					$("#roel").hide();
+				}
+				$('#jsTree').jstree({
+					'core': {
+						"multiple": false,
+						'data': {
+							"url": urlpath + "/order/getOrderDealUserTree",
+							"data": function(node) {
+								return {
+									"P_DB_ID":id,
+									"P_OPER_ID":operid
+								};
+							}
+						}
+					},
+					"plugins": ["checkbox"]
+				}).bind('activate_node.jstree', function(obj, e) {
+					var ref = $("#jsTree").jstree(true);
+					sel = ref.get_selected();
+					var nodes = $("#jsTree").jstree("get_checked");
+					$("#role_id").val(e.node.id);
+					$("#role_text").val(e.node.text);
+				});
+				$("#role_select").on("blur", "#role_text", function(e) {
+					setTimeout(function() {
+						$("#jsTree").hide();
+					}, 200)
+				});
+				$("#role_select").on("click", "#role_text", function() {
+					if($("#jsTree")[0].style.display == "none" || $("#jsTree")[0].style.display == "") {
+						$("#jsTree")[0].style.display = "block";
+					} else if($("#jsTree")[0].style.display == "block") {
+						$("#jsTree")[0].style.display = "none";
+					}
+				});
+			})
+			function formValidator() {
+				if($("#DSC").val() == "") {
+					layer.alert("请填写备注！");
+					return false;
+				}
+				if(type==1){
+					if($("#role_text").val() == "") {
+					layer.alert("请选择处理人！");
+					return false;
+				}
+				}
+				firm("确定提交吗？",$("#role_id").val(), $("#P_DSC").val(),"",id,operid,"");
+			}
+		</script>
+	</body>
+</html>

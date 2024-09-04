@@ -1,0 +1,4 @@
+[{"name":"工作台","src":"../Layout/maintenanceStaff/maintenanceStaff.html"},
+{"name":"知识库","src":"../Layout/ordinaryUsers/knowledgeList.html"},
+{"name":"工单监控","src":"../Layout/adminUsers/PersonnelDeployment.html"},
+{"name":"公告管理","src":"../Layout/maintenanceStaff/noteManage.html"}]

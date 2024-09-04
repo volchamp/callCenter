@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <title>角色操作配置</title>
+    <link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+    <link rel="stylesheet" href="../../Lib/easyUpload/main.css">
+    <link rel="stylesheet" href="../../Lib/jsTree/style.min.css">
+    <style>
+        html,
+        body {
+            font-family: "微软雅黑";
+            font-size: 14px;
+            background: #F9F9F9;
+            overflow: auto;
+            width: 100%;
+        }
+
+        .container-fluid {
+            padding: 5px;
+            width: 98%;
+        }
+
+        .form-group {
+            display: inline-flex;
+            width: 100%;
+        }
+
+        .col-sm-9 {
+            width: 85%;
+        }
+
+        .panel-heading {
+            margin: 0px 10px 0px 10px;
+        }
+
+
+        .form-group {
+            margin-bottom: 0px;
+        }
+
+        .panel-body {
+            padding: 1px;
+        }
+
+        .treeject {
+            position: absolute;
+            border: 1px solid #3BA4FF;
+            border-radius: 3px;
+            border-top: 0px;
+            -moz-border-radius-topleft: 0px;
+            -moz-border-radius-topright: 0px;
+            overflow: auto;
+            display: none;
+            background: #fff;
+            z-index: 9999;
+            max-height: 230px;
+            width: 96%;
+            font-size: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2">
+                <div class="panel" style="width: 100%;min-width: 550px;">
+                    <div class="panel-body">
+                        <form class="form-horizontal" id="form">
+                            <div class="form-group">
+                                <label
+                                    class="col-sm-4 control-label required">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;类型名称</label>
+                                <div class="col-sm-6 col-xs-6">
+                                    <select id="P_TYPEIDNAME" name="P_TYPEIDNAME" class="form-control">
+                                        <option value=""></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label
+                                    class="col-sm-4 control-label required">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;角色名称</label>
+                                <div class="col-sm-8 col-xs-6" id="project_select">
+                                    <input id="P_ROLENAME_TEXT" type="text" readonly class="form-control search-input"
+                                        placeholder="请选择角色">
+                                    <input id="P_ROLENAME" type="hidden">
+                                    <div id="treeproject" class="treeject"></div>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label
+                                    class="col-sm-4 control-label required">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;当前状态</label>
+                                <div class="col-sm-6 col-xs-6">
+                                    <select id="P_APPLYNAME" name="P_APPLYNAME" class="form-control">
+                                        <option value=""></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label
+                                    class="col-sm-4 control-label required">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;方法名称</label>
+                                <div class="col-sm-6 col-xs-6">
+                                    <select id="P_TYPENAME" name="P_TYPENAME" class="form-control">
+                                        <option value=""></option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <button class="btn btn-primary" style="float:left;margin-left: 36%;margin-top: 15px;"
+                                onclick="submitBtn()" type="button" data-loading-text="正在提交...">提交</button>
+                            <button class="btn btn-primary" style="float:left;margin-left: 1%;margin-top: 15px;"
+                                onclick="closeBtn()" type="button">取消</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../Lib/jquery-3.4.1.min.js"></script>
+    <script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+    <script src="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js"></script>
+    <script src="../../lib/jsTree/jstree.min.js"></script>
+    <script src="../../Lib/public.js"></script>
+    <script type="text/javascript">
+        var newTrigger = new $.zui.ModalTrigger();
+        var P_ID = $.url("PID");
+        var link_role=decodeURI($.url("operation"));
+        var butnum = [];
+        var IDs = "";
+        var arr1 = "";
+        $(function () {
+            getDepartTree();
+            getType();
+            getMethod();
+            getState();
+        });
+
+        function getType() {
+            $.ajax({
+                type: "post",
+                url: urlpath + "/ProcessHandler/GetProcessType.action",
+                data: {
+                    P_TABLE: 'TR_BASE_APPLY',
+                    P_COLUMN: 'TYPE_ID'
+                },
+                xhrFields: {
+                    withCredentials: true
+                },
+                crossDomain: true == !(document.all), //兼容ie
+                dataType: 'json',
+                success: function (res) {
+                    if (res != null && res.length > 0) {
+                        var html = '';
+                        for (var i = 0; i < res.length; i++) {
+                            html += '<option value="' + res[i].ID + '">' + res[i].TEXT + '</option>';
+                        }
+                        $("#P_TYPEIDNAME").append(html);
+                    } else {
+                        new $.zui.Messager('获取数据失败！', {
+                            type: 'danger',
+                            placement: 'center'
+                        }).show();
+                    }
+                },
+                error: function (err, error) {
+                    new $.zui.Messager('获取数据失败！', {
+                        type: 'danger',
+                        placement: 'center'
+                    }).show();
+                }
+            });
+        }
+
+        function getMethod() {
+            $.ajax({
+                type: "post",
+                url: urlpath + "/ProcessHandler/GetZdPowerType.action",
+                data: {
+                    P_ID: P_ID
+                },
+                xhrFields: {
+                    withCredentials: true
+                },
+                crossDomain: true == !(document.all), //兼容ie
+                dataType: 'json',
+                success: function (res) {
+                    if (res != null && res.length > 0) {
+                        var html = '';
+                        for (var i = 0; i < res.length; i++) {
+                            html += '<option value="' + res[i].ID + '">' + res[i].TEXT + '</option>';
+                        }
+                        $("#P_TYPENAME").append(html);
+                        if (P_ID != "") {
+                            getData();
+                        }
+                    } else {
+                        new $.zui.Messager('获取数据失败！', {
+                            type: 'danger',
+                            placement: 'center'
+                        }).show();
+                    }
+                },
+                error: function (err, error) {
+                    new $.zui.Messager('获取数据失败！', {
+                        type: 'danger',
+                        placement: 'center'
+                    }).show();
+                }
+            });
+
+        }
+
+        function getState() {
+            $.ajax({
+                type: "post",
+                url: urlpath + "/ProcessHandler/ProcessGetStates.action",
+                data: {
+                    P_ID: P_ID
+                },
+                xhrFields: {
+                    withCredentials: true
+                },
+                crossDomain: true == !(document.all), //兼容ie
+                dataType: 'json',
+                success: function (res) {
+                    if (res != null && res.length > 0) {
+                        var html = '';
+                        for (var i = 0; i < res.length; i++) {
+                            html += '<option value="' + res[i].ID + '">' + res[i].TEXT + '</option>';
+                        }
+                        $("#P_APPLYNAME").append(html);
+                    } else {
+                        new $.zui.Messager('获取数据失败！', {
+                            type: 'danger',
+                            placement: 'center'
+                        }).show();
+                    }
+                },
+                error: function (err, error) {
+                    new $.zui.Messager('获取数据失败！', {
+                        type: 'danger',
+                        placement: 'center'
+                    }).show();
+                }
+            });
+        }
+
+        function getData() {
+            $.ajax({
+                type: "post",
+                url: urlpath + "/ProcessHandler/getZdPowerById.action",
+                data: {
+                    P_ID: P_ID
+                },
+                xhrFields: {
+                    withCredentials: true
+                },
+                crossDomain: true == !(document.all), //兼容ie
+                dataType: 'json',
+                success: function (res) {
+                    if (res != null && res.length > 0) {
+                        arr1 = res[0];
+                        $("#P_TYPEIDNAME").val(res[0].TYPE_ID);
+                        $("#P_TYPENAME").val(res[0].TYPE);
+                        $("#P_APPLYNAME").val(res[0].APPLY_STATE);
+                        $("#P_ROLENAME").val(res[0].ROLE_ID);
+                        $("#P_ROLENAME_TEXT").val(link_role);
+                    } else {
+                        new $.zui.Messager('获取数据失败！', {
+                            type: 'danger',
+                            placement: 'center'
+                        }).show();
+                    }
+
+                },
+                error: function (err, error) {
+                    new $.zui.Messager('获取数据失败！', {
+                        type: 'danger',
+                        placement: 'center'
+                    }).show();
+                }
+            });
+        }
+
+        function getDepartTree() {
+            $tree = $('#treeproject').jstree({
+                'core': {
+                    "multiple": false,
+                    'data': {
+                        "url": urlpath + "/RoleHander/getNRoleTree",
+                        "data": function (node) {
+                            return {
+                                "id": node.id
+                            };
+                        }
+                    }
+                },
+                "plugins": ["search"],
+                "search": {
+                    "show_only_matches": true,
+                    "show_only_matches_children": true
+                }
+            });
+            $tree.bind('activate_node.jstree', function (obj, e) {
+                $("#P_ROLENAME").val(e.node.id);
+                $("#P_ROLENAME_TEXT").val(e.node.text);
+            })
+            $("#project_select").on("blur", "#P_ROLENAME_TEXT", function (e) {
+                setTimeout(function () {
+                    $("#treeproject").hide();
+                }, 200)
+            })
+            $("#project_select").on("click", "#P_ROLENAME_TEXT", function () {
+                if ($("#treeproject")[0].style.display == "none" || $("#treeproject")[0].style.display == "") {
+                    $("#treeproject")[0].style.display = "block";
+                } else if ($("#treeproject")[0].style.display == "block") {
+                    $("#treeproject")[0].style.display = "none";
+                }
+            });
+        }
+        // 提交按钮事件
+        function submitBtn() {
+            var P_TYPEIDNAME = $("#P_TYPEIDNAME").val();
+            var P_ROLENAME = $("#P_ROLENAME").val();
+            var P_APPLYNAME = $("#P_APPLYNAME").val();
+            var P_TYPENAME = $("#P_TYPENAME").val();
+            var data = $("#form").serializeArray();
+            var url = "";
+            //console.log(str.length);
+            if (P_TYPEIDNAME == "") {
+                new $.zui.Messager('请选择类型！', {
+                    type: 'danger',
+                    placement: 'center'
+                }).show();
+                return false;
+            }
+            if (P_ROLENAME == "") {
+                new $.zui.Messager('请选择角色!', {
+                    type: 'danger',
+                    placement: 'center'
+                }).show();
+                return false;
+            }
+            if (P_APPLYNAME == "") {
+                new $.zui.Messager('请选择当前状态！', {
+                    type: 'danger',
+                    placement: 'center'
+                }).show();
+                return false;
+            }
+            if (P_TYPENAME == "") {
+                new $.zui.Messager('请选择方法名称！', {
+                    type: 'danger',
+                    placement: 'center'
+                }).show();
+                return false;
+            }
+
+            data.push({
+                name: 'P_ID',
+                value: P_ID
+            });
+            data.push({
+                name: 'P_ROLES',
+                value: P_ROLENAME
+            });
+            data.push({
+                name: 'P_FFS',
+                value: P_TYPENAME
+            });
+            data.push({
+                name: 'P_QQS',
+                value: P_APPLYNAME
+            });
+
+            //编辑
+            if (P_ID != "") {
+                url = urlpath + "/ProcessHandler/zdPowerUpdate.action";
+            } else {
+                url = urlpath + "/ProcessHandler/zdPowerAdd.action"
+            }
+            // 验证通过，执行提交方法
+            //判断是修改还是新增
+            if (P_ID != "") {
+                //判断内容是否被修改 如果未修改则直接提交 如果已修改则先判断是否存在
+                if (arr1.APPLY_STATE == P_APPLYNAME && arr1.ROLE_ID == P_ROLENAME && arr1.TYPE == P_TYPENAME) {
+                    $.ajax({
+                        url: url,
+                        data: data,
+                        type: "post",
+                        success: function (data) {
+                            if (data == "SUCCESS") {
+                                new $.zui.Messager('提示消息：提交成功', {
+                                    type: 'success',
+                                    placement: 'center'
+                                }).show();
+                                window.parent.closeTrigger();
+                                window.parent.updateGrid(); //刷新列表数据
+
+                            } else {
+                                new $.zui.Messager('提示消息：提交失败', {
+                                    type: 'danger',
+                                    placement: 'center'
+                                }).show();
+                            }
+                        }
+                    });
+                } else {
+                    pdtijiao(data, url);
+                }
+            } else {
+                pdtijiao(data, url);
+            }
+
+
+        }
+
+        function pdtijiao(data, url) {
+            $.ajax({
+                url: urlpath + "/ProcessHandler/getZdPowerIsexist.action",
+                data: data,
+                type: "post",
+                success: function (res) {
+                    if (res.length > 0) {
+                        var str = "";
+                        for (var i = 0; i < res.length; i++) {
+                            str += "【" + res[i].ROLE_NAME + "】的【" + res[i].LXMC + "】的【" + res[i].QQZT +
+                                "】状态的【" + res[i].FFMC + "】方法已经存在;"
+                        }
+                        str += "请修改后再提交！";
+                        new $.zui.Messager(str, {
+                            type: 'danger',
+                            placement: 'center'
+                        }).show();
+
+                    } else {
+                        // $.messager.progress({
+                        //     title: '提示',
+                        //     msg: '提交中，请稍后……',
+                        //     text: ''
+                        // });
+                        $.ajax({
+                            url: url,
+                            data: data,
+                            type: "post",
+                            success: function (data) {
+                                if (data == "SUCCESS") {
+                                    new $.zui.Messager('提示消息：提交成功', {
+                                        type: 'success',
+                                        placement: 'center'
+                                    }).show();
+                                    window.parent.closeTrigger();
+                                    window.parent.updateGrid(); //刷新列表数据
+
+                                } else {
+                                    new $.zui.Messager('提示消息：提交失败', {
+                                        type: 'danger',
+                                        placement: 'center'
+                                    }).show();
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        }
+        //关闭弹框按钮事件
+        function closeBtn() {
+            window.parent.closeTrigger();
+        }
+    </script>
+</body>
+
+</html>

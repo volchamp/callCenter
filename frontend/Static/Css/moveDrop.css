@@ -1,0 +1,423 @@
+.card,
+#userList .card div {
+	padding: 10px;
+}
+
+#userList {
+	padding-top: 15px;
+	/*height: calc(100% - 110px);
+				overflow: auto;*/
+}
+
+#userList .cardBox {
+	display: inline-table;
+}
+
+#userList .card {
+	width: 30%;
+	min-width: 290px;
+	padding: 0;
+	cursor: pointer;
+	display: inline-block;
+	margin-right: 15px;
+}
+
+#userList .card p {
+	position: absolute;
+	top: 16px;
+	left: 90px;
+	color: #9F9F9F;
+}
+
+#userList .card p span:first-child {
+	font-size: 20px;
+}
+
+#userList .card ul {
+	list-style: none;
+	padding: 0;
+}
+
+#userList .card ul li {
+	float: left;
+	text-align: center;
+	width: 25%;
+	margin-bottom: 10px;
+}
+
+#userList .card ul li span:first-child {
+	font-size: 18px;
+}
+
+#userList .card ul li span:last-child {
+	color: #9F9F9F;
+}
+
+#userListPage {
+	float: right;
+	margin-right: 60px;
+}
+
+.collapseJobs {
+	border-top-left-radius: 10px;
+	border-bottom-left-radius: 10px;
+	margin-bottom: 0;
+}
+
+.collapseJobs .panel-body {
+	padding: 0;
+	height: 50px;
+	line-height: 50px;
+	border-left: 10px solid #46D8AB;
+	border-top-left-radius: 10px;
+	border-bottom-left-radius: 10px;
+	font-size: 15px;
+	overflow: hidden;
+}
+
+.outTimeBody {
+	border-left: 10px solid #FF0302 !important;
+}
+
+.assignedAmountBody {
+	border-left: 10px solid #3BA4FF !important;
+}
+
+.collapseJobs .panel-body p {
+	padding: 0 10px;
+}
+
+.collapseJobs .panel-body p span {
+	float: right;
+	color: #A3A3A3;
+	font-size: 15px;
+}
+
+.pending {
+	color: #E98B7F;
+}
+
+.outTime {
+	color: #A92727;
+}
+
+.applyId,
+.userId {
+	display: none;
+}
+
+.assignedAmount {
+	color: #4F9FE3;
+}
+
+.average {
+	color: #393939;
+}
+
+.mask {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index: 998;
+	background-color: #fff;
+	opacity: 0;
+	color: #fff;
+}
+
+.cardBox {
+	width: 330px;
+}
+
+#multiDroppableContainer .datagrid-row,
+#removeJobsContainer .collapseJobs {
+	cursor: move;
+	/* 为被拖动的按钮更改光标类型 */
+}
+
+.datagrid-cell-head {
+	line-height: 22px;
+}
+
+.titttt {
+	filter: grayscale(100%);
+	opacity: 0.5;
+}
+
+.rades {
+	text-decoration: none;
+	position: absolute;
+	top: 27px;
+	left: 21px;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background: rgb(70, 247, 116);
+}
+
+.offline {
+	background: red!important;
+}
+
+.text-line {
+	text-decoration: none;
+	position: absolute;
+	top: -47px;
+	left: 254px;
+	font-size: 12px;
+	height: 80px;
+	width: 82px;
+	padding-left: 27px;
+	/* display: none; */
+	transform: rotate(45deg);
+	color: #fff;
+}
+
+.backgrounds1 {
+	background: #ea5761;
+}
+
+.backgrounds2 {
+	background: #30c776;
+}
+
+.cardlist {
+	background: #0000F1;
+}
+
+#bianjie {
+	text-decoration: none;
+	border: 1px solid #3BA4FF;
+	border-radius: 3px;
+	/*padding: 3px;*/
+	background: #3BA4FF;
+	color: #fff;
+	font-size: 16px;
+}
+
+#bianjie:hover {
+	border: 1px solid #3280FC;
+	background: #3280FC;
+}
+
+.page {
+	margin: 0px;
+}
+
+.question-center {
+	width: 14%;
+	height: 40px;
+	cursor: pointer;
+	background: #3BA4FF;
+	border-radius: 5px;
+	padding: 1%;
+	float: left;
+	margin-right: 10px;
+	min-width: 140px;
+}
+
+.question-center>p {
+	color: #fff;
+	font-size: 18px;
+	text-align: center
+}
+
+.question-center:hover {
+	background: #3280FC;
+	box-shadow: 0 0 12px #3280FC;
+}
+
+.clearfix {
+	font-size: 12px;
+	height: 92px;
+	padding: 15px;
+	font: 12px "微软雅黑";
+}
+
+.clearfix table {
+	border-collapse: collapse;
+	border-spacing: 0;
+	width: 100%;
+}
+
+.clearfix tr {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+.clearfix td {
+	display: table-cell;
+	vertical-align: inherit;
+	width: 12%;
+	height: 100%;
+	padding-right: 10px;
+}
+
+.clearfix tbody {
+	display: table-row-group;
+	vertical-align: middle;
+	border-color: inherit;
+}
+
+.clearfix a {
+	color: inherit;
+	text-decoration: none;
+	cursor: pointer;
+	background-color: transparent;
+}
+
+.clearfix table tr td img {
+	border-top-left-radius: 2px;
+	border-bottom-left-radius: 2px;
+	width: 34px;
+	height: 34px;
+	float: left;
+	display: block;
+	margin: 20px 10px 0px 10px;
+}
+
+.clearfix table tr td em {
+	display: block;
+	color: #606669;
+	height: 72px;
+	background: #e9eff1;
+	font-style: normal;
+}
+
+.clearfix table tr td em b {
+	padding-top: 16px;
+	display: block;
+	font-weight: normal;
+}
+
+.clearfix table tr td em i {
+	font-size: 20px;
+	color: #007bff;
+	display: block;
+}
+
+.order_list:hover {
+	cursor: pointer;
+}
+
+.order_list:active {
+	cursor: move;
+}
+#bottom{
+    margin: 10px 15px;
+    width: 100%;
+    height: auto;
+    float: left;
+}
+ .order_list {
+    margin-bottom: 15px;
+    border: 1px solid #dbdcdb;
+    color: #3c3c3c;
+    font-size: 12px;
+}
+.order_list .ol_title {
+    padding: 0 15px;
+    background: #eaf8ff;
+    height: 35px;
+    color: #3c3c3c;
+    line-height: 35px;
+}
+.order_list h3{
+    font-size: 16px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    font-family: "Helvetica Neue", Helvetica, Tahoma, Arial, 'PingFang SC', 'Source Han Sans CN', 'Source Han Sans', 'Source Han Serif', 'Hiragino Sans GB', 'WenQuanYi Micro Hei', 'Microsoft YaHei', sans-serif;
+    font-weight: 700;
+    line-height: 1.1;
+    color: inherit;
+    width: 50%;
+    display: inline-block;
+}
+ .order_list .ol_title a {
+    float: right;
+    display: block;
+    height: 16px;
+    width: 60px;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+    background-color: transparent;
+    color: #7FC2FF;
+}
+.order_list .ol_con {
+    padding: 10px;
+    position: relative;
+    z-index: -1;
+}
+.order_list .ol_con table {
+    width: auto;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+.order_list th {
+    font-weight: bold;
+    text-align: -internal-center;
+    display: table-cell;
+    vertical-align: inherit;
+}
+.order_list .ol_con th a {
+    float: left;
+    margin: 0 20px 0 5px;
+    border: 1px solid #ebebeb;
+    /*padding: 5px 10px;*/
+    display: block;
+    text-align: center;
+    width: 60px;
+    height: 60px;
+    color: inherit;
+    text-decoration: none;
+    cursor: pointer;
+}
+ .order_list .ol_con th a span {
+    margin-top: 2px;
+    display: block;
+    color: #999999;
+    font-weight: normal;
+    width: 58px;
+}
+.order_list .ol_con td {
+    line-height: 24px;
+}
+.order_list .ol_con td em {
+    color: #008bc9;
+}
+em, i {
+    font-style: normal;
+}
+.order_list .ol_con td span.olc_txt {
+    margin-right: 10px;
+    padding-right: 10px;
+    background: url(../../Static/Img/cut-off-line.gif) no-repeat right;
+    display: inline-block;
+}
+.order_list  .yellow_txt {
+    color: #eb6100;
+}
+.order_list .ol_con td span.olc_txt.last {
+    background: none;
+    padding-right: 0px;
+}
+.loadpos {
+    position: relative;
+    height: 200px;
+}
+span.nodata {
+    padding-top: 86px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin: -50px 0 0 -65px;
+    background: url(../../Static/Img/OrderManage/nodata.gif) no-repeat left top;
+    display: block;
+    height: 24px;
+    width: 129px;
+    color: #333;
+    line-height: 24px;
+    text-align: center;
+}

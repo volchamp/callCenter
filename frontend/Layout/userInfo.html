@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>用户信息</title>
+		<link rel="stylesheet" href="../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../Lib/zui-1.9.1-dist/dist/lib/uploader/zui.uploader.min.css">
+		<link rel="stylesheet" href="../Lib/easyUpload/main.css">
+		<style>
+			html,
+			body {
+				overflow: hidden;
+				height: 100%;
+				width: 100%;
+				font-family: 微软雅黑;
+				font-size: 16px;
+				overflow: hidden;
+			}
+			
+			.div_img1 {
+				margin: 12px;
+				height: 40px;
+				margin-bottom: 0px;
+			}
+			
+			.div_img {
+				height: 300px;
+				width: 100%;
+				text-align: center;
+			}
+			
+			img {
+				width: 270px;
+				height: 270px;
+				margin: 0px auto;
+				border-radius: 50%;
+			}
+			
+			#uploader {
+				width: 85%;
+				float: left;
+			}
+			
+			#btnClass {
+				height: 38px;
+				width: 72px;
+				background: #f2f2f2;
+				margin-right: 3%;
+				float: right;
+			}
+			
+			[v-cloak] {
+				display: none;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div id="app" method="post">
+			<form id="dorm">
+				<div class="div_img1">
+					<div id="uploader"></div>
+					<button class="btn btn-primary" type="button" id="btn" onclick="getbuttn()">确定</button>
+				</div>
+				<div class="div_img">
+					<img id="img" src="../Static/Img/photo.jpg" class="img-circle">
+				</div>
+			</form>
+		</div>
+		<script type="text/javascript" src="../Lib/jquery-3.4.1.min.js"></script>
+		<script type="text/javascript" src="../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script type="text/javascript" src="../Lib/easyUpload/easyUploader.js"></script>
+		<script type="text/javascript" src="../Lib/public.js"></script>
+		<script type="text/javascript">
+			var imgname = "";
+			var imgurl = "";
+			$(document).ready(function() {
+				getuploder();
+				getUserInfo();
+			})
+
+			function getbuttn() {
+				$.ajax({
+					type: "post",
+					url: urlpath +'/UserHander/addUserInfo',
+					data: {
+						"FJ_NAME": imgname,
+						"FJ_URL": imgurl
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all),
+					dataType: 'json',
+					success: function(res) {
+				      if(res.data=="SUCCESS"){
+				      	new $.zui.Messager('提示消息:跟换头像成功', {
+							type: 'success',
+							placement: 'center'
+						}).show();
+						setTimeout(function() {
+							parent.closeTrigger();
+							window.parent.parent.vim.getUserInfo();
+							window.parent.vm.getUserInfo();
+							getUserInfo();
+						}, 500);
+				      }else{
+				      	new $.zui.Messager('提示消息:跟换头像失败', {
+							type: 'danger',
+							placement: 'center'
+						}).show();
+				      }
+					},
+					error: function(err) {
+						alert('服务器出错！');
+					}
+				});
+			}
+
+			function getUserInfo() {
+				$.ajax({
+					type: "post",
+					url: urlpath + '/UserHander/getUserInfo',
+					data: {},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all),
+					dataType: 'json',
+					success: function(res) {
+						document.getElementById('img').src = res[0].IMG_URL;
+						imgname = res[0].IMG_NAME;
+						imgurl = res[0].IMG_URL;
+						$('ul.list').css('display', 'none');
+					}
+				});
+			}
+
+			function getuploder() {
+				var uploader = easyUploader({
+					id: "uploader",
+					/* 渲染容器id */
+					accept: '.jpg,.png,.gif,.jpeg',
+					/* 上传类型 */
+					action: urlpath + "/attach/uploadFile",
+					/* 上传地址 */
+					autoUpload: true,
+					/* 是否开启自动上传 */
+					crossDomain: true,
+					/* 是否允许跨域 */
+					data: null,
+					/* 上传配置参数，依据dataFormat而不同， */
+					dataFormat: 'formData',
+					/* 上传表单类型，有formData和base64两种 */
+					dataType: 'json',
+					/* 同$.ajax，�默认返回数据格式为json */
+					headers: {
+						// testKey: 'testValue'
+					},
+					/* 上传的请求头部，视需要配置 */
+					maxCount: 5,
+					/* 最大上传文件数 */
+					maxSize: 3,
+					/* 最大上传文件体积，单位M */
+					multiple: false,
+					/* 是否开启多选上传 */
+					name: 'upfile',
+					/* 上传的文件字段名 */
+					previewWidth: 70,
+					/* 压缩预览图的宽度，样式中高度等于宽度 */
+					processData: false,
+					/* 同$.ajax参数，这里默认为false */
+					successKey: 'code',
+					/* 标识上传成功的key */
+					successValue: 200,
+					/* 标识上传成功对应的value */
+					showAlert: true,
+					/* 是否开启alert提示 */
+					timeout: 0,
+					/* ajax请求超时时间，默认值为0，表示永不超时*/
+					withCredentials: true,
+					/* 是否支持发送 cookie 凭证信息 */
+					beforeUpload: null,
+					/* ajax上传前的回调函数 */
+					onAlert: null, //alert时的钩子
+					onChange: null, // input选中时触发
+					onError: function(err) { //上传失败时的钩子
+						new $.zui.Messager('头像上传失败', {
+							icon: 'info-sign',
+							placement: 'center', // 定义显示位置
+							time: 3000,
+							type: 'danger'
+						}).show();
+					},
+					onRemove: function(removedFiles, files) {
+						/*
+						 *批量删除时只返回removedFiles:剩下的文件信息,files为空
+						 *单个删除时返回removedFiles，files,removedFiles:剩下的文件信息,files:删除的文件信息
+						 */
+						//console.log(removedFiles);
+						fileid = "";
+						for(var i = 0; i < removedFiles.length; i++) {
+							if(fileid.indexOf(removedFiles[i].ajaxResponse.original) == -1){
+								fileid += removedFiles[i].ajaxResponse.original + '|' + removedFiles[i].ajaxResponse.url+',';
+							}
+						};
+					}, //移除文件时的钩子
+					onSuccess: function(res) { //上传成功时的钩子
+						if(res.state == "SUCCESS") {
+							imgname = res.original;
+							imgurl = res.url;
+							document.getElementById('img').src = res.url;
+							new $.zui.Messager('头像上传成功', {
+								icon: 'info-sign',
+								placement: 'center', // 定义显示位置
+								time: 3000,
+								type: 'success'
+							}).show();
+						} else if(res.state == '上传失败') {
+							new $.zui.Messager('头像上传失败', {
+								icon: 'info-sign',
+								placement: 'center', // 定义显示位置
+								time: 3000,
+								type: 'danger'
+							}).show();
+						} else {
+							new $.zui.Messager(res.err, {
+								icon: 'info-sign',
+								placement: 'center', // 定义显示位置
+								time: 3000,
+								type: 'danger'
+							}).show();
+						}
+					}
+				})
+			}
+		</script>
+	</body>
+
+</html>

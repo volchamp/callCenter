@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>公告详情</title>
+	<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+	<style>
+		html,
+		body {
+			font-family: "微软雅黑";
+			font-size: 14px;
+			background: #F9F9F9;
+			overflow: hidden;
+		}
+
+		#note {
+			padding: 20px;
+		}
+
+		#note>.panel {
+			width: 550px;
+			height: 366px;
+			/* overflow: auto; */
+			margin-bottom: 0;
+		}
+
+		.article {
+			padding-top: 0;
+		}
+
+		.article>header h2 {
+			margin: 0;
+			line-height: 50px;
+		}
+
+		.noteContent {
+			text-indent: 2rem;
+		}
+
+		.content {
+			height: 211px;
+			overflow: auto;
+		}
+
+		footer>.pager-justify {
+			width: 100%;
+		}
+	</style>
+</head>
+
+<body>
+	<div id="note">
+		<div class="panel">
+			<div class="panel-body" style="padding: 0;">
+				<article class="article  article-condensed">
+					<!-- 文章头部 -->
+					<header>
+						<h2 style="text-align: center;" v-text="noteData.TITLE"></h2>
+						<!-- 文章属性列表 -->
+						<dl class="dl-inline">
+							<dt>发布人：</dt>
+							<dd v-text="noteData.USER_NAME"></dd>
+							<dt>发布时间：</dt>
+							<dd v-text="noteData.CREATE_TIME"></dd>
+						</dl>
+						<!-- <div class="abstract">
+							<p>摘要信息</p>
+						</div> -->
+					</header>
+					<!-- 文章正文部分 -->
+					<section class="content">
+						<div class="noteContent" v-text="noteData.CONTENT">
+						</div>
+					</section>
+					<!-- 文章底部 -->
+					<footer>
+						<ul class="pager pager-justify">
+							<li class="previous" :class="{ disabled: isDisabled }"><a
+									@click="getnoteData(noteData.LAST_ID)"><i class="icon-arrow-left"></i>
+									上一个</a></li>
+							<li class="next" :class="{ disabled: nextIsDisabled }"><a
+									@click="getnoteData(noteData.NEXT_ID)">下一个 <i class="icon-arrow-right"></i></a></li>
+						</ul>
+					</footer>
+				</article>
+			</div>
+		</div>
+	</div>
+
+	<script src="../../Lib/jquery-3.4.1.min.js"></script>
+	<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+	<script src="../../Lib/public.js"></script>
+	<script src="../../Lib/vue.js" type="text/javascript"></script>
+	<script>
+		var noteid = $.url("noteid");
+		var pType = $.url("pType")
+
+		var vm = new Vue({
+			el: '#note',
+			data: {
+				noteData: {},
+				isDisabled: false,
+				nextIsDisabled: false
+			},
+			methods: {
+				getnoteData:function(NOTEID) {
+					var self = this;
+					$.ajax({
+						type: "get",
+						url: urlpath + "/CommonHander/getNoteInfo",
+						data: { "P_NOTEID": NOTEID, "P_TYPE": pType },
+						dataType: 'json',
+						xhrFields: {
+							withCredentials: true
+						},
+						crossDomain:true==!(document.all),//兼容ie
+					}).then(function (res) {
+						self.noteData = res[0];
+						self.isDisabled = res[0]["LAST_ID"] == 0 ? true : false;
+						self.nextIsDisabled = res[0]["NEXT_ID"] == 0 ? true : false;
+					}).fail(function () {
+						new $.zui.Messager('获取通知信息错误', {
+							type: 'error' // 定义颜色主题
+						}).show();
+					});
+				}
+			},
+			created: function () {
+				var self = this;
+				$.ajax({
+					type: "get",
+					url: urlpath + "/CommonHander/getNoteInfo",
+					data: { "P_NOTEID": noteid, "P_TYPE": pType },
+					dataType: 'json',
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain:true==!(document.all),//兼容ie
+				}).then(function (res) {
+					self.noteData = res[0];
+					self.isDisabled = res[0]["LAST_ID"] == 0 ? true : false;
+					self.nextIsDisabled = res[0]["NEXT_ID"] == 0 ? true : false;
+				}).fail(function () {
+					new $.zui.Messager('获取通知信息错误', {
+						type: 'error' // 定义颜色主题
+					}).show();
+				});
+			}
+		});
+	</script>
+</body>
+
+</html>

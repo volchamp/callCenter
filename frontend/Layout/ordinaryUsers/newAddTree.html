@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>类型配置</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Lib/easyUpload/main.css">
+		<link rel="stylesheet" href="../../Lib/jsTree/style.min.css">
+		<style>
+			.container-fluid {
+				padding: 10px;
+				height: 95%;
+			}
+			
+			.row {
+				height: 95%;
+			}
+			
+			.treeject {
+				position: absolute;
+				border: 1px solid #3BA4FF;
+				border-radius: 3px;
+				border-top: 0px;
+				-moz-border-radius-topleft: 0px;
+				-moz-border-radius-topright: 0px;
+				overflow: auto;
+				display: none;
+				background: #fff;
+				z-index: 9999;
+				max-height: 230px;
+				width: 93%;
+				font-size: 10px;
+			}
+			
+			#treenone {
+				display: none;
+			}
+			
+			strong {
+				color: red;
+				margin-left: 20px;
+				font-style: oblique;
+			}
+			
+			.depart-ul {
+				width: 100%;
+				height: 200px;
+				overflow: auto;
+				border: 1px solid #ccc;
+				border-radius: 3px;
+				padding: 5px;
+			}
+			
+			.depart-ul li {
+				float: left;
+				list-style: none;
+				padding: 0px 12px 0px 5px;
+				border: 1px solid #ccc;
+				margin-left: 3px;
+				margin-top: 3px;
+				border-radius: 3px;
+				cursor: pointer;
+				position: relative;
+			}
+			
+			.depart-ul li span {
+				display: block;
+				position: absolute;
+				top: -8px;
+				right: 0px;
+				width: 10px;
+				font-size: 14px;
+				font-weight: 700;
+				font-family: unset;
+			}
+			
+			.depart-ul li span:hover {
+				color: #3BA4FF;
+			}
+			
+			.left-panel {
+				border: 1px solid transparent;
+				border-color: #ddd;
+				padding: 5px;
+				float: left;
+				width: 30%;
+				height: 98%;
+				margin-top: 5px;
+				min-height: 380px;
+				border-radius: 4px;
+				margin-left: 5px;
+			}
+			
+			.right-panel {
+				padding: 5px;
+				float: left;
+				width: 69%;
+				height: 100%;
+			}
+			
+			.trees {
+				height: 95%;
+				overflow: auto;
+				min-height: 378px;
+			}
+			
+			.form-horizontal .required:after {
+				right: -9px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="left-panel">
+					<div><strong>鼠标右键，对类型进行增删改！</strong></div>
+					<div class="trees">
+						<div style="margin-left:15%;" id="jsTree"></div>
+					</div>
+				</div>
+				<div class="right-panel">
+					<div class="panel" style="padding: 10px;height: 100%;min-height: 400px;">
+						<form class="form-horizontal" style="margin-top: 20px;">
+							<div class="form-group">
+								<label style="float: left;margin-left: 10px;padding-top: 0px;">新增方式:</label>
+								<div class="col-sm-9">
+									<div class="radio-primary" style="float: left;"><input type="radio" name="radioname" checked="checked" id="primaryradio1" value="0"><label>新增子节点</label></div>
+									<div class="radio-primary" style="margin-left: 10px;float: left;"><input type="radio" name="radioname" id="primaryradio2" value="1"><label>新增同级节点</label></div>
+								</div>
+							</div>
+							<div class="form-group" id="treenone">
+								<label class="required" style="float: left;margin-left: 10px;">父级名称:</label>
+								<div class="col-sm-9" id="project_select">
+									<input id="project_text" type="text" readonly class="form-control search-input" placeholder="请选择类型">
+									<input id="project_id" type="hidden">
+									<div id="treeproject" class="treeject"></div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label class="required" style="float: left;margin-left: 10px;">类型名称:</label>
+								<div class="col-sm-9">
+									<input id="P_TYPE_NAME" name="P_TYPE_NAME" class="form-control" type="text">
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-7"><label style="color: rgb(59, 164, 255);margin-left: 10px;">对应部门:</label></div>
+								<div class="col-sm-5"><label style="color: rgb(59, 164, 255);margin-left: 10px;">添加对应部门:</label></div>
+								<div class="col-sm-12" style="clear: both;content:'';">
+									<div style="float: left;width: 60%;">
+										<ul class="depart-ul" id="departContent">
+										</ul>
+									</div>
+									<div style="float: left;width: 39%;margin-left: 1%;">
+										<div id="tree" class="treeject" style="display: block;width:38%;height: 200px;z-index: 99;border:1px solid #ccc ;"></div>
+									</div>
+								</div>
+							</div>
+						</form>
+						<button style="margin-left: 39%; font-size:16px ;margin-bottom: 10px;" class="btn btn-primary" id="add" type="button">添加类型</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../../Lib/jquery-3.4.1.min.js" type="text/javascript"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js" type="text/javascript"></script>
+		<script src="../../Lib/public.js" type="text/javascript"></script>
+		<script src="../../Lib/jsTree/jstree.js"></script>
+		<script type="text/javascript">
+			var newTrigger = new $.zui.ModalTrigger();
+			var prentid = "";
+			var ID = "";
+			var optiont = "";
+			var IDs = "";
+			var parentQX = 0;
+			var roleid = "";
+			var checkId = [];
+			var praentid = '';
+			var praentext = '';
+			$(function() {
+				optiont = 'add';
+				getTree();
+				roleid = window.localStorage.getItem('role_id');
+				$("#jsTree").on("activate_node.jstree", function(e, node) { //触发事件
+					console.log(node);
+					$("#primaryradio1").removeAttr('disabled');
+					$("#primaryradio2").removeAttr('disabled');
+					document.getElementById('add').innerHTML = '添加类型';
+					$("#P_DSC").val("");
+					$("#P_TYPE_NAME").val("");
+					ID = node.node.id;
+					prentid = node.node.parent;
+					optiont = 'add';
+					getIdtree(ID);
+					$("#treenone").css({
+						'display': 'none'
+					});
+					if(roleid != "1000") {
+						if(node.node.parent == "#") {
+							$("#primaryradio1").attr('disabled', 'disabled');
+							$("#primaryradio2").attr('disabled', 'disabled');
+							$("#primaryradio1").attr('checked', false);
+							$("#primaryradio2").attr('checked', false);
+							tishi('你没有权限在最高节点新增节点！');
+							parentQX = 1;
+							return false;
+						} else {
+							parentQX = 0;
+							$("#primaryradio1").attr('checked', true);
+							$("#primaryradio2").attr('disabled', 'disabled');
+						}
+					}
+					if(node.node.id == '0') {
+						$("#primaryradio2").attr('disabled', 'disabled');
+						ID = '0';
+					}
+				});
+				$('#add').on('click', function() {
+					var p_type_name = $("#P_TYPE_NAME").val();
+					var p_dsc = $("#P_DSC").val();
+					if(roleid == "1000") {
+						if($("#tree_id").val() == "") {
+							tishi('请选择对应部门！');
+							return false;
+						}
+					}
+					if(trim(p_type_name) == "") {
+						tishi('类型名称不能为空！');
+						return false;
+					} else {
+						if(optiont == 'add') {
+							if(ID == "") {
+								new $.zui.Messager('请选择新增的父级节点', {
+									type: 'danger'
+								}).show();
+								return false;
+							} else {
+								if($("input[name='radioname']:checked").val() == 1) {
+									if(prentid == "#") {
+										prentid = '0';
+									}
+									add(p_type_name, p_dsc, prentid);
+								} else if($("input[name='radioname']:checked").val() == 0) {
+									add(p_type_name, p_dsc, ID);
+								} else {
+									console.log($("input[name='radioname']:checked").val())
+								}
+							}
+						} else if(optiont == "updata") {
+							if(prentid == "#") {
+								new $.zui.Messager('不能修改！', {
+									type: 'danger'
+								}).show();
+								return false;
+							} else {
+								update(p_type_name, p_dsc);
+							}
+						}
+					}
+				});
+				var $tree = $('#treeproject').jstree({
+					'core': {
+						"multiple": false,
+						'data': {
+							"url": urlpath + "/approval/getEditTypeTree?lazy",
+							"data": function(node) {
+								return {
+									"id": node.id
+								};
+							}
+						}
+					}
+				});
+				$tree.bind('activate_node.jstree', function(obj, e) {
+					var ref = $("#treeproject").jstree(true);
+					sel = ref.get_selected();
+					var nodes = $("#treeproject").jstree("get_checked");
+					var text = $("#treeproject").jstree("get_text", nodes);
+					var id = nodes;
+					praentext = e.node.text;
+					praentid = e.node.id;
+					IDs = e.node.id;
+					if(roleid != "1000"){
+						if(e.node.parent == "#") {
+							tishi('你没有权限选最高节点为父节点！');
+							return false;
+						} else {
+							$("#project_id").val(e.node.id);
+					        $("#project_text").val(e.node.text);
+						}
+					}else{
+						$("#project_id").val(e.node.id);
+					    $("#project_text").val(e.node.text);
+					}
+				})
+
+				$("#project_select").on("blur", "#project_text", function(e) {
+					setTimeout(function() {
+						$("#treeproject").hide();
+					}, 200)
+				});
+				$("#project_select").on("click", "#project_text", function() {
+					if($("#treeproject")[0].style.display == "none" || $("#treeproject")[0].style.display == "") {
+						$("#treeproject")[0].style.display = "block";
+					} else if($("#treeproject")[0].style.display == "block") {
+						$("#treeproject")[0].style.display = "none";
+					}
+				});
+				$('#tree').jstree({
+					'core': {
+						"multiple": true,
+						'data': {
+							"url": urlpath + "/CommonHander/getDepartTreeNew.action?lazy",
+							"data": function(node) {
+								return {
+									"id": node.id
+								};
+							}
+						}
+					},
+					// 这两个必须要
+					checkbox: {
+						tie_selection: false,
+						whole_node: false
+					},
+					plugins: ["checkbox", "wholerow"]
+
+				}).bind('activate_node.jstree', function(obj, e) {
+					var ref = $("#tree").jstree(true);
+					sel = ref.get_selected();
+					var nodes = $("#tree").jstree("get_checked");
+					var text = "";
+					var id = "";
+					var html = "";
+					for(var i = 0; i < nodes.length; i++) {
+						html += '<li value="' + nodes[i] + '">' + $("#tree").jstree("get_text", nodes[i]) + '<span onclick="removee(this)">x</span></li>';
+					}
+					$("#departContent").html(html);
+				}).bind("loaded.jstree", function(event, data) {
+					var checkId = ["5303", "5304", "5305"];
+					$('#tree').find("li").each(function() {
+						if(checkId == 'all') {
+							$('#tree').jstree("check_node", $(this));
+						} else if(checkId instanceof Array) {
+							for(var i = 0; i < checkId.length; i++) {
+								if($(this).attr("id") == checkId[i]) {
+									$('#tree').jstree("check_node", $(this));
+								}
+							}
+						}
+					});
+					//					},10000)
+				});
+				$("#select_tree").on("blur", "#tree_text", function(e) {
+					/*setTimeout(function() {
+						$("#tree").hide();
+					}, 200)*/
+				})
+				$("#select_tree").on("click", "#tree_text", function() {
+					if($("#tree")[0].style.display == "none" || $("#tree")[0].style.display == "") {
+						$("#tree")[0].style.display = "block";
+					} else if($("#tree")[0].style.display == "block") {
+						$("#tree")[0].style.display = "none";
+					}
+				})
+
+			})
+
+			function removee(obj) {
+				$(obj).parent().remove();
+			}
+
+			function add(name, dsc, prentid) {
+				if(parentQX == 1) {
+					tishi('你没有权限在最高节点新增节点！');
+					return false;
+				}
+				var liid = "";
+				for(var i = 0; i < $("#departContent").find('li').length; i++) {
+					if(i == 0) {
+						liid = $("#departContent").find('li')[i].attributes[0].value;
+					} else {
+						liid = liid + "," + $("#departContent").find('li')[i].attributes[0].value;
+					}
+				}
+				$.ajax({
+					url: urlpath + "/approval/knowledgeTypeAdd",
+					type: "post",
+					data: {
+						"P_TYPE_NAME": name,
+						'P_PARENT': prentid,
+						'P_DEPART_ID': liid
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'json',
+					success: function(res) {
+						if(res.result == "SUCCESS") {
+							new $.zui.Messager('提示消息：' + res.message, {
+								type: 'success',
+								placement: 'center'
+							}).show();
+							$("#jsTree").jstree(true).refresh();
+						} else {
+							tishi(res.message);
+						}
+					}
+				});
+			}
+
+			function update(name, dsc) {
+				var liid = "";
+				for(var i = 0; i < $("#departContent").find('li').length; i++) {
+					if(i == 0) {
+						liid = $("#departContent").find('li')[i].attributes[0].value;
+					} else {
+						liid = liid + "," + $("#departContent").find('li')[i].attributes[0].value;
+					}
+				}
+				$.ajax({
+					url: urlpath + "/approval/knowledgeTypeEdit",
+					type: "post",
+					data: {
+						"P_TYPE_NAME": name,
+						"P_PARENT": IDs,
+						"P_ID": ID,
+						"P_DEPART_ID": liid
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'json',
+					success: function(res) {
+						if(res.result == "SUCCESS") {
+							new $.zui.Messager('提示消息：' + '修改成功', {
+								type: 'success',
+								placement: 'center'
+							}).show();
+							$("#jsTree").jstree(true).refresh();
+						} else {
+							tishi(res.message);
+						}
+					}
+				});
+			}
+
+			function getTree() {
+				$("#jsTree").jstree({
+					'core': {
+						"multiple": false,
+						"check_callback": true, //默认为flase，会导致无法使用修改树结构。
+						"expand_selected_onload": true,
+						'data': {
+							"url": urlpath + "/approval/getEditTypeTree?lazy",
+							"data": function(node) {
+								return {
+									"id": node.id
+								};
+							}
+						}
+					},
+					'plugins': ['contextmenu'],
+					'contextmenu': {
+						'items': function(o, j) {
+							return {
+								"create": {
+									"separator_before": false, //Create这一项在分割线之前 
+									"separator_after": true, //Create这一项在分割线之后
+									"_disabled": false, //false表示 create 这一项可以使用; true表示不能使用
+									"label": "新增节点", //Create这一项的名称 可自定义
+									"action": function(data) { //点击Create这一项触发该方法								
+										var inst = $.jstree.reference(data.reference),
+											obj = inst.get_node(data.reference); //获得当前节点,可以拿到当前节点所有属性　　
+										$("#primaryradio1").removeAttr('disabled');
+										if(roleid == "1000") {
+											$("#primaryradio2").removeAttr('disabled');
+										}
+										document.getElementById('add').innerHTML = '添加类型';
+										$("#P_DSC").val("");
+										$("#P_TYPE_NAME").val("");
+										ID = obj.id;
+										prentid = obj.parent;
+										optiont = "add";
+										if(roleid != "1000") {
+											if(prentid == "#") {
+												tishi('您没有权限新增最高级节点，请联系管理员！');
+												return false;
+											}
+										}
+										if(prentid == "#") {
+											$("#primaryradio2").attr('disabled', 'disabled');
+											ID = '0';
+										}
+									}
+								},
+								"rename": {
+									"separator_before": false, //Create这一项在分割线之前 
+									"separator_after": true, //Create这一项在分割线之后
+									"_disabled": false, //false表示 create 这一项可以使用; true表示不能使用
+									"label": "修改节点", //Create这一项的名称 可自定义
+									"action": function(data) { //点击Create这一项触发该方法
+										var inst = $.jstree.reference(data.reference),
+											obj = inst.get_node(data.reference); //获得当前节点,可以拿到当前节点所有属性
+										$("#primaryradio1").attr('disabled', 'disabled');
+										$("#primaryradio2").attr('disabled', 'disabled');
+										document.getElementById('add').innerHTML = '修改类型';
+										ID = obj.id;
+										optiont = "updata";
+										var node = $('#treeproject').jstree("get_node", obj.parent);
+										$('#project_id').val(node.id);
+										IDs = node.id;
+										$("#project_text").val(node.text);
+										if(obj.parent == "#") {
+											new $.zui.Messager('最高节点不能修改！', {
+												type: 'danger'
+											}).show();
+											return false;
+										} else {
+											$("#treenone").css({
+												'display': 'block'
+											});
+											getIdtree(ID);
+										}
+									}
+								},
+								"remove": {
+									"separator_before": false, //Create这一项在分割线之前 
+									"separator_after": true, //Create这一项在分割线之后
+									"_disabled": false, //false表示 create 这一项可以使用; true表示不能使用
+									"label": "删除节点", //Create这一项的名称 可自定义
+									"action": function(data) { //点击Create这一项触发该方法
+										var inst = $.jstree.reference(data.reference);
+										obj = inst.get_node(data.reference); //获得当前节点,可以拿到当前节点所有属性　
+										var childrenid = "";
+										var childrenprent = '';
+										if(obj.parent == "#") {
+											new $.zui.Messager('最高节点不能删除！', {
+												type: 'danger'
+											}).show();
+											return false;
+										} else {
+											if(obj.children.length > 0) {
+												for(var i = 0; i < obj.children_d.length; i++) {
+													if(i == 0) {
+														childrenid = obj.children_d[i] + ',';
+													} else {
+														childrenid = childrenid + obj.children_d[i] + ',';
+													}
+												}
+												childrenprent = childrenid + obj.id;
+												$.ajax({
+													type: "post",
+													url: urlpath + '/approval/knowledgeTypeNum',
+													data: {
+														'P_ID': childrenprent
+													},
+													xhrFields: {
+														withCredentials: true
+													},
+													crossDomain: true == !(document.all), //兼容ie
+													dataType: 'json',
+													success: function(res) {
+														if(res[0].CZ_NUM > 0) {
+															var tt = '提示消息:该节点下有知识库相关分类，请修改知识库的分类';
+															updateTwo(tt, childrenprent);
+														} else {
+															var titt = obj.text + '的节点下有子节点是否要一起删除？';
+															deltwo(obj.id, titt);
+														}
+													}
+												});
+											} else {
+												var tit = '是否要删除《' + obj.text + '》类型？';
+												deltwo(obj.id, tit)
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				})
+			}
+
+			function deltwo(id, text) {
+				new $.zui.Messager(text, {
+					type: 'warning',
+					time: 0,
+					placement: 'center', // 定义显示位置
+					actions: [{
+						name: 'del',
+						icon: 'remove-sign',
+						text: '删除',
+						action: function() {
+							$.ajax({
+								type: "post",
+								url: urlpath + '/approval/knowledgeTypeDel',
+								data: {
+									'P_ID': id
+								},
+								xhrFields: {
+									withCredentials: true
+								},
+								crossDomain: true == !(document.all), //兼容ie
+								dataType: 'json',
+								success: function(res) {
+									if(res.result == "SUCCESS") {
+										new $.zui.Messager('删除成功！', {
+											type: 'success'
+										}).show();
+										setTimeout(function() {
+											$("#jsTree").jstree(true).refresh();
+										}, 500)
+									} else {
+										new $.zui.Messager('删除失败！', {
+											type: 'danger'
+										}).show();
+									}
+								}
+							});
+						}
+					}, {
+						name: 'undo',
+						icon: 'undo',
+						text: '取消',
+						action: function() { // 点击该操作按钮的回调函数
+							return;
+						}
+					}]
+				}).show();
+			}
+
+			function getIdtree(id) {
+				$.ajax({
+					url: urlpath + "/approval/knowledgeTypedata",
+					type: "post",
+					data: {
+						"P_ID": id
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'json',
+					success: function(res) {
+						$("#departContent").html('');
+						$("#P_TYPE_NAME").val(res[0].TYPE_NAME);
+						//						$("#project_id").val(res[0].PARENT_TYPE_ID);
+						//						$("#project_text").val(res[0].PARENT_TYPE_NAME);
+						var id = res[0].DEPART_ID;
+						var text = res[0].DEPART_NAME;
+						if(id == 'undefined') {
+							id = '';
+							text = '';
+						}
+						arrfor(id, text);
+					},
+					error: function(ree) {
+						alert('服务器出错!');
+					}
+				});
+			}
+			//删除验证不通过时
+			function updateTwo(text, prentid) {
+				new $.zui.Messager(text, {
+					type: 'warning',
+					time: 0,
+					placement: 'center', // 定义显示位置
+					actions: [{
+						name: 'del',
+						icon: 'undo',
+						text: '确定',
+						action: function() {
+							window.parent.newTrigger.close();
+							window.parent.document.getElementById('zym').value = prentid;
+							window.parent.searchzy();
+						}
+					}, {
+						name: 'undo',
+						icon: 'undo',
+						text: '取消',
+						action: function() { // 点击该操作按钮的回调函数
+							return;
+						}
+					}]
+				}).show();
+			}
+
+			function tishi(res) {
+				new $.zui.Messager(res, {
+					type: 'danger',
+					placement: 'center'
+				}).show();
+			}
+
+			function arrfor(id, text) {
+				$("#departContent").html('');
+				if(id == "") {
+					$("#departContent").html('');
+				} else {
+					var checkId = id.split(',');
+					var checkText = text.split(',');
+					var html = "";
+					for(var i = 0; i < checkId.length; i++) {
+						html += '<li value="' + checkId[i] + '">' + checkText[i] + '<span onclick="removee(this)">x</span></li>';
+					}
+					$("#departContent").html(html);
+				}
+			}
+
+			function fuzhitree(id) {
+				var checkId = id.split(',');
+				console.log(checkId);
+				$('#tree').find("li").each(function() {
+					if(checkId == 'all') {
+						$('#tree').jstree("check_node", $(this));
+					} else if(checkId instanceof Array) {
+						for(var i = 0; i < checkId.length; i++) {
+							if($(this).attr("id") == checkId[i]) {
+								$('#tree').jstree("check_node", $(this));
+							}
+						}
+					}
+				});
+			}
+		</script>
+	</body>
+
+</html>

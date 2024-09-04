@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>新增题库</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<link rel="stylesheet" href="../../../Lib/bootstrap-3.3.7-dist/css/bootstrap.css" />
+		<link rel="stylesheet" href="../../../Lib/bootstrap-table/dist/bootstrap-table.css" />
+		<link rel="stylesheet" href="../../../Lib/jsTree/style.min.css" />
+		<style>
+			html,
+			body {
+				height: 100%;
+				width: 100%;
+				overflow: hidden;
+			}
+			
+			.form {
+				padding: 10px 14%;
+			}
+			
+			.container-fluid {
+				height: 100%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<article class="article  article-condensed">
+				<!-- 文章正文部分 -->
+				<section class="content">
+					<div class="noteContent">
+						<form role="form" class="form">
+							<div class="form-group" id="project_select">
+								<label for="name" class="required">题目分类</label>
+								<div style="display: inline-block;margin-left: 10px;width: 70%;">
+									<input id="project_text"  type="text" readonly class="form-control search-input" placeholder="请选择类型">
+									<input id="project_id" type="hidden">
+									<div id="treeproject" style="position:absolute;border:1px solid #3BA4FF;border-radius: 3px;border-top:0px;-moz-border-radius-topleft:0px ;-moz-border-radius-topright: 0px;overflow: auto;display: none;background: #fff;z-index:9999;max-height: 230px;width: 48.5%;font-size: 10px;"></div>
+								</div>
+							</div>
+							<div class="form-group">
+								<label for="p_question_class" class="required">题目类型</label>
+								<div style="display: inline-block;margin-left: 10px;">
+									<label class="radio-inline">
+                                        <input type="radio" name="p_question_class" value="1">单选
+                                     </label>
+									<label class="radio-inline">
+					                    <input type="radio" name="p_question_class" value="3">判断
+					                </label>
+									<label class="radio-inline">
+					                    <input type="radio" name="p_question_class" value="2">多选
+					                </label>
+									<label class="radio-inline">
+					                    <input type="radio" name="p_question_class" value="4">填空
+					                </label>
+									<label class="radio-inline">
+					                    <input type="radio" name="p_question_class" value="5">简答
+					                </label>
+								</div>
+							</div>
+							<div class="form-group">
+								<label style="position: absolute;" class="required" for="dsc">题目名称</label>
+								<textarea style="margin-left:66px;" class="form-control form-contro" id="p_question_name" name="p_question_name" placeholder="请输入名称"></textarea>
+							</div>
+						</form>
+					</div>
+				</section>
+				<!-- 文章底部 -->
+				<div style="position: absolute;bottom: 10px;width: 100%;text-align: center;">
+					<button type="button" style="width: 100px;" id="btn" class="btn btn-primary" onclick="sumit()">提交</button>
+				</div>
+			</article>
+		</div>
+
+		<script type="text/javascript" src="../../../Lib/jquery-3.4.1.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+		<script type="text/javascript" src="../../../Lib/jsTree/jstree.js"></script>
+		<!--弹框-->
+		<script type="text/javascript" src="../../../Lib/layer/layer.js"></script>
+		<script type="text/javascript" src="../../../Lib/public.js"></script>
+		<script type="text/javascript">
+			var Trigger = new $.zui.ModalTrigger();
+			var ID = $.url("ID");
+			var option = $.url("option");
+			var typee="";
+			$(document).ready(function() {
+				var $tree = $('#treeproject').jstree({
+					'core': {
+						"multiple": false,
+						'data': {
+							"url": urlpath + "/CommonHander/getZdTypeTree",
+							"data": function(node) {
+								return {
+									"id": node.id
+								};
+							}
+						}
+					}
+				});
+				$tree.bind('activate_node.jstree', function(obj, e) {
+					$("#project_id").val(e.node.id);
+					$("#project_text").val(e.node.text);
+				});
+				$("#project_select").on("blur", "#project_text", function(e) {
+					setTimeout(function() {
+						$("#treeproject").hide();
+					}, 200);
+				})
+				$("#project_select").on("click", "#project_text", function() {
+					if($("#treeproject")[0].style.display == "none") {
+						$("#treeproject")[0].style.display = "block";
+					} else if($("#treeproject")[0].style.display == "block") {
+						$("#treeproject")[0].style.display = "none";
+					}
+				});
+				if(option == "updata") {
+					getdate(ID);
+					$("#project_text").attr('disabled',true);
+					$("input[name=p_question_class]").attr('disabled',true);
+				}
+			});
+
+			function sumit() {
+				if($("#project_text").val() == "") {
+					layer.alert("请选择分类！");
+					return false;
+				} else if($('input[name="p_question_class"]:checked').val()==undefined) {
+					layer.alert("请选择类型！");
+					return false;
+				} else if(trim($("#p_question_name").val()) == "") {
+					layer.alert("请填写名称！");
+					return false;
+				} else {
+					$("#btn").attr("disabled", true);
+					var urlstr="";
+					var Date={};
+					if(option=="updata"){
+						urlstr="/exam/examStoreEdit";
+						Date={
+							'p_question_name':$("#p_question_name").val(),
+							'p_question_class':$('input[name="p_question_class"]:checked').val(),
+							'P_ID':ID
+						}
+					}else{
+						urlstr="/exam/examStoreAdd";
+						Date={
+							'p_question_name':$("#p_question_name").val(),
+							'p_question_class':$('input[name="p_question_class"]:checked').val(),
+							'p_question_type': $("#project_id").val()
+						}
+					}
+					$.ajax({
+						type: "post",
+						url: urlpath +urlstr,
+						async: true,
+						data: Date,
+						dataType: 'text',
+						success: function(res) {
+							if(res.substring(0,7)=="SUCCESS") {
+								new $.zui.Messager('提示消息：提交成功', {
+									type: 'success',
+									placement: 'center'
+								}).show();
+								//调用父页面上的关闭窗口
+								window.parent.Trigger.close();
+								window.parent.tableRefresh();
+							} else {
+								new $.zui.Messager('提示消息：提交失败', {
+									type: 'danger',
+									placement: 'center'
+								}).show();
+								$("#btn").attr("disabled", false);
+							}
+						},
+						error: function(err) {
+							$("#btn").attr("disabled", false);
+							alert("服务器出错了");
+						}
+					});
+				}
+			}
+			function getdate(id) {
+				$.ajax({
+					type: "post",
+					url: urlpath + "/exam/examStoreDateGet",
+					async: true,
+					data: {
+						'P_ID': id
+					},
+					dataType:'json',
+					success: function(res) {
+						if(res.length > 0) {
+								var radito = "input[name=p_question_class][value=" + res[0].P_QUESTION_CLASS + "]";
+								$(radito).attr('checked', true);
+								$("#project_text").val(res[0].P_TYPE_NAME);
+								$("#project_id").val(res[0].P_QUESTION_TYPE);
+								$("#p_question_name").val(res[0].P_QUESTION_NAME);
+						} 
+					},
+					error: function(err) {
+						alert("获取数据服务器出错了");
+					}
+				});
+			}
+			function addanswer(){
+				var url="";
+				if(typee==1){
+					url="settinsRadioAnswer.html?ID="+select[0]["ID"];
+				}else if(typee==2){
+					url="settinsCheckboxAnswer.html?ID="+select[0]["ID"];
+				}else if(typee==3){
+					url="settinsFillBlanksAnswer.html?ID="+select[0]["ID"];
+				}else if(typee==4){
+					url="settinsJudgeAnswer.html?ID="+select[0]["ID"];
+				}else if(typee==5){
+					url="settinsShortAnswer.html?ID="+select[0]["ID"];
+				}
+				Trigger.show({
+					title: "添加答案",
+					iframe:url ,
+					height:$('body').height() * 0.90,
+					width:$('body').width() * 0.85
+				});
+			}
+		</script>
+	</body>
+</html>

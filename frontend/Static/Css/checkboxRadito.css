@@ -1,0 +1,73 @@
+
+input[type="radio"]+label::before {
+	content: "\a0";
+	/*不换行空格*/
+	display: inline-block;
+	vertical-align: middle;
+	font-size: 18px;
+	width: 1em;
+	height: 1em;
+	margin-right: .4em;
+	border-radius: 50%;
+	border: 1px solid  #3BA4FF;
+	text-indent: .15em;
+	line-height: 1;
+}
+
+input[type="radio"]:checked+label::before {
+	background-color:  #3BA4FF;
+	background-clip: content-box;
+	padding: .2em;
+}
+
+input[type="radio"] {
+	position: absolute;
+	clip: rect(0, 0, 0, 0);
+}
+input[type="radio"]+label{
+	margin-right: 1.4em;
+}
+.checkbox-item {
+	margin-right: 20px;
+	display: inline-block;
+	position: relative;
+}
+
+.checkbox-item label {
+	line-height: 34px;
+	vertical-align: middle;
+	cursor: pointer;
+}
+
+.checkbox-item input[type="checkbox"] {
+	margin-right: 5px;
+	width: 20px;
+	height: 20px;
+	visibility: hidden;
+}
+
+
+/* 设计新的checkbox，位置 */
+
+.checkbox-item label:BEFORE {
+	content: '';
+	position: absolute;
+	top: 8px;
+	left: 0px;
+	width: 20px;
+	height: 20px;
+	border-radius: 2px;
+	border: 1px solid #bbb;
+	background: #fff;
+	cursor: pointer;
+}
+/* 点击初始的checkbox，将新的checkbox关联起来 */
+.checkbox-item input[type="checkbox"]:checked+label:BEFORE {
+	content: '\2713';
+	display: block;
+	line-height: 20px;
+	vertical-align: middle;
+	text-align: center;
+	background-color: #1890FF;
+	color: #ffffff;
+}

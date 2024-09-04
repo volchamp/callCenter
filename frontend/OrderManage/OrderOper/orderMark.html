@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>工单处理评价</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<style>
+			html,
+			body {
+				width: 100%;
+				height: 100%;
+				overflow: auto;
+			}
+			.container1 {
+				width: 90%;
+				height: 97%;
+				border-radius: 10px;
+				padding-right: 0;
+				padding-left: 0;
+				margin-right: auto;
+				margin-left: auto;
+				margin-top: 10px;
+			}
+			.cleanfloat {
+				height: 100%;
+				line-height: 100%;
+				list-style-type: none;
+				margin: 0;
+				padding: 0;
+				/*width: 90%;		*/
+				width: 260px;
+			}
+			.starLi {
+				list-style: none;
+				float: left;
+				font-size: 30px;
+				margin: 2px;
+				color: #ccc;
+				cursor: pointer;
+				font-size: 30px;
+			}
+			.cleanfloat::after {
+				display: block;
+				clear: both;
+				content: "";
+				visibility: hidden;
+				height: 0;
+			}
+			.hs,
+			.cs {
+				color: #FFD500;
+			}
+			.container-fluid {
+				padding: 10px;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<div class="container1">
+				<div id="pfbt" style="font-size: 15px;vertical-align: middle;font-weight: bold;">请为处理人的解决方案打分？</div>
+				<div style="padding: 5px 0;">
+					<span style="display: inline-block;width: 75px;font-weight: 500;color: rgb(245, 116, 6);font-size: 15px;">总体评分：</span>
+					<ul id="all" class="cleanfloat total" style="display: inline-block">
+						<li class="starLi total">&#9733;</li>
+						<li class="starLi total">&#9733;</li>
+						<li class="starLi total">&#9733;</li>
+						<li class="starLi total">&#9733;</li>
+						<li class="starLi total">&#9733;</li>
+					</ul>
+					<br />
+					<span style="display: inline-block;width: 75px;font-weight: 500;color: rgb(245, 116, 6);font-size: 15px;">处理速度：</span>
+					<ul id="shudu" class="cleanfloat total" style="display: inline-block">
+						<li class="starLi total">&#9733;</li>
+						<li class="starLi total">&#9733;</li>
+						<li class="starLi total">&#9733;</li>
+						<li class="starLi total">&#9733;</li>
+						<li class="starLi total">&#9733;</li>
+					</ul>
+					<br />
+					<span style="display: inline-block;width: 75px;font-weight: 500;color: rgb(245, 116, 6);font-size: 15px;">解决方案：</span>
+					<ul id="fangan" class="cleanfloat total" style="display: inline-block">
+						<li class="starLi total">&#9733;</li>
+						<li class="starLi total">&#9733;</li>
+						<li class="starLi total">&#9733;</li>
+						<li class="starLi total">&#9733;</li>
+						<li class="starLi total">&#9733;</li>
+					</ul>
+				</div>
+				<div class="form-group">
+					<textarea class="form-control" placeholder="我的意见" id="dsc" name="dsc"></textarea>
+				</div>				
+			</div>
+		</div>
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/layer/layer.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script type="text/javascript" src="../../Lib/public.js"></script>
+		<script src="../../Lib/all.js"></script>
+		<script type="text/javascript">
+			var score;
+			var id=$.url("ID");
+			var operid=$.url("PERID");
+			$(document).ready(function() {
+				setTimeout(function() {
+					$(".starLi").hover(function() {
+						score = $(this).index() + 1;
+						$(this).addClass('hs');
+						$(this).prevAll().addClass('hs');
+					}, function() {
+						score = $(this).index() + 1;
+						$(this).removeClass('hs');
+						$(this).prevAll().removeClass('hs');
+					});
+					$(".starLi").click(function() {
+							if($(this).hasClass('cs')) {
+								$(this).removeClass('cs');
+								$(this).prevAll().addClass('cs');
+								$(this).nextAll().removeClass('cs');
+							} else {
+								$(this).addClass('cs');
+								$(this).prevAll().addClass('cs');
+							    $(this).nextAll().removeClass('cs');
+							}
+					})
+				}, 500)
+			})
+
+			function formValidator() {
+				if($("#dsc").val() == "") {
+					layer.alert("请填写意见！");
+					return false;
+				}
+				var allscore = $("#all .cs").length;
+				var sd = $("#shudu .cs").length;
+				var fa = $("#fangan  .cs").length;
+				if((sd != 0 || fa != 0) && allscore == 0) {
+					layer.alert("请您对总体评星！");
+					return false;
+				} else if(allscore != 0 && sd == 0 && fa == 0) {
+					layer.alert("请您对处理速度或处理方案进行评星！");
+					return false;
+				} else {
+					score = "0|总体评分|" + allscore + ",1|处理速度|" + sd + ",2|处理方案|" + fa;
+					scorefirm("确定提交吗？", "", $("#dsc").val(),"",id,operid,score);
+				}
+			}
+		</script>
+	</body>
+
+</html>

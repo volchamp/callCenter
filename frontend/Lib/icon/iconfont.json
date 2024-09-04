@@ -1,0 +1,135 @@
+{
+  "id": "1459446",
+  "name": "gongdantubiao",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "821428",
+      "name": "icon_发起人",
+      "font_class": "faqiren",
+      "unicode": "e669",
+      "unicode_decimal": 58985
+    },
+    {
+      "icon_id": "998476",
+      "name": "人",
+      "font_class": "ai59",
+      "unicode": "e6b1",
+      "unicode_decimal": 59057
+    },
+    {
+      "icon_id": "1015071",
+      "name": "悬赏问题详情-录制按钮",
+      "font_class": "xuanshangwentixiangqingluzhianniu",
+      "unicode": "e636",
+      "unicode_decimal": 58934
+    },
+    {
+      "icon_id": "3006958",
+      "name": "部门 (2)",
+      "font_class": "bumen",
+      "unicode": "e663",
+      "unicode_decimal": 58979
+    },
+    {
+      "icon_id": "3329757",
+      "name": "状态",
+      "font_class": "zhuangtai",
+      "unicode": "e675",
+      "unicode_decimal": 58997
+    },
+    {
+      "icon_id": "3495506",
+      "name": "电话",
+      "font_class": "dianhua",
+      "unicode": "e851",
+      "unicode_decimal": 59473
+    },
+    {
+      "icon_id": "3525575",
+      "name": "发起人",
+      "font_class": "faqiren1",
+      "unicode": "e60f",
+      "unicode_decimal": 58895
+    },
+    {
+      "icon_id": "3612962",
+      "name": "附件",
+      "font_class": "fujian",
+      "unicode": "e667",
+      "unicode_decimal": 58983
+    },
+    {
+      "icon_id": "3747866",
+      "name": "时间",
+      "font_class": "shijian",
+      "unicode": "e7c2",
+      "unicode_decimal": 59330
+    },
+    {
+      "icon_id": "5089257",
+      "name": "电话咨询 话务综合管理#bl",
+      "font_class": "dianhuazixunhuawuzongheguanlibl",
+      "unicode": "eaff",
+      "unicode_decimal": 60159
+    },
+    {
+      "icon_id": "5558477",
+      "name": "右箭头",
+      "font_class": "arrow-right-copy-copy-copy-copy-copy",
+      "unicode": "e601",
+      "unicode_decimal": 58881
+    },
+    {
+      "icon_id": "6135452",
+      "name": "区域",
+      "font_class": "quyu",
+      "unicode": "e600",
+      "unicode_decimal": 58880
+    },
+    {
+      "icon_id": "6183109",
+      "name": "停留时长",
+      "font_class": "tingliushichang",
+      "unicode": "e613",
+      "unicode_decimal": 58899
+    },
+    {
+      "icon_id": "6460052",
+      "name": "问题来源",
+      "font_class": "wentilaiyuan",
+      "unicode": "e639",
+      "unicode_decimal": 58937
+    },
+    {
+      "icon_id": "6865356",
+      "name": "问题",
+      "font_class": "wenti",
+      "unicode": "e614",
+      "unicode_decimal": 58900
+    },
+    {
+      "icon_id": "7946634",
+      "name": "问题类型",
+      "font_class": "wentileixing",
+      "unicode": "e62d",
+      "unicode_decimal": 58925
+    },
+    {
+      "icon_id": "9688433",
+      "name": "系统",
+      "font_class": "xitong",
+      "unicode": "e60d",
+      "unicode_decimal": 58893
+    },
+    {
+      "icon_id": "11218053",
+      "name": "紧急程度",
+      "font_class": "jinjichengdu",
+      "unicode": "e6a7",
+      "unicode_decimal": 59047
+    }
+  ]
+}

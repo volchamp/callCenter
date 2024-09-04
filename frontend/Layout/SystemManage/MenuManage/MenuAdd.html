@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>新增角色</title>
+		<link rel="stylesheet" href="../../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.css">
+		<link rel="stylesheet" href="../../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.css">
+		<link rel="stylesheet" href="../../../Lib/bootstrap-3.3.7-dist/css/bootstrap.min.css" />
+		<link rel="stylesheet" href="../../../Lib/bootstrap-icon-picker/css/icon-picker.css" />
+		<link rel="stylesheet" href="../../../Lib/select/css/select-mania.css" />
+		<link rel="stylesheet" href="../../../Lib/jsTree/style.min.css">
+		<style type="text/css">
+			html,
+			body {
+				height: 100%;
+				width: 100%;
+				overflow: hidden;
+			}
+			
+			.treeject {
+				position: absolute;
+				border: 1px solid #3BA4FF;
+				border-radius: 3px;
+				border-top: 0px;
+				-moz-border-radius-topleft: 0px;
+				-moz-border-radius-topright: 0px;
+				overflow: auto;
+				display: none;
+				background: #fff;
+				z-index: 9999;
+				max-height: 230px;
+				width: 94%;
+				font-size: 10px;
+			}
+			
+			.container-fluid {
+				padding: 10px;
+				overflow-y: auto;
+				overflow-x: hidden;
+			}
+			
+			.form-control[readonly],
+			.input-group-addon {
+				background: #fff !important;
+			}
+		</style>
+	</head>
+
+	<body onkeydown="keySubmit()">
+		<div class="container-fluid" >
+			<form class="form-horizontal">
+				<div class="form-group">
+					<label class="col-sm-3 ">菜单名称:</label>
+					<div class="col-sm-8">
+						<input id="P_MenuName" name="P_MenuName" type="text" class="form-control" placeholder="请输入名称">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-3">上级菜单:</label>
+					<div class="col-sm-8" id="power_select">
+						<input id="power_text" type="text" readonly class="form-control search-input" placeholder="请选择类型">
+						<input id="power_id" type="hidden">
+						<div id="powerTree" class="treeject"></div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-3">菜单类型:</label>
+					<div class="col-sm-8">
+						<select style="float: left;" class="form-control" id="MenuType">
+							<option value=""></option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-3 ">菜单路径:</label>
+					<div class="col-sm-8">
+						<input id="P_MenuPath" name="P_MenuPath" type="text" class="form-control" placeholder="请输入名称">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-3 ">菜单图标:</label>
+					<div class="col-sm-8">
+						<input class="form-control" name="P_IconPath" id="P_IconPath" placeholder="请选择图标" readonly />
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-3 ">数据源:</label>
+					<div class="col-sm-8">
+						<input id="P_DataSource" name="P_DataSource" type="text" class="form-control" placeholder="请输入名称">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-3 ">报表路径:</label>
+					<div class="col-sm-8">
+						<input id="P_ReportPath" name="P_ReportPath" type="text" class="form-control" placeholder="请输入名称">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-3 ">排序序号:</label>
+					<div class="col-sm-8">
+						<input id="P_OrderID" name="P_OrderID" type="text" class="form-control" placeholder="请输入名称">
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-3">使用角色:</label>
+					<div class="col-sm-8" id="role_select">
+						<input id="role_text" type="text" readonly class="form-control search-input" placeholder="请选择类型">
+						<input id="role_id" type="hidden">
+						<div id="roleTree" class="treeject"></div>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-3">使用范围:</label>
+					<div class="col-sm-8">
+						<select style="float: left;" class="form-control" id="MenuRole">
+							<option value=""></option>
+						</select>
+					</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-3">菜单备注:</label>
+					<div class="col-sm-8" id="project_select">
+						<textarea id="P_MenuDSC" name="P_MenuDSC" class="form-control"></textarea>
+					</div>
+				</div>
+			</form>
+			<div style="position: absolute;bottom: 0px;text-align: center;width:100%;">
+				<button style="font-size:16px ;margin-bottom: 10px;width: 160px;" class="btn btn-primary" onclick="formValidator()" type="button">提交</button>
+			</div>
+		</div>
+
+		<script type="text/javascript" src="../../../Lib/jquery-3.4.1.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/public.js"></script>
+		<script type="text/javascript" src="../../../Lib/bootstrap-icon-picker/js/iconPicker.js" charset="utf-8"></script>
+		<script type="text/javascript" src="../../../Lib/select/js/select-mania.js"></script>
+		<!--弹框-->
+		<script type="text/javascript" src="../../../Lib/layer/layer.js"></script>
+		<script type="text/javascript" src="../../../Lib/jsTree/jstree.js"></script>
+		<script type="text/javascript">
+			var operation = $.url("operation");
+			var P_ID = $.url("P_ID");
+			$(function() {
+				//图标选择组件
+				$("#P_IconPath").iconPicker();
+				MenuTree();
+				getMenuType();
+				getMenuRole();
+				RoleTree();
+				if(operation == "updata") {
+					setTimeout(function(){
+						getDate();
+					},100);
+					
+				}
+			})
+
+			function RoleTree() {
+				var $treepower = $('#roleTree').jstree({
+					'core': {
+						"multiple": false,
+						'data': {
+							"url": urlpath + "/RoleHander/getNRoleTree",
+							"data": function(node) {
+								return {
+									"id": node.id,
+									"P_ROLE_ID": 0,
+									"P_KEYWORD": 0
+								};
+							}
+						}
+					}
+				}).bind('activate_node.jstree', function(obj, e) {
+					var ref = $("#roleTree").jstree(true);
+					sel = ref.get_selected();
+					var nodes = $("#roleTree").jstree("get_checked");
+					$("#role_id").val(e.node.id);
+					$("#role_text").val(e.node.text);
+				});
+				$("#role_select").on("blur", "#role_text", function(e) {
+					setTimeout(function() {
+						$("#roleTree").hide();
+					}, 200)
+				});
+				$("#role_select").on("click", "#role_text", function() {
+					if($("#roleTree")[0].style.display == "none" || $("#roleTree")[0].style.display == "") {
+						$("#roleTree")[0].style.display = "block";
+					} else if($("#roleTree")[0].style.display == "block") {
+						$("#roleTree")[0].style.display = "none";
+					}
+				});
+			}
+
+			function MenuTree() {
+				var $treepower = $('#powerTree').jstree({
+					'core': {
+						"multiple": false,
+						'data': {
+							"url": urlpath + "/MenuHander/getComboMenu",
+							"data": function(node) {
+								return {
+									"id": node.id
+								};
+							}
+						}
+					}
+				}).bind('activate_node.jstree', function(obj, e) {
+					var ref = $("#powerTree").jstree(true);
+					sel = ref.get_selected();
+					var nodes = $("#powerTree").jstree("get_checked");
+					$("#power_id").val(e.node.id);
+					$("#power_text").val(e.node.text);
+				});
+				$("#power_select").on("blur", "#power_text", function(e) {
+					setTimeout(function() {
+						$("#powerTree").hide();
+					}, 200)
+				});
+				$("#power_select").on("click", "#power_text", function() {
+					if($("#powerTree")[0].style.display == "none" || $("#powerTree")[0].style.display == "") {
+						$("#powerTree")[0].style.display = "block";
+					} else if($("#powerTree")[0].style.display == "block") {
+						$("#powerTree")[0].style.display = "none";
+					}
+				});
+			}
+
+			function getMenuType() {
+				webapi("/MenuHander/getMenuTypeQuery", "", function(res) {
+					var html = "";
+					if(res.length > 0) {
+						for(var i = 0; i < res.length; i++) {
+							html = "<option value='" + res[i].ID + "'>" + res[i].TEXT + "</option>";
+							$("#MenuType").append(html);
+						}
+						$('#MenuType').selectMania({
+							themes: ['green'],
+							placeholder: '请选择',
+							removable: false,
+							ajax: false,
+						});
+					}
+				}, function() {
+					layer.alert("服务器出错！");
+				})
+			}
+
+			function getMenuRole() {
+				webapi("/MenuHander/getMenuUserRangeQuery.action", "", function(res) {
+					var html = "";
+					if(res.length > 0) {
+						for(var i = 0; i < res.length; i++) {
+							html = "<option value='" + res[i].ID + "'>" + res[i].TEXT + "</option>";
+							$("#MenuRole").append(html);
+						}
+						$('#MenuRole').selectMania({
+							themes: ['green'],
+							placeholder: '请选择',
+							removable: false,
+							ajax: false,
+						});
+					}
+				}, function() {
+					layer.alert("服务器出错！");
+				})
+			}
+			//表单验证
+			function formValidator() {
+				if(trim($("#P_MenuName").val()) == "") {
+					layer.msg("菜单名称不能为空");
+					return false;
+				} else if($("#power_text").val() == "" || $("#power_id").val() == "") {
+					layer.msg("请选择上级菜单");
+					return false;
+				} else if($('#MenuRole').selectMania('get')[0].value == "") {
+					layer.msg("请选择使用范围");
+					return false;
+				} else if($("#MenuType").selectMania('get')[0].value == "") {
+					layer.msg("菜单类型不能为空");
+					return false;
+				} else if($("#role_text").val() == "" || $("#role_id").val() == "") {
+					layer.msg("角色不能为空");
+					return false;
+				} else {
+					layer.msg('提交中', {
+						icon: 16,
+						shade: 0.5,
+						time: false
+					});
+					operation == "add" ? addMenu() : updateMenu();
+					return true;
+				}
+			}
+
+			function addMenu() {
+				var parms = {
+					"P_MenuName": $("#P_MenuName").val(),
+					"P_ParentMenuID": $("#power_id").val(),
+					"P_MenuType": $("#MenuType").selectMania('get')[0].value,
+					"P_MenuPath": $("#P_MenuPath").val(),
+					"P_IconPath": $("#P_IconPath").val(),
+					"P_DataSource": $("#P_DataSource").val(),
+					"P_ReportPath": $("#P_ReportPath").val(),
+					"P_OrderID": $("#P_OrderID").val(),
+					"P_MenuDSC": $("#P_MenuDSC").val(),
+					"P_UseRange": $('#MenuRole').selectMania('get')[0].value,
+					"P_UseRole1": $("#role_id").val()
+				}
+				webapi("/MenuHander/addMenu", parms, function(res) {
+					layer.closeAll('dialog');
+					if(res == "SUCCESS") {
+						layer.alert("添加成功！");
+						window.parent.updateGrid();
+                        window.parent.Close();
+					} else {
+						layer.alert("添加失败！");
+					}
+				}, function() {
+					layer.closeAll('dialog');
+					layer.alert("服务器出错！");
+				})
+			}
+
+			function updateMenu() {
+				var parms = {
+					"P_ID":P_ID,
+					"P_MenuName": $("#P_MenuName").val(),
+					"P_ParentMenuID": $("#power_id").val(),
+					"P_MenuType": $("#MenuType").selectMania('get')[0].value,
+					"P_MenuPath": $("#P_MenuPath").val(),
+					"P_IconPath": $("#P_IconPath").val(),
+					"P_DataSource": $("#P_DataSource").val(),
+					"P_ReportPath": $("#P_ReportPath").val(),
+					"P_OrderID": $("#P_OrderID").val(),
+					"P_MenuDSC": $("#P_MenuDSC").val(),
+					"P_UseRange": $('#MenuRole').selectMania('get')[0].value,
+					"P_UseRole1": $("#role_id").val()
+				}
+				webapi("/MenuHander/editMenu", parms, function(res) {
+					layer.closeAll('dialog');
+					if(res == "SUCCESS") {
+                       window.parent.updateGrid();
+                       window.parent.Close();
+					} else {
+						layer.alert("修改失败！");
+					}
+				}, function() {
+					layer.closeAll('dialog');
+					layer.alert("服务器出错！");
+				})
+			}
+
+			function getDate() {
+				var Parmse = {
+					"P_ID": P_ID
+				}
+				webapi("/MenuHander/GetMENUDateRole.action", Parmse, function(res) {
+					if(res.length > 0) {
+						$("#role_text").val(res[0].ROLE_NAME);
+						$("#role_id").val(res[0].ROLE_ID);
+					} else {
+						layer.alert("获取数据失败！");
+					}
+				}, function() {
+					layer.alert("服务器出错！");
+				});
+				webapi("/MenuHander/MenuDateGet", Parmse, function(res) {
+					if(res.length > 0) {
+						$('#MenuRole').selectMania('set', [{
+							value:parseInt(res[0].MENU_CLASS),
+							text: res[0].CLASS_NAME
+						}]);
+						$('#MenuType').selectMania('set', [{
+							value: res[0].MENU_LX,
+							text: res[0].LX_NAME
+						}]);
+						$("#P_MenuName").val(res[0].MNAME);
+						$("#P_IconPath").val(res[0].ICON_PATH);
+						$("#P_MenuPath").val(res[0].MENU_PATH);
+						$("#P_OrderID").val(res[0].ORDER_ID);
+						$("#power_text").val(res[0].PNAME);
+						$("#power_id").val(res[0].PID);
+						if(res[0].DSC == undefined) {
+							$("#P_MenuDSC").val("");
+						} else {
+							$("#P_MenuDSC").val(res[0].DSC);
+						}
+						if(res[0].DATA_SOURCE==undefined){
+							$("#P_DataSource").val("");
+						}else{
+							$("#P_DataSource").val(res[0].DATA_SOURCE);
+						}
+						if(res[0].REPORT_PATH==undefined){
+							$("#P_ReportPath").val("");
+						}else{
+							$("#P_ReportPath").val(res[0].REPORT_PATH);
+						}
+						if(res[0].REPORT_PATH==undefined){
+							$("#P_ReportPath").val("");
+						}else{
+							$("#P_ReportPath").val(res[0].REPORT_PATH);
+						}
+					} else {
+						layer.alert("获取数据失败！");
+					}
+				}, function() {
+					layer.alert("服务器出错！");
+				});
+			}
+			//回车提交
+			var lock = false; //加个锁防止重复提交
+			function keySubmit() {
+				if(event.keyCode == 13 && !lock) {
+					lock = formValidator()
+				}
+			}
+		</script>
+	</body>
+
+</html>

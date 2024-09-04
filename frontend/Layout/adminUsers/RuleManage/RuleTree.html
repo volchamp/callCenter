@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>人员树</title>
+		<link rel="stylesheet" href="../../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../../Lib/jsTree/style.min.css">
+		<style></style>
+	</head>
+	<style>
+		html,
+		body {
+			background: #F9F9F9;
+			height: 100%;
+			width: 100%;
+			overflow: hidden;
+		}
+		
+		btn_class {
+			height: 98%;
+		}
+		/*滚动条样式*/
+		
+		.ibox-content::-webkit-scrollbar {
+			/*滚动条整体样式*/
+			width: 6px;
+			/*高宽分别对应横竖滚动条的尺寸*/
+			height: 6px;
+		}
+		
+		.ibox-content::-webkit-scrollbar-thumb {
+			/*滚动条里面小方块*/
+			border-radius: 5px;
+			-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+			background: rgba(0, 0, 0, 0.2);
+		}
+		
+		.ibox-content::-webkit-scrollbar-track {
+			/*滚动条里面轨道*/
+			-webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+			border-radius: 0;
+			background: rgba(0, 0, 0, 0.1);
+		}
+		lable{
+			cursor: pointer;
+		}
+	</style>
+
+	<body class="gray-bg">
+		<div class="wrapper wrapper-content " style="height: 100%">
+
+				<label style="float: left;margin-left: 10px;padding-top: 0px;">派单方式:&nbsp;&nbsp;&nbsp;</label>
+				<div style="display: inline-block;">
+					<div class="radio-primary" style="float: left;"><input type="radio" name="radioname" checked="checked" id="primaryradio1" value="0"><label>派单至部门</label></div>
+					<div class="radio-primary" style="margin-left: 10px;float: left;"><input type="radio" name="radioname" id="primaryradio2" value="1"><label>派单至人</label></div>
+				</div>
+
+<!--			<div style="width: 100%;height: 25px;padding: 0 25%">-->
+<!--				<lable><input type="radio" checked value="0" style="cursor: pointer;" name="select">派单至部门&nbsp;&nbsp;&nbsp;&nbsp;</lable>-->
+<!--				<lable><input type="radio" value="1" style="cursor: pointer;" name="select">派单至人</lable>-->
+<!--			</div>-->
+			<div class="col-sm-12" style="height: 80%;">
+				<div class="ibox-content" style="height: 100%;overflow: auto;padding-left: 15%;margin-right: 10px;">
+					<div style="" id="jsTree"></div>
+					<div style="" id="jsTree1"></div>
+				</div>
+			</div>
+			<div class="form-group ">
+				<div class="btn_class">
+					<button id="jsTreeButton" class="btn btn-primary" style="position: absolute;bottom: 15px;left: 40%;letter-spacing: 3px;" type="button" onclick="loadUser()">选择</button>
+				</div>
+			</div>
+		</div>
+		<script src="../../../Static/Js/myEchars.js"></script>
+		<script src="../../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script src="../../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.js"></script>
+		<script src="../../../Static/Js/yunnan.js"></script>
+		<script src="../../../Lib/public.js"></script>
+		<script src="../../../Lib/jsTree/jstree.js"></script>
+		<script type="text/javascript">
+			var TEXT = '';
+			var ID = '';
+			var result;
+			$(document).ready(function() {
+				loadTree();
+				$('#jsTree1').css({"display":"none"});
+				$(":radio").click(function(){
+					if($(this).val()==0) {
+						$('#jsTree1').css({"display":"none"});
+						$('#jsTree').css({"display":"block"});
+						//$('#jsTree').data('jstree', false).empty();//这个是关键，如果不清空实例，jstree不会重新生成
+						result=$(this).val();
+						loadTree();
+					}else{
+						//$('#jsTree1').data('jstree', false).empty();//这个是关键，如果不清空实例，jstree不会重新生成
+						$('#jsTree1').css({"display":"block"});
+						$('#jsTree').css({"display":"none"});
+						result=$(this).val();
+						loadTree1();
+					}
+
+				});
+				$('#jsTree').bind("activate_node.jstree", function(obj, e) {
+					TEXT = e.node.text;
+					ID = e.node.id;
+				});
+				$('#jsTree1').bind("activate_node.jstree", function(obj, e) {
+					TEXT = e.node.text;
+					ID = e.node.id;
+				});
+			});
+
+			// function getTreeData() {
+			// 	$.ajax({
+			// 		type: "POST",
+			// 		url: urlpath + "/CommonHander/getUsrTreeNode",
+			// 		xhrFields: {
+			// 			withCredentials: true
+			// 		},
+			// 		crossDomain: true == !(document.all),
+			// 		dataType: 'json',
+			// 		success: function(tree) {
+			// 			loadTree(tree);
+			// 		}
+			// 	});
+			// }
+
+			function loadTree() {
+				$('#jsTree').jstree({
+					'core': {
+						"multiple": false,
+						'data': {
+							"url": urlpath + "/CommonHander/getFactoryTree?P_CLASS="+result,
+							"data": function(node) {
+								return {
+									"id": node.id
+								};
+							}
+						}
+					},
+					"plugins": ["checkbox"]
+				})
+			}
+
+			function loadTree1() {
+				$('#jsTree1').jstree({
+					'core': {
+						"multiple": false,
+						'data': {
+							"url": urlpath + "/CommonHander/getFactoryTree?P_CLASS="+result,
+							"data": function(node) {
+								return {
+									"id": node.id
+								};
+							}
+						}
+					},
+					"plugins": ["checkbox"]
+				})
+			}
+
+
+			function loadUser() {
+				var parent = window.parent;
+				if(ID==""){
+					new $.zui.Messager('请选择地区！', {
+						type: 'danger',
+						placement: 'center'
+					}).show();
+					return false;
+				}else if (TEXT=="省本级"){
+					new $.zui.Messager('不能多选！', {
+						type: 'danger',
+						placement: 'center'
+					}).show();
+					return false;
+				}else{
+				parent.$("#factory_text").css({"display":"inline-block"});
+				parent.$("#factory_id").val(ID);
+				parent.$("#factory_text").val(TEXT);
+				parent.$("#factory_user").val(result);
+
+				parent.$.zui.modalTrigger.close();
+               }
+			}
+		</script>
+	</body>
+
+</html>

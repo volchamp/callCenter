@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>事件便捷录入功能</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+    <link rel="stylesheet" href="../../../Lib/easyUpload/main.css">
+    <style>
+        #DETAIL{
+            height: 195px;
+        }
+        /*.form-group {*/
+        /*    float: left;*/
+        /*    width: 50%;*/
+        /*}*/
+    </style>
+
+    <script src="../../../Lib/jquery-3.4.1.min.js"></script>
+    <script src="../../../Lib/zui-1.9.1-dist/dist/lib/chosen/chosen.min.js"></script>
+    <script src="../../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+    <script src="../../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js" ></script>
+    <script src="../../../Lib/public.js"></script>
+    <script src="../../../Lib/easyUpload/easyUploader.js"></script>
+    <script src="../../../Lib/vue.js" type="text/javascript"></script>
+</head>
+<body>
+    <div class="container-fluid" style="padding: 15px;">
+        <div class="panel " style="padding: 0">
+                <form class="form-horizontal" id="form1" style="padding-top: 5px;">
+                    <div class="form-group" style="margin-right: 0px;margin-left: 0px;">
+                        <label class="col-sm-2  required">事件发起人</label>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" id="SEND_USER" name="SEND_USER">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-right: 0px;margin-left: 0px;">
+                        <label class="col-sm-2  required">联系电话</label>
+                        <div class="col-sm-4">
+                            <input class="form-control" type="text" id="REAL_NBR" name="REAL_NBR">
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-right: 0px;margin-left: 0px;" >
+                        <label class="col-sm-2  required">事件详情</label>
+                        <div class="col-sm-9">
+                            <textarea class="form-control" rows="3" maxlength="250" placeholder="限制只能输入250字" id="DETAIL" name="DETAIL"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group" style="margin-bottom: 0;width: 100%;margin-right: 0px;margin-left: 0px;">
+                        <label class="col-sm-2 control-label">附件上传</label>
+                        <div class="col-sm-10">
+                            <div id="uploader"></div>
+                        </div>
+                    </div>
+                    <input type="reset" style="display: none">
+                </form>
+                <button style="margin-left: 37%; font-size:16px ;margin-bottom: 10px;width: 150px;" class="btn btn-primary" id="loadingBtn" type="button" data-loading-text="正在提交...">提交 </button>
+        </div>
+    </div>
+
+    <script>
+        var fileid = "";
+        var name = window.localStorage.getItem("username");
+        var rolename = window.localStorage.getItem("rolename");
+        var userPhone = window.localStorage.getItem("user_phone");
+        $(function () {
+            $("#SEND_USER").val(name);
+            $("#REAL_NBR").val(userPhone);
+
+            $('#loadingBtn').on('click', function() {
+                var $btn = $(this);
+                $btn.button('loading');
+                var data1 = $("#form1").serializeArray();
+                data1.push({
+                    name: "P_FUJIAN_ID",
+                    value: fileid
+                });
+                data1.push({
+                    name: "P_TYPE_ID",
+                    value: 1
+                });
+                var isnull = /^[\s]*$/;
+                var mobileRegex = /^(((1[3456789][0-9]{1})|(15[0-9]{1}))+\d{8})$/;
+                var phoneRegex = /^0\d{2,3}-?\d{7,8}$/;
+                if(isnull.test($("#DETAIL").val())) {
+                    tishi('问题详情不能为空！');
+                    $btn.button('reset');
+                }else if(isnull.test($("#SEND_USER").val())) {
+                    tishi('问题发起人不能为空！');
+                    $btn.button('reset');
+                }else if(!mobileRegex.test($("#REAL_NBR").val()) && !phoneRegex.test($("#REAL_NBR").val())) {
+                    tishi('联系方式不正确！');
+                    $btn.button('reset');
+                }else {
+                    $.ajax({
+                        url: urlpath + "/approval/applyQuickAdd",
+                        type: "post",
+                        data: data1,
+                        xhrFields: {
+                            withCredentials: true
+                        },
+                        crossDomain: true,
+                        dataType: 'json',
+                        success: function(res) {
+                            if(res.RESULT == "SUCCESS") {
+                                new $.zui.Messager('提示消息：提交成功', {
+                                    type: 'success',
+                                    placement: 'center'
+                                }).show();
+                                $("input[type=reset]").trigger("click");
+                                $('.urgent').css("color", "#353535");
+                                $('.urgent .label').css("background", "#E4E4E4");
+                                $('.urgent_input').val('');
+                                window.parent.$.zui.modalTrigger.close();
+                                // vm.question();
+                            } else {
+                                new $.zui.Messager('提示消息：提交失败', {
+                                    type: 'danger',
+                                    placement: 'center'
+                                }).show();
+                            }
+                            $btn.button('reset');
+                        },
+                        error: function(res) {
+                            $btn.button('reset');
+                        }
+                    });
+                }
+            });
+            $("#REAL_NBR").on("change",function (e) {
+                var value = e.delegateTarget.value;
+                var mobileRegex = /^(((1[3456789][0-9]{1})|(15[0-9]{1}))+\d{8})$/;
+                var phoneRegex = /^0\d{2,3}-?\d{7,8}$/;
+                if(!mobileRegex.test(value) && !phoneRegex.test(value)){
+                    $('#REAL_NBR').parent(".col-sm-4").addClass("has-error");
+                }else{
+                    $('#REAL_NBR').parent(".col-sm-4").removeClass("has-error");
+                }
+            });
+
+
+        });
+
+        function tishi(res) {
+            new $.zui.Messager(res, {
+                type: 'danger',
+                placement: 'center'
+            }).show();
+        }
+
+
+        var uploader = easyUploader({
+            id: "uploader",
+            /* 渲染容器id */
+            accept: '.*',
+            /* 上传类型 */
+            action: urlpath + "/approval/fuJianAdd",
+            /* 上传地址 */
+            autoUpload: true,
+            /* 是否开启自动上传 */
+            crossDomain: true,
+            /* 是否允许跨域 */
+            data: null,
+            /* 上传配置参数，依据dataFormat而不同， */
+            dataFormat: 'formData',
+            /* 上传表单类型，有formData和base64两种 */
+            dataType: 'json',
+            /* 同$.ajax，�默认返回数据格式为json */
+            headers: {
+                // testKey: 'testValue'
+            },
+            /* 上传的请求头部，视需要配置 */
+            maxCount: 5,
+            /* 最大上传文件数 */
+            maxSize: 3,
+            /* 最大上传文件体积，单位M */
+            multiple: true,
+            /* 是否开启多选上传 */
+            name: 'FILEID',
+            /* 上传的文件字段名 */
+            previewWidth: 70,
+            /* 压缩预览图的宽度，样式中高度等于宽度 */
+            processData: false,
+            /* 同$.ajax参数，这里默认为false */
+            successKey: 'code',
+            /* 标识上传成功的key */
+            successValue: 200,
+            /* 标识上传成功对应的value */
+            showAlert: true,
+            /* 是否开启alert提示 */
+            timeout: 0,
+            /* ajax请求超时时间，默认值为0，表示永不超时*/
+            withCredentials: true,
+            /* 是否支持发送 cookie 凭证信息 */
+            beforeUpload: null,
+            /* ajax上传前的回调函数 */
+            onAlert: null, //alert时的钩子
+            onChange: null, // input选中时触发
+            onError: function(err) { //上传失败时的钩子
+                new $.zui.Messager('文件上传失败', {
+                    icon: 'info-sign',
+                    placement: 'center', // 定义显示位置
+                    time: 1500,
+                    type: 'danger'
+                }).show();
+            },
+            onRemove: function(removedFiles, files) {
+                /*
+                 *批量删除时只返回removedFiles:剩下的文件信息,files为空
+                 *单个删除时返回removedFiles，files,removedFiles:剩下的文件信息,files:删除的文件信息
+                 */
+                //console.log(removedFiles);
+                fileid = "";
+                for(var i = 0; i < removedFiles.length; i++) {
+                    fileid += removedFiles[i].ajaxResponse.data[0].FUJIAN_ID + ',';
+                    if(i == removedFiles.length - 1) {
+                        fileid += removedFiles[i].ajaxResponse.data[0].FUJIAN_ID;
+                    }
+                };
+            }, //移除文件时的钩子
+            onSuccess: function(res) { //上传成功时的钩子
+                if(res.code=="200"){
+                    if(fileid.indexOf(res.data[0].FUJIAN_ID) == -1) {
+                        fileid += res.data[0].FUJIAN_ID + ',';
+                    }
+                }else{
+                    new $.zui.Messager('系统暂只支持上传.jpg,.png,.gif,.txt,.pdf,.docx,.doc,.xlsx,.xls,.zip,.ppt,.pptx格式的文件!', {
+                        icon: 'info-sign',
+                        placement: 'center', // 定义显示位置
+                        time: 1500,
+                        type: 'danger'
+                    }).show();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

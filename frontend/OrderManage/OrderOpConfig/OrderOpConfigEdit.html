@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>操作添加</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../../Lib/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../Lib/select/css/select-mania.css" />
+    <link rel="stylesheet" href="../../Lib/jsTree/style.min.css" />
+
+    <style>
+        .treeject {
+            position: absolute;
+            border: 1px solid #3BA4FF;
+            border-radius: 3px;
+            border-top: 0px;
+            -moz-border-radius-topleft: 0px;
+            -moz-border-radius-topright: 0px;
+            overflow: auto;
+            display: none;
+            background: #fff;
+            z-index: 9999;
+            max-height: 230px;
+            width: 91%;
+            font-size: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div style="width: 80%;margin: 40px 100px 0;">
+        <form class="form-horizontal">
+            <div class="form-group">
+                <label for="FLOW_TYPE" class="col-sm-2 control-label">流程</label>
+                <div class="col-sm-6">
+                    <select id="FLOW_TYPE" name="FLOW_TYPE" class="form-control">
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="NOW_STEP" class="col-sm-2 control-label">当前步骤</label>
+                <div class="col-sm-6">
+                    <select id="NOW_STEP" name="NOW_STEP" class="form-control"></select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="OPER" class="col-sm-2 control-label">操作</label>
+                <div class="col-sm-6">
+                    <select id="OPER" name="OPER" class="form-control"></select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="NEXT_STEP" class="col-sm-2 control-label">下一步骤</label>
+                <div class="col-sm-6">
+                    <select id="NEXT_STEP" name="NEXT_STEP" class="form-control"></select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">使用角色</label>
+                <div class="col-sm-6" id="role_select">
+                    <input id="role_text" type="text" readonly class="form-control search-input" placeholder="请选择类型">
+                    <input id="role_id" type="hidden">
+                    <div id="roleTree" class="treeject"></div>
+                </div>
+             </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label" for="ORDER_ID">排序值</label>
+                <div class="col-sm-6">
+                    <input type="text" id="ORDER_ID" name="ORDER_ID" class="form-control">
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script type="text/javascript" src="../../Lib/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="../../Lib/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+    <script type="text/javascript" src="../../Lib/bootstrap-datapicker/bootstrap-datetimepicker.min.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../../Lib/bootstrap-datapicker/bootstrap-datetimepicker.zh-CN.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../../Lib/select/js/select-mania.js"></script>
+    <script type="text/javascript" src="../../Lib/public.js"></script>
+    <script type="text/javascript" src="../../Lib/jsTree/jstree.js"></script>
+    <script type="text/javascript" src="../../Lib/layer/layer.js"></script>
+    <script>
+        var CONFIG_ID = $.url("P_CONFIG_ID");
+        var operation = $.url("operation");
+        $(function () {
+
+            $('#FLOW_TYPE').selectMania({
+                themes: ['green'],
+                placeholder: '请选择',
+                removable: false,
+                ajax: false,
+            });
+            $('#NOW_STEP').selectMania({
+                themes: ['green'],
+                placeholder: '请选择',
+                removable: false,
+                ajax: false,
+            });
+            $('#OPER').selectMania({
+                themes: ['green'],
+                placeholder: '请选择',
+                removable: false,
+                ajax: false,
+            });
+            $('#NEXT_STEP').selectMania({
+                themes: ['green'],
+                placeholder: '请选择',
+                removable: false,
+                ajax: false,
+            });
+
+
+            webapi("/order/getFlowCombo",{},function (res) {
+               var str = "";
+               if(res.length>0){
+                   $.each(res,function (i,item) {
+                       str += "<option value='"+item.ID+"'>"+item.TEXT+"</option>"
+                   });
+                   $("#FLOW_TYPE").append(str);
+                   $("#FLOW_TYPE").selectMania('update');
+               }
+            });
+            webapi("/order/getStepCombo",{},function (res) {
+                var str = "";
+                if(res.length>0){
+                    $.each(res,function (i,item) {
+                        str+="<option value='"+item.ID+"'>"+item.TEXT+"</option>"
+                    });
+                    $("#NOW_STEP").append(str);
+                    $("#NOW_STEP").selectMania('update');
+                }
+            });
+            webapi("/order/getOpCombo",{},function (res) {
+                var str = "";
+                if(res.length>0){
+                    $.each(res,function (i,item) {
+                        str+="<option value='"+item.ID+"'>"+item.TEXT+"</option>"
+                    });
+                    $("#OPER").append(str);
+                    $("#OPER").selectMania('update');
+                }
+            });
+            webapi("/order/getStepCombo",{},function (res) {
+                var str = "";
+                if(res.length>0){
+                    $.each(res,function (i,item) {
+                        str+="<option value='"+item.ID+"'>"+item.TEXT+"</option>"
+                    });
+                    $("#NEXT_STEP").append(str);
+                    $("#NEXT_STEP").selectMania('update');
+                }
+            });
+
+            RoleTree();
+            if(operation == "update") {
+                setTimeout(function(){
+                    getDate();
+                },100);
+
+            }
+        });
+
+        function RoleTree() {
+            var $treepower = $('#roleTree').jstree({
+                'core': {
+                    "multiple": false,
+                    'data': {
+                        "url": urlpath + "/RoleHander/getNRoleTree",
+                        "data": function(node) {
+                            return {
+                                "id": node.id,
+                                "P_ROLE_ID": 0,
+                                "P_KEYWORD": 0
+                            };
+                        }
+                    }
+                }
+            }).bind('activate_node.jstree', function(obj, e) {
+                var ref = $("#roleTree").jstree(true);
+                sel = ref.get_selected();
+                var nodes = $("#roleTree").jstree("get_checked");
+                $("#role_id").val(e.node.id);
+                $("#role_text").val(e.node.text);
+            });
+            $("#role_select").on("blur", "#role_text", function(e) {
+                setTimeout(function() {
+                    $("#roleTree").hide();
+                }, 200)
+            });
+            $("#role_select").on("click", "#role_text", function() {
+                if($("#roleTree")[0].style.display == "none" || $("#roleTree")[0].style.display == "") {
+                    $("#roleTree")[0].style.display = "block";
+                } else if($("#roleTree")[0].style.display == "block") {
+                    $("#roleTree")[0].style.display = "none";
+                }
+            });
+        }
+
+        function formValidate() {
+            if(trim($("#FLOW_TYPE").val())==""){
+                layer.msg("请选择流程");
+                return false;
+            } else if(trim($("#NOW_STEP").val()) == ""){
+                layer.msg("请选择当前步骤");
+                return false;
+            } else if(trim($("#OPER").val()) == ""){
+                layer.msg("请选择操作");
+                return false;
+            } else if (trim($("#NEXT_STEP").val()) == ""){
+                layer.msg("请选择下一步骤");
+                return false;
+            } else if (trim($("#ORDER_ID").val()) == ""){
+                layer.msg("请输入排序值");
+                return false;
+            } else if($("#role_text").val() == "" || $("#role_id").val() == "") {
+                layer.msg("请选择操作角色");
+                return false;
+            }else{
+                layer.msg('提交中', {
+                    icon: 16,
+                    shade: 0.5,
+                    time: false
+                });
+                operation == "add" ? addConfig() : updateConfig();
+                return true;
+            }
+        }
+
+        function addConfig() {
+            var param = {
+                "P_FLOW_ID":$("#FLOW_TYPE").val(),
+                "P_NOW_STEP_ID":$("#NOW_STEP").val(),
+                "P_ROLE_ID":$("#role_id").val(),
+                "P_OPER_ID":$("#OPER").val(),
+                "P_NEXT_STEP_ID":$("#NEXT_STEP").val(),
+                "P_ORDER_ID":$("#ORDER_ID").val()
+            };
+            webapi("/order/ConfigAdd",param,function (res) {
+                layer.closeAll('dialog');
+                if(res.RESULT=="success"){
+                    window.parent.tableRefresh();
+                    window.parent.Close("添加成功！");
+                }else{
+                    layer.alert(res.MSG);
+                    lock = false;
+                }
+            },function (err) {
+                layer.closeAll('dialog');
+                layer.alert("服务器出错！");
+            })
+        }
+
+        function updateConfig() {
+            var param = {
+                "P_CONFIG_ID":CONFIG_ID,
+                "P_FLOW_ID":$("#FLOW_TYPE").val(),
+                "P_NOW_STEP_ID":$("#NOW_STEP").val(),
+                "P_ROLE_ID":$("#role_id").val(),
+                "P_OPER_ID":$("#OPER").val(),
+                "P_NEXT_STEP_ID":$("#NEXT_STEP").val(),
+                "P_ORDER_ID":$("#ORDER_ID").val()
+            };
+            webapi("/order/ConfigUpdate",param,function (res) {
+                layer.closeAll('dialog');
+                if(res.RESULT=="success"){
+                    window.parent.tableRefresh();
+                    window.parent.Close("添加成功！");
+                }else{
+                    layer.alert(res.MSG);
+                    lock=false;
+                }
+            },function (err) {
+                layer.closeAll('dialog');
+                layer.alert("服务器出错！");
+            })
+        }
+
+        function getDate() {
+            var Parmse = {
+                "P_CONFIG_ID": CONFIG_ID
+            }
+            webapi("/order/getConfigInfo", Parmse, function(res) {
+                if(res !=null) {
+                    $("#role_text").val(res.ROLE_NAME);
+                    $("#role_id").val(res.ROLE_ID);
+                    $('#FLOW_TYPE').selectMania('set', [{
+                        value:res.FLOW_ID,
+                        text: res.FLOW_NAME
+                    }]);
+                    $('#NOW_STEP').selectMania('set',[{
+                        value:res.NOW_STEP_ID,
+                        text:res.NOW_STEP
+                    }]);
+                    $('#OPER').selectMania('set',[{
+                        value:res.OPER_ID,
+                        text:res.OPER_NAME
+                    }]);
+                    $('#NEXT_STEP').selectMania('set',[{
+                        value:res.NEXT_STEP_ID,
+                        text:res.NEXT_STEP_NAME
+                    }]);
+                    $('#ORDER_ID').val(res.ORDER_ID);
+                } else {
+                    layer.alert("获取数据失败！");
+                }
+            }, function() {
+                layer.alert("服务器出错！");
+            });
+
+        }
+
+        //回车提交
+        var lock = false; //加个锁防止重复提交
+        function keySubmit() {
+            if(!lock) {
+                lock = formValidate()
+            }
+        }
+    </script>
+</body>
+</html>

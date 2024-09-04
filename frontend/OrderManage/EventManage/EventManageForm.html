@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>工单录入</title>
+		<link rel="stylesheet" href="../../Lib/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+		<link rel="stylesheet" href="../../Lib/layer/theme/default/layer.css">
+		<link rel="stylesheet" href="../../Lib/select/css/select-mania.css" />
+		<link rel="stylesheet" href="../../Lib/bootstrap-datapicker/bootstrap-datetimepicker.min.css" />
+		<link rel="stylesheet" href="../../Lib/select/css/select-mania.css" />
+		<link rel="stylesheet" href="../../Lib/jsTree/style.min.css">
+		<link rel="stylesheet" href="../../Lib/easyUpload/main.css">
+		<link rel="stylesheet" href="../../Lib/font-awesome-4.7.0/css/font-awesome.css">
+		<link rel="stylesheet" href="../../OrderManage/allCss/timeLine.css">
+		<link rel="stylesheet" href="../../Static/Css/changeManage.css">
+		<style>
+			.urgent {
+				display: inline-block;
+				width: 23%;
+				cursor: pointer;
+			}
+			
+			.urgent .label:empty {
+				display: inline-block;
+				width: 65px;
+				height: 15px;
+				position: absolute;
+				background: #E4E4E4;
+				margin-top: 5px;
+			}
+			
+			.urgent span:first-child {
+				font-size: 12px;
+				margin-left: 18px;
+				margin-top: 8px;
+			}
+			
+			.col-form-label {
+				text-align: right;
+			}
+			
+			.form-group {
+				margin-left: 0!important;
+				margin-right: 0!important;
+			}
+			
+			.btn {
+				background: #13a2ff;
+				border: 1px solid #0187dd;
+			}
+			
+			.sf-mf {
+				padding: 15px;
+				border: 1px solid #dadbdf;
+			}
+			
+			.fs_main {
+				padding: 0 15px;
+			}
+			
+			.easy-uploader .btn {
+				color: #ffffff;
+			}
+			
+			thead {
+				background-color: #e8e6e6;
+			}
+			
+			a {
+				cursor: pointer;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="fs_main">
+			<div style="width: 100%;">
+				<div class="floatParent" style="padding:15px">
+					<div class="pageTitle">事件录入</div>
+					<button style="margin-right: 15px;float: right;" class="btn btn-primary" onclick="paperBack()">返回</button>
+					<!--<button style="margin-right: 15px;float: right;" class="btn btn-light" onclick="openHistory()"><i class="fa fa-edit fa-fw"></i>历史工单<span id="createNum" style="color:#b02424 "></span></button>-->
+				</div>
+			</div>
+			<div class="sf-mf">
+				<div class="form-title floatParent">
+					<div class="title-info">基本信息</div>
+				</div>
+				<form id="form1" class="form-horizontal">
+					<div class="form-group">
+						<label for="ORDER_NAME" class="col-sm-2 control-label"><span class="required">事件名称</span></label>
+						<div class="col-sm-5">
+							<input maxlength="30" placeholder="限制只能输入30字" type="text" id="ORDER_NAME" name="ORDER_NAME" class="form-control"></div>
+					</div>
+					<div class="form-group" style="width: 100%;">
+						<label for="ORDER_DSC" class="col-sm-2 control-label"><span class="required">事件详情</span></label>
+						<div class="col-sm-5">
+							<textarea rows="5" maxlength="250" placeholder="限制只能输入250字" id="ORDER_DSC" name="ORDER_DSC" class="form-control"></textarea></div>
+					</div>
+					<div id="SOU" class="form-group">
+						<label for="ORDER_SOURCE" class="col-sm-2 control-label"><span class="required">事件来源</span></label>
+						<div class="col-sm-2">
+							<select id="ORDER_SOURCE" name="ORDER_SOURCE" class="form-control">
+								<option value=""></option>
+							</select>
+						</div>
+						<label for="SYSTEM_NAME" class="control-label col-sm-1"><span class="required">来源系统</span></label>
+						<div class="col-sm-2" id="SystemSelect">
+							<input id="SYSTEM_TEXT" type="text" readonly class="form-control search-input" placeholder="请选择">
+							<input id="SYSTEM_NAME" name="SYSTEM_NAME" type="hidden">
+							<div id="SystemTreeId" style="position:absolute;border:1px solid #3BA4FF;border-radius: 3px;border-top:0px;-moz-border-radius-topleft:0px ;-moz-border-radius-topright: 0px;overflow: auto;display: none;background: #fff;z-index:9999;max-height: 230px;width: 91%;font-size: 10px;"></div>
+						</div>
+					</div>
+					<div id="TP" class="form-group">
+						<label for="ORDER_CLASS" class="col-sm-2 control-label"><span class="required">事件类型</span></label>
+						<div class="col-sm-2">
+							<select id="ORDER_CLASS" name="ORDER_CLASS" class="form-control">
+								<option value=""></option>
+							</select>
+						</div>
+						<label class="col-sm-1 control-label"><span class="required">反馈部门</span></label>
+						<div class="col-sm-2" id="departSelect">
+							<input id="DEPAET_NAME" type="text" readonly class="form-control search-input" placeholder="请选择">
+							<input id="FK_DEPART" name="FK_DEPART" type="hidden">
+							<div id="departTreeId" style="position:absolute;border:1px solid #3BA4FF;border-radius: 3px;border-top:0px;-moz-border-radius-topleft:0px ;-moz-border-radius-topright: 0px;overflow: auto;display: none;background: #fff;z-index:9999;max-height: 230px;width: 90%;font-size: 10px;"></div>
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="CONNECT_USER" class="col-sm-2 control-label"><span class="required">联系人</span></label>
+						<div class="col-sm-2">
+							<input type="text" id="CONNECT_USER" name="CONNECT_USER" class="form-control">
+						</div>
+						<label for="CONNECT_TEL" class="col-sm-1 control-label"><span class="required">联系电话</span></label>
+						<div class="col-sm-2">
+							<input type="text" id="CONNECT_TEL" name="CONNECT_TEL" class="form-control">
+						</div>
+					</div>
+					<div class="form-group">
+						<label for="START_TIME" class="col-sm-2 control-label"><span class="required">发生时间</span></label>
+						<div class="col-sm-2">
+							<div class="input-group date form_date" id="START" data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+								<input class="form-control" size="16" type="text" id="START_TIME" readonly>
+								<span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+								<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+							</div>
+						</div>
+						<label for="EXPET" class="col-sm-1 control-label"><span class="required">期望完成时间</span></label>
+						<div class="col-sm-2">
+							<div class="input-group date form_date" id="EXPET" data-date="" data-date-format="yyyy-mm-dd" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+								<input class="form-control" size="16" type="text" id="EXPET_TIME" readonly>
+								<span class="input-group-addon"><span class="glyphicon glyphicon-remove"></span></span>
+								<span class="input-group-addon"><span class="glyphicon glyphicon-calendar"></span></span>
+							</div>
+						</div>
+					</div>
+					<div class="form-group" style="margin-bottom: 30px;">
+						<label class="col-sm-2 control-label ">紧急程度</label>
+						<div class="col-sm-2">
+							<div id="di" onclick="urgent(4,this)" class="urgent EM_LEVEL"><span>一般</span><br><span class="label label-badge"></span></div>
+							<div onclick="urgent(3,this)" class="urgent EM_LEVEL"><span>较急</span><br><span class="label label-badge"></span></div>
+							<div onclick="urgent(2,this)" class="urgent EM_LEVEL"><span>加急</span><br><span class="label label-badge"></span></div>
+							<div onclick="urgent(1,this)" class="urgent EM_LEVEL"><span>特急</span><br><span class="label label-badge"></span></div>
+							<input type="hidden" id="EMER_LEVEL" name="EM_LEVEL" value="4" class="urgent_input">
+						</div>
+
+						<label style="display: none;" class="col-sm-1 control-label">其他系统工号</label>
+						<div style="display: none;" class="col-sm-2">
+							<input type="text" id="ORTHER_USER_ID" name="ORTHER_USER_ID" class="form-control">
+						</div>
+					</div>
+					<div class="form-group" style="width: 100%;">
+						<label class="col-sm-2 control-label"><span>附件上传</span></label>
+						<div class="col-sm-4">
+							<div id="uploader">
+								<div class="easy-uploader">
+									<div class="btn-box"><span class="btn-select-file btn">选取文件</span><i style="display: none !important;" class="btn-check-all cursor-select checkbox unchecked"></i><input class="input-file" type="file" accept=".*" multiple="multiple" style="display:none;"></div>
+									<ul class="list"></ul>
+								</div>
+							</div>
+						</div>
+					</div>
+					<input type="reset" style="display: none;">
+				</form>
+
+				<div class="form-title floatParent">
+					<div class="title-info">关联工单</div>
+					<div style="float: right">
+						<button type="button" onclick="connectOrder()">添加关联工单</button>
+					</div>
+				</div>
+				<div style="padding: 10px 25px">
+					<table class="table table-bordered">
+						<thead>
+							<tr>
+								<td>ID</td>
+								<td>标题</td>
+								<td style="width: 40%">内容</td>
+								<td>工单类型</td>
+								<td>创建时间</td>
+								<td>创建人</td>
+								<td>操作</td>
+							</tr>
+						</thead>
+						<tbody id="connectBody">
+							<tr id="noneInfo">
+								<td colspan="7" style="text-align: center">暂无关联信息</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+
+				<div style="text-align: center;height: 35px;width: 100%;padding-bottom: 70px">
+					<button class="btn btn-primary" id="orderSave" type="button" data-loading-text="正在提交...">暂存 </button>
+					<button class="btn btn-primary" id="loadingBtn" type="button" data-loading-text="正在提交...">提交 </button>
+					<button style="margin-left: 15px;" class="pageButton btn btn-primary" type="button" onclick="paperBack()">返回</button>
+				</div>
+			</div>
+		</div>
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+		<script src="../../Lib/bootstrap-datapicker/bootstrap-datetimepicker.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../Lib/bootstrap-datapicker/bootstrap-datetimepicker.zh-CN.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../Lib/layer/layer.js"></script>
+		<script src="../../Lib/select/js/select-mania.js"></script>
+		<script src="../../Lib/easyUpload/easyUploader.js"></script>
+		<script src="../../Lib/all.js" type="text/javascript"></script>
+		<script src="../../Lib/public.js"></script>
+		<script src="../../Lib/jsTree/jstree.js"></script>
+		<script type="text/javascript">
+			var YZ_TYPE = [];
+			var fileid = "";
+			var fag;
+			var P_SYSTEM_ID = $.url("P_SYSTEM_ID");
+			var source = $.url("psource");
+			var area_code = $.url("area_code");
+			var CREATE_NUM = "";
+			var USER_NAME = "";
+			var REAL_ACC_NBR = "";
+			var EVENT_ID = $.url("EVENT_ID");
+			$(function() {
+
+				$('#ORDER_SOURCE').selectMania({
+					themes: ['green'],
+					placeholder: '请选择',
+					removable: false,
+					ajax: false,
+				});
+				$('#ORDER_CLASS').selectMania({
+					themes: ['green'],
+					placeholder: '请选择',
+					removable: false,
+					ajax: false,
+				});
+				if(P_SYSTEM_ID != '' || source != '' || area_code != '') {
+					window.sessionStorage.setItem("pageType", "jiekou");
+				}
+				urgent(4, $("#di"));
+				getSelect('TR_BASE_APPLY_XX', 'TYPE', 'ORDER_CLASS');
+				getSelectjquery({
+					"P_EVENT_ID": EVENT_ID,
+				}, 'ORDER_CLASS', '/order/OrderTypeCombo');
+				getSelect('TR_BASE_APPLY_XX', 'SOURCE', 'ORDER_SOURCE');
+				getcreatNum();
+				getDepartTree();
+				getProject('CHILD_PROJECT', 'CHILD_PROJECT');
+				$("#REAL_NBR").on("change", function(e) {
+					var value = e.delegateTarget.value;
+					var mobileRegex = /^(((1[3456789][0-9]{1})|(15[0-9]{1}))+\d{8})$/;
+					var phoneRegex = /^0\d{2,3}-?\d{7,8}$/;
+					if(!mobileRegex.test(value) && !phoneRegex.test(value)) {
+						$('#REAL_NBR').parent(".col-sm-8").addClass("has-error");
+					} else {
+						$('#REAL_NBR').parent(".col-sm-8").removeClass("has-error");
+					}
+				});
+				$.ajax({
+					type: "post",
+					url: urlpath + '/UserHander/getUserInfo',
+					data: {},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all),
+					dataType: 'json',
+					success: function(res) {
+						USER_NAME = res[0].USER_NAME;
+						REAL_ACC_NBR = res[0].REAL_ACC_NBR;
+						$("#SEND_USER").val(USER_NAME);
+						$("#REAL_NBR").val(REAL_ACC_NBR);
+					}
+				});
+				$('#START').datetimepicker({
+					language: 'zh-CN',
+					weekStart: 1,
+					todayBtn: 1,
+					autoclose: 1,
+					todayHighlight: 1,
+					startView: 2,
+					minView: 2,
+					forceParse: 0
+				});
+				$('#EXPET').datetimepicker({
+					language: 'zh-CN',
+					weekStart: 1,
+					todayBtn: 1,
+					autoclose: 1,
+					todayHighlight: 1,
+					startView: 2,
+					minView: 2,
+					forceParse: 0
+				});
+
+				$('#loadingBtn').on('click', function() {
+					var $btn = $(this);
+					$btn.button('loading');
+
+					if(validateForm($btn)) {
+						var connect_ids = getConnectIds();
+						$btn.button('reset');
+						var value = {
+							"P_EVENT_ID": 1020, //--表单流程事件ID
+							"P_SYS_USER_ID": "", //指定工单处理人，没有传空值
+							"P_OPER_ID": "1000", //操作工号
+							"P_FUJIAN_STR": fileid, //处理时上传的附件，附件信息拼接字符
+							"ORDER_NAME": $("#ORDER_NAME").val(),
+							"ORDER_DSC": $("#ORDER_DSC").val(),
+							"SYSTEM_NAME":$("#SYSTEM_TEXT").val(),
+							"SYSTEM_ID": $("#SYSTEM_NAME").val(),
+							"CONNECT_TEL": $("#CONNECT_TEL").val(),
+							"CONNECT_USER": $("#CONNECT_USER").val(),
+							"ORDER_SOURCE": $("#ORDER_SOURCE").selectMania('get')[0].text,
+							"START_TIME": $("#START_TIME").val(),
+							"EXPET_TIME": $("#EXPET_TIME").val(),
+							"ORDER_CLASS": $("#ORDER_CLASS").selectMania('get')[0].text,
+							"FK_DEPART": $("#DEPAET_NAME").val(),
+							"EMER_LEVEL": $("#EMER_LEVEL").val(),
+							"P_RESEND_ID": "",
+							"P_CONNECT_ID": connect_ids
+						}
+						orderAdd(value);
+					}
+				});
+				$('#orderSave').on('click', function() {
+					var $btn = $(this);
+					$btn.button('loading');
+					if(validateForm($btn)) {
+						var connect_ids = getConnectIds();
+						$btn.button('reset');
+						var value = {
+							"P_EVENT_ID": 1020, //--表单流程事件ID
+							"P_SYS_USER_ID": "", //指定工单处理人，没有传空值
+							"P_OPER_ID": "1001", //操作工号
+							"P_FUJIAN_STR": fileid, //处理时上传的附件，附件信息拼接字符
+							"ORDER_NAME": $("#ORDER_NAME").val(),
+							"ORDER_DSC": $("#ORDER_DSC").val(),
+							"SYSTEM_NAME": $("#SYSTEM_TEXT").val(),
+							"SYSTEM_ID": $("#SYSTEM_NAME").val(),
+							"CONNECT_TEL": $("#CONNECT_TEL").val(),
+							"CONNECT_USER": $("#CONNECT_USER").val(),
+							"ORDER_SOURCE": $("#ORDER_SOURCE").selectMania('get')[0].text,
+							"START_TIME": $("#START_TIME").val(),
+							"EXPET_TIME": $("#EXPET_TIME").val(),
+							"ORDER_CLASS": $("#ORDER_CLASS").selectMania('get')[0].text,
+							"FK_DEPART": $("#DEPAET_NAME").val(),
+							"EMER_LEVEL": $("#EMER_LEVEL").val(),
+							"P_RESEND_ID": "",
+							"P_CONNECT_ID": connect_ids
+						}
+						orderSave(value);
+					}
+				});
+				getSystemTree();
+				$("#CONNECT_TEL").blur(function() {
+					checkTel();
+				})
+			});
+
+			function checkTel() {
+				var obj = document.getElementById("CONNECT_TEL");
+				var value = obj.value;
+				var regTel1 = /^(([0\+]\d{2,3}-)?(0\d{2,3})-)(\d{7,8})(-(\d{3,}))?$/.test(value); //带区号的固定电话
+				var reg = /^1[3|4|5|7|8][0-9]{9}$/.test(value);
+				if(value != "") {
+					if(!regTel1 && !reg) {
+						layer.alert("电话号码输入有误！");
+						fas = false;
+						return false;
+					}
+				}
+				fas = true;
+				return true;
+			}
+
+			function validateForm($btn) {
+				var isnull = /^[\s]*$/;
+				var mobileRegex = /^(((1[3456789][0-9]{1})|(15[0-9]{1}))+\d{8})$/;
+				var phoneRegex = /^0\d{2,3}-?\d{7,8}$/;
+				if(isnull.test($("#ORDER_CLASS").val())) {
+					tishi('事件类型不能为空！');
+					$btn.button('reset');
+				} else if(!mobileRegex.test($("#CONNECT_TEL").val()) && !phoneRegex.test($("#CONNECT_TEL").val())) {
+					tishi('联系方式不正确！');
+					$btn.button('reset');
+				} else if(isnull.test($("#ORDER_SOURCE").val())) {
+					tishi('事件来源不能为空！');
+					$btn.button('reset');
+				}else if($("#SYSTEM_NAME").val()==""){
+					tishi('请选择来源系统！');
+					$btn.button('reset');
+				} else if(isnull.test($("#ORDER_NAME").val())) {
+					tishi('事件名称不能为空！');
+					$btn.button('reset');
+				} else if(isnull.test($("#ORDER_DSC").val())) {
+					tishi('事件详情不能为空！');
+					$btn.button('reset');
+				} else if(isnull.test($("#FK_DEPART").val())) {
+					tishi('反馈部门不能为空！');
+					$btn.button('reset');
+				} else if(isnull.test($("#CONNECT_USER").val())) {
+					tishi('联系人不能为空！');
+					$btn.button('reset');
+				} else {
+					return true;
+				}
+			}
+
+			function selectTree(text, url) {
+				loadwindow('450', '400', text, 'cogs', url);
+			}
+			//加载部门树
+			function getSystemTree() {
+				$departTree = $('#SystemTreeId').jstree({
+					'core': {
+						"multiple": false,
+						'data': {
+							"url": urlpath + "/order/GetProsysTree",
+							"data": function(node) {
+								node.id=="#"? "0":node.id;
+								return {
+									"P_PROSYS_ID":node.id,
+								};
+							}
+						}
+					},
+					"plugins": ["search"],
+					"search": {
+						"show_only_matches": true,
+						"show_only_matches_children": true
+					}
+				});
+				$departTree.bind('activate_node.jstree', function(obj, e) {
+					$("#SYSTEM_NAME").val(e.node.id);
+					$("#SYSTEM_TEXT").val(e.node.text);
+				})
+				$("#SystemSelect").on("blur", "#SYSTEM_TEXT", function(e) {
+					setTimeout(function() {
+						$("#SystemTreeId").hide();
+					}, 200)
+				})
+				$("#SystemSelect").on("click", "#SYSTEM_TEXT", function() {
+					if($("#SystemTreeId")[0].style.display == "none" ||
+						$("#SystemTreeId")[0].style.display == "") {
+						$("#SystemTreeId")[0].style.display = "block";
+					} else if($("#SystemTreeId")[0].style.display == "block") {
+						$("#SystemTreeId")[0].style.display = "none";
+					}
+				});
+			}
+			//加载部门树
+			function getDepartTree() {
+				$departTree = $('#departTreeId').jstree({
+					'core': {
+						"multiple": false,
+						'data': {
+							"url": urlpath + "/DepartmentHander/getNDepartTree",
+							"data": function(node) {
+								return {
+									"id": node.id
+								};
+							}
+						}
+					},
+					"plugins": ["search"],
+					"search": {
+						"show_only_matches": true,
+						"show_only_matches_children": true
+					}
+				});
+				$departTree.bind('activate_node.jstree', function(obj, e) {
+					DP_TEXT = e.node.text;
+					DP_VALUE = e.node.id;
+					$("#FK_DEPART").val(DP_VALUE);
+					$("#DEPAET_NAME").val(DP_TEXT);
+				})
+				$("#departSelect").on("blur", "#DEPAET_NAME", function(e) {
+					setTimeout(function() {
+						$("#departTreeId").hide();
+					}, 200)
+				})
+				$("#departSelect").on("click", "#DEPAET_NAME", function() {
+					if($("#departTreeId")[0].style.display == "none" ||
+						$("#departTreeId")[0].style.display == "") {
+						$("#departTreeId")[0].style.display = "block";
+					} else if($("#departTreeId")[0].style.display == "block") {
+						$("#departTreeId")[0].style.display = "none";
+					}
+				});
+			}
+
+			function getSelectjquery(data, useId, url) {
+				webapi(url, data, function(res) {
+					var str = "";
+					if(res.length > 0) {
+						$.each(res, function(i, item) {
+							str += "<option  value=" + item.ID + ">" + item.TEXT + "</option>";
+						});
+						$("#" + useId).append(str);
+						$('#' + useId).selectMania('update');
+					}
+				}, function(err) {
+					layer.alert("获取下拉数据错误,错误信息为" + err);
+				});
+
+			}
+
+			function getSelect(tableName, columnName, useId) {
+				$.ajax({
+					type: 'get',
+					dataType: 'json',
+					url: urlpath + '/ProcessHandler/GetProcessType',
+					data: {
+						"P_TABLE": tableName,
+						"P_COLUMN": columnName
+					},
+					success: function(res) {
+						if(res.length > 0) {
+							var opStr = "<option value=\"\"></option>";
+							$.each(res, function(i, item) {
+								opStr += "<option value=" + item.ID + ">" + item.TEXT + "</option>";
+							});
+							$("#" + useId).html(opStr);
+							$('#' + useId).selectMania('update');
+							fromisok(columnName);
+						}
+					},
+					error: function(err) {
+						alert("获取下拉数据错误,错误信息为" + err);
+					}
+				})
+			}
+
+			function getProject(columnName, useId) {
+				$.ajax({
+					type: 'get',
+					dataType: 'json',
+					url: urlpath + '/ProcessHandler/GetProject',
+					data: {},
+					success: function(res) {
+						if(res.length > 0) {
+							var opStr = "<option value=\"\"></option>";
+							$.each(res, function(i, item) {
+								opStr += "<option value=" + item.ID + ">" + item.TEXT + "</option>";
+							});
+							$("#" + useId).html(opStr);
+
+							fromisok(columnName);
+						}
+					},
+					error: function(err) {
+						layer.alert("获取下拉数据错误,错误信息为" + err);
+					}
+				})
+			}
+			// 根据参数赋值  系统  来源  区域不做选择
+			function fromisok(typename) {
+				if(typename == "SYSTEM") {
+					if(P_SYSTEM_ID != null && P_SYSTEM_ID != "") {
+						var select = document.getElementById("SYSTEM");
+						for(var i = 0; i < select.options.length; i++) {
+							if(select.options[i].value == P_SYSTEM_ID) {
+								$("#SYSTEM").val(P_SYSTEM_ID);
+								$("#SYS").addClass("noshow");
+								break;
+							}
+						}
+					}
+				}
+				if(typename == "SOURCE") {
+					if(source != null && source != "") {
+						var select = document.getElementById("SOURCE");
+						for(var i = 0; i < select.options.length; i++) {
+							if(select.options[i].value == source) {
+								$("#SOURCE").val(source);
+								$("#SOU").addClass("noshow");
+								break;
+							}
+						}
+					}
+				}
+				if(typename == 'TYPE') {
+					if(area_code != null && area_code != "") {
+						$("#AREA").val(area_code);
+						$("#AREA").parent().parent().addClass("noshow");
+					}
+				}
+			}
+
+			function openHistory() {
+				loadwindow('', '', '历史事件', 'cogs', '../../Layout/maintenanceStaff/orderList.html?P_STATE=14', 'fullscreen');
+			}
+
+			var uploader = easyUploader({
+				id: "uploader",
+				/* 渲染容器id */
+				accept: '.jpg,.png,.gif,.txt,.pdf,.docx,.doc,.xlsx,.xls,.zip,.ppt,.pptx',
+				/* 上传类型 */
+				action: urlpath + "/attach/uploadFile",
+				/* 上传地址 */
+				autoUpload: true,
+				/* 是否开启自动上传 */
+				crossDomain: true,
+				/* 是否允许跨域 */
+				data: null,
+				/* 上传配置参数，依据dataFormat而不同， */
+				dataFormat: 'formData',
+
+				/* 上传表单类型，有formData和base64两种 */
+				dataType: 'json',
+				/* 同$.ajax，�默认返回数据格式为json */
+				headers: {
+					// testKey: 'testValue'
+				},
+				/* 上传的请求头部，视需要配置 */
+				maxCount: 5,
+				/* 最大上传文件数 */
+				maxSize: 3,
+				/* 最大上传文件体积，单位M */
+				multiple: true,
+				/* 是否开启多选上传 */
+				name: 'upfile',
+				/* 上传的文件字段名 */
+				previewWidth: 70,
+				/* 压缩预览图的宽度，样式中高度等于宽度 */
+				processData: false,
+				/* 同$.ajax参数，这里默认为false */
+				successKey: 'code',
+				/* 标识上传成功的key */
+				successValue: 200,
+				/* 标识上传成功对应的value */
+				showAlert: true,
+				/* 是否开启alert提示 */
+				timeout: 0,
+				/* ajax请求超时时间，默认值为0，表示永不超时*/
+				withCredentials: true,
+				/* 是否支持发送 cookie 凭证信息 */
+				beforeUpload: null,
+				/* ajax上传前的回调函数 */
+				onAlert: null, //alert时的钩子
+				onChange: null, // input选中时触发
+				onError: function(err) { //上传失败时的钩子
+					layer.msg("文件上传失败");
+				},
+				onRemove: function(removedFiles, files) {
+					/*
+					 *批量删除时只返回removedFiles:剩下的文件信息,files为空
+					 *单个删除时返回removedFiles，files,removedFiles:剩下的文件信息,files:删除的文件信息
+					 */
+					//console.log(removedFiles);
+					fileid = "";
+					for(var i = 0; i < removedFiles.length; i++) {
+						if(fileid.indexOf(removedFiles[i].ajaxResponse.original) == -1) {
+							fileid += removedFiles[i].ajaxResponse.original + '|' + removedFiles[i].ajaxResponse.url + ',';
+						}
+					};
+				}, //移除文件时的钩子
+				onSuccess: function(res) { //上传成功时的钩子
+					if(res.state == "SUCCESS") {
+						if(fileid.indexOf(res.original) == -1) {
+							fileid += res.original + "|" + res.url + ",";
+						}
+					} else {
+						layer.msg('系统暂只支持上传.jpg,.png,.gif,.txt,.pdf,.docx,.doc,.xlsx,.xls,.zip,.ppt,.pptx格式的文件!');
+					}
+				}
+			});
+
+			function tishi(text) {
+				layer.alert(text);
+			}
+
+			function getcreatNum() {
+				$.ajax({
+					type: "post",
+					url: urlpath + "/approval/getApplyCount",
+					data: {
+						"P_TYPE": 1
+					},
+					dataType: 'json',
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					success: function(res) {
+						$("#createNum").text(" " + res.creatNum);
+					}
+				})
+			}
+
+			function urgent(num, obj) {
+				$('.urgent').css("color", "#353535");
+				$('.urgent .label').css("background", "#E4E4E4");
+				$(obj).css("color", "red");
+				var color = "";
+				switch(num) {
+					case 4:
+						color = "#11bae1";
+						break;
+					case 3:
+						color = "orange";
+						break;
+					case 2:
+						color = "#f4e60d";
+						break;
+					case 1:
+						color = "red";
+						break;
+				}
+				$(obj).children(".label").css("background", color);
+				$("#EMER_LEVEL").val(num);
+			}
+
+			function reSet() {
+				fileid = "";
+				var new_files = [];
+				var that = uploader;
+				that.ajax.isReady = false;
+				that.files = new_files;
+				$('.list-item').remove();
+				that.ajax.isReady = true;
+			}
+		</script>
+	</body>
+
+</html>

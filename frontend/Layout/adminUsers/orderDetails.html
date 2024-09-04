@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html xmlns:v-bind="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>事件查看</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Static/Css/timeline.css" />
+		<link rel="stylesheet" href="../../Lib/icon/iconfont.css" />
+		<style>
+			html,
+			body {
+				width: 100%;
+				height: 100%;
+				background-color: #EEEEEE;
+				overflow: hidden;
+			}
+			
+			#app {
+				width: 100%;
+				height: 99%;
+				overflow: auto;
+			}
+			
+			a {
+				color: #000000;
+				text-decoration: none;
+			}
+			
+			a:hover {
+				text-decoration: none;
+			}
+			
+			.container {
+				width: 99%;
+				/*height: 99%;*/
+				background-color: #FFFFFF;
+				border-radius: 10px;
+			}
+			
+			#top {
+				width: 100%;
+				height: 49px;
+				font-size: 22px;
+				line-height: 49px;
+				border-bottom: solid 1px #EEEEEE;
+				position: relative;
+			}
+			
+			.Collection {
+				position: absolute;
+				right: 15px;
+				top: 4px;
+				font-size: 16px;
+				color: rgb(37, 124, 210);
+				cursor: pointer;
+				line-height: 50px;
+			}
+			
+			#bottom {
+				width: 100%;
+				display: flex;
+				height: calc(100% - 40px);
+			}
+			
+			#bottom_left {
+				flex: 0 0 45%;
+				width: 45%;
+				border-right: 1px solid #3ba4ff;
+			}
+			
+			#bottom_right {
+				flex: 1;
+				float: left;
+			}
+			/* 	 #bottom_left table{
+				 margin: 20px auto;
+			 }
+			 
+			 #bottom_left table th,#bottom_left table td{
+				 padding: 5px;
+			 } */
+			
+			#bottom_right_top {
+				width: 100%;
+				height: 71%;
+				overflow: hidden;
+				padding: 0px 15px;
+			}
+			
+			#bottom_right_bottom {
+				width: 100%;
+				height: 25%;
+				min-height: 140px;
+				padding: 10px;
+				padding-left: 2%;
+			}
+			
+			#dsc {
+				width: 90%;
+				height: 69px;
+				border: solid 1px #3ba4ff;
+				border-radius: 5px;
+				margin-left: 30px;
+			}
+			
+			#fbpl {
+				position: relative;
+				width: 100%;
+				height: 30px;
+				margin-top: 10px;
+				text-align: right;
+				padding-right: 55px;
+			}
+			
+			#fbpl a {
+				position: absolute;
+				right: 15px;
+			}
+			
+			.bottom-content {
+				list-style: none;
+				margin: 5px;
+				overflow: auto;
+				height: 95%;
+				margin-left: 10%;
+				margin-right: 5%;
+			}
+			
+			.bottom-item {
+				display: inline-block;
+				padding: 5px;
+				width: 100%;
+			}
+			
+			.title-frist {
+				display: inline-block;
+				width: 100%;
+				height: 20px;
+				line-height: 20px;
+				font-weight: 800;
+				color: rgb(7, 17, 27);
+				font-size: 13px;
+			}
+			
+			.item-title {
+				display: inline-block;
+				width: 135px;
+				height: 20px;
+				line-height: 20px;
+				font-weight: 800;
+				color: rgb(7, 17, 27);
+				font-size: 15px;
+				float: left;
+				/*width: 25%;*/
+			}
+			
+			.icon {
+				margin-right: 5px;
+				color: #3BA4FF;
+				font-size: 18px;
+			}
+			
+			.jinjicss {
+				padding: 2px;
+				border-radius: 5px;
+				background: red;
+				color: #fff;
+			}
+			
+			.errinfo {
+				/*color: red;*/
+			}
+			
+			.item-info {
+				color: rgba(7, 17, 27, 0.7);
+				margin: 14px;
+				line-height: 2em;
+			}
+			
+			.checkincon {
+				color: red;
+			}
+			
+			h4 a {
+				vertical-align: top;
+				color: #145CCD;
+				margin-left: 5px;
+			}
+			
+			.filea {
+				color: black;
+				/* border: 1px black; */
+				/* border: 1px solid #607D8B; */
+				border-radius: 5px;
+				padding: 3px;
+				margin: 3px;
+			}
+			
+			.filea:hover {
+				font-weight: bolder;
+			}
+			
+			.list>header {
+				padding-bottom: 10px;
+				/*border-bottom: 4px solid #e5e5e5;*/
+			}
+			
+			[v-cloak] {
+				display: none;
+			}
+			
+			.knowClass {
+				position: absolute;
+				right: 120px;
+				top: 4px;
+				font-size: 16px;
+				color: rgb(37, 124, 210);
+				cursor: pointer;
+				line-height: 50px;
+			}
+			
+			.active-list {
+				cursor: pointer;
+			}
+			
+			.infospan:hover {
+				color: #3BA4FF;
+			}
+			
+			.filea:hover {
+				text-decoration: none;
+				color: #3BA4FF;
+			}
+			
+			.yi-lan:hover {
+				color: goldenrod;
+			}
+			
+			.knowDiv {
+				padding: 5px 10px;
+				cursor: pointer;
+				color: #145ccd;
+			}
+			
+			.knowDiv:hover {
+				color: #0d3d88;
+				text-decoration: underline;
+			}
+			
+			.textover {
+				position: absolute;
+				left: -46px;
+				top: 48%;
+				display: none;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div v-cloak id="app">
+			<div class="container" style="margin-top: 10px;height: 97%;">
+				<div id="bottom">
+					<div id="bottom_left">
+						<div id="top">
+							<span style="margin-left:10px;line-height: 40px;">事件详细信息</span>
+							<div v-show="pageType!='jiekou'" v-if="scinfo" class="Collection" @click="unCollection"><i :class="{checkincon:scinfo}" class="icon icon-heart" style="font-size: 18px;"></i><span>取消收藏</span></div>
+							<div v-show="pageType!='jiekou'" v-else class="Collection" @click="Collection"><i class="icon icon-heart" style="font-size: 18px;"></i><span>收藏</span></div>
+							<div v-if="tjinfo" class="knowClass" @click="unKnowledge"><i :class="{checkincon:tjinfo}" class="icon icon-signout" style="font-size: 18px;"></i><span>取消知识库关联</span></div>
+							<div v-else class="knowClass" @click="Knowledge"><i class="icon icon-signout" style="font-size: 18px;"></i><span>关联知识</span></div>
+						</div>
+						<ul class="bottom-content">
+							<li v-for="(item,key,i) in orderinfo" class="bottom-item" v-if="key==='附件上传'">
+								<img src="../../Static/Img/gongdan/fujian.png" style="float: left;height: 18px;width: 18px;margin-right: 1%;" /><span v-cloak class="item-title">附件：</span><br />
+								<span v-for="fujian in fujianinfo">
+									<a class="item-info" :href="fujian.FUJIAN_URL" :download="fujian.FUJIAN_NAME" v-if="isImg(fujian.FUJIAN_NAME)">{{fujian.FUJIAN_NAME}}</a><img style="width: 70px;" v-else :src="fujian.FUJIAN_URL" />
+								</span>
+
+								<div style="padding: 10px;">
+									<div v-for="(file,index) in files" style="width: 100%;">
+										<a style="text-decoration: none;" v-cloak class="filea" class="item-info" :href="file.FUJIAN_URL" :download="file.FUJIAN_NAME"><i class="icon icon-file-text-o"></i>{{file.FUJIAN_NAME}}&nbsp;&nbsp;<span>下载</span>&nbsp;&nbsp;</a>
+										<span style="cursor: pointer;margin-right: 10px;text-decoration: none;" v-show="file.FUJIAN_NAME.split('.')[1]=='pdf'||file.FUJIAN_NAME.split('.')[1]=='txt'? false:true" class="yi-lan" @click="yialan(index,file)">预览</span>
+									</div>
+								</div>
+								<div style="margin-left: 5%">
+									<img v-for="img in imgs" data-toggle="lightbox" :src="img.FUJIAN_URL" :data-image="img.FUJIAN_URL" class="img-thumbnail" alt="" width="140">
+								</div>
+							</li>
+							<li  class="bottom-item" v-else-if="key==='工单号'"  v-show="false">
+
+							</li>
+							<li v-show="noshow.indexOf(key)==-1" class="bottom-item" v-else>
+								<div v-cloak class="item-title"><img :src="cssmap[i]" / style="height: 90%;width: 13%;margin-top: -3%;margin-right: 5%;">{{key}}：</div>
+								<div class="" style="float: left;width: 58%;background: rgb(251, 247, 247);"><span :class="{jinjicss:(key==='紧急程度'||key==='事件状态'),errinfo:item==='待处理'}" v-cloak class="item-value">&nbsp;{{item}}&nbsp;</span></div>
+							</li>
+						</ul>
+					</div>
+					<div id="bottom_right">
+						<div id="bottom_right_top">
+							<ul class="nav nav-tabs" style="margin-top: 10px">
+								<li @click="showsf" v-bind:class="[logactive?'active':'']">
+									<a>处理流程</a>
+								</li>
+								<li @click="showsfqu1" v-bind:class="[wayactive?'active':'']" v-show="plinfo1.length>0">
+									<a>评论</a>
+								</li>
+								<li @click="showKs" v-bind:class="[knowactive?'active':'']" v-show="pknowInfo.length>0">
+									<a>相关知识</a>
+								</li>
+								<li @click="showsfqu2" v-bind:class="[methodctive?'active':'']" v-show="plinfo2.length>0"><a >解决办法</a></li>
+							</ul>
+							<div class="track-rcol list" style="max-height:70%; overflow:auto;" v-show="logactive">
+								<div class="track-list">
+									<ul id="lcul" style="">
+										<li v-for="item in LCInfo">
+											<span ref='acp' class="textover" v-if="item.CL_STATE===1">待处理</span>
+											<span ref='acp' class="textover" v-else>已处理</span>
+											<i @mouseover="mouseOver" @mouseleave="mouseLeave" v-if="item.CL_STATE===1" class="node-icon-on"></i>
+											<i @mouseover="mouseOver" @mouseleave="mouseLeave" v-else class="node-icon"></i>
+											<span v-cloak class="time">{{item.TIME_INFO}}</span>
+											<span v-cloak class="txt">{{item.LC_STATE}}</span>
+											<span v-cloak class="txt1">{{item.CZ_USER}}</span>
+											<span v-cloak v-show="item.OPINION" class="op">{{item.OPINION}}</span>
+										</li>
+									</ul>
+								</div>
+							</div>
+							<div style="height:88%;" v-show="wayactive">
+								<ul id="aa" class="" style="list-style: none;overflow: auto;height: 95%;">
+									<li v-for="item in plinfo1">
+										<div class="items items-hover">
+											<div class="item">
+												<div class="item-heading">
+													<div v-cloak class="pull-right"><span class="text-muted">{{item.评论时间}}</span>
+													</div>
+													<div v-cloak class="pull-right label label-success">{{item.infotg}}</div>
+													<h4>
+                                                        <div v-cloak class="label label-success">{{item.INFOTG}}</div><a style="text-decoration: none;" href="###">{{item.评论人}}</a>
+                                                    </h4>
+												</div>
+												<div class="item-content">
+													<div v-cloak class="text" style="padding: 5px 10px;">{{item.处理意见}}</div>
+												</div>
+												<div v-show="item.FJ_NUM>0" class="item-footer" style="padding: 5px 10px;">
+													<i class="icon-file"></i>
+													<span class="text-muted" style="cursor: pointer;" @click="lookfj(item,$event)">附件({{item.FJ_NUM}})
+                                                    </span>
+												</div>
+											</div>
+										</div>
+									</li>
+									<li>
+										<footer v-show="isShow">
+											<ul class="pager" data-ride="pager" id="myPage">
+											</ul>
+										</footer>
+									</li>
+								</ul>
+							</div>
+                            <div style="height:88%;" v-show="methodctive">
+								<ul id="aa" class="" style="list-style: none;overflow: auto;height: 95%;">
+									<li v-for="item in plinfo2">
+									<div class="items items-hover">
+										<div class="item">
+											<div class="item-heading">
+												<div v-cloak class="pull-right"><span class="text-muted">{{item.评论时间}}</span>
+												</div>
+
+												<div v-cloak class="pull-right label label-success">{{item.infotg}}</div>
+												<h4>
+                                                <div v-cloak class="label label-success">{{item.INFOTG}}</div><a style="text-decoration: none;" href="###">{{item.评论人}}</a>
+                                            </h4>
+											</div>
+											<div class="item-content">
+												<div v-cloak class="text" style="padding: 5px 10px;">{{item.处理意见}}</div>
+											</div>
+											<div v-show="item.FJ_NUM>0" class="item-footer" style="padding: 5px 10px;">
+												<i class="icon-file"></i>
+												<span class="text-muted" style="cursor: pointer;" @click="lookfj(item,$event)">附件({{item.FJ_NUM}})</span>
+											</div>
+										</div>
+									</div>
+								</li>
+								<li>
+									<footer v-show="isShow2">
+										<ul class="pager" data-ride="pager" id="myPage2">
+										</ul>
+									</footer>
+								</li>
+								</ul>
+							</div>
+							<div style="height:88%;" v-show="knowactive">
+								<ul class="" style="list-style: none;overflow: auto;height: 80%;">
+									<li v-for="it in pknowInfo">
+										<div class="items items-hover">
+											<div class="item">
+												<div class="item-content">
+													<div @click="opknow(it)" class="knowDiv" v-cloak class="text" style="padding: 5px 10px;cursor:pointer;color: #145ccd;">{{it.TITLE}}</div>
+												</div>
+											</div>
+										</div>
+									</li>
+								</ul>
+							</div>
+						</div>
+						<div id="bottom_right_bottom">
+							<textarea placeholder="我的评论" id="dsc" name="dsc"></textarea>
+							<div id="fbpl">
+								<button onclick="dealWith()" id="btn" class="btn btn-primary-new" style="padding: 6px;border-radius: 5px;">发表评论</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script src="../../Lib/public.js" type="text/javascript"></script>
+		<script src="../../Lib/vue.js"></script>
+		<script type="text/javascript">
+			var id =$.url("p_apply_id");
+			var op_id = 103;
+			function getOrderInfo() {
+				$.ajax({
+					type: "get",
+					url: urlpath + "/approval/getApplyInfo",
+					//        async:true,
+					dataType: 'html',
+					xhrFields: {
+						withCredentials: true
+					},
+					data: {
+						'P_APPLY_ID': id
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					success: function(data) {
+						if(data != null && data.length > 0) {
+							setTimeout(function() {
+								$('#bottom_left').html(data);
+							}, 1000);
+						}
+					},
+					complete: function(data) {}
+				});
+			}
+			//添加评论
+			function dealWith() {
+				$("#btn").attr("disabled", true);
+				if($('#dsc').val() == "") {
+					new $.zui.Messager('请填写评论！', {
+						icon: 'frown',
+						placement: 'center' // 定义显示位置
+					}).show();
+					$("#btn").attr("disabled", false);
+				} else {
+					$.ajax({
+						type: "post",
+						url: urlpath + "/approval/evaluateAdd",
+						//        async:true,
+						dataType: 'json',
+						xhrFields: {
+							withCredentials: true
+						},
+						data: {
+							'P_APPLY_ID': id,
+							'P_TYPE': 2,
+							'P_EVALUATE_DSC': $('#dsc').val()
+						},
+						crossDomain: true == !(document.all), //兼容ie
+						success: function(data) {
+							if(data.result != null && data.result == 'SUCCESS') {
+								new $.zui.Messager('评论成功！', {
+									icon: 'smile',
+									placement: 'center' // 定义显示位置
+								}).show();
+								window.location.reload();
+								$("#btn").attr("disabled", false);
+							} else {
+								new $.zui.Messager('评论失败！', {
+									icon: 'frown',
+									placement: 'center' // 定义显示位置
+								}).show();
+								$("#btn").attr("disabled", false);
+							}
+						}
+					});
+
+				}
+			}
+
+			var vim = new Vue({
+				el: '#app',
+				data: {
+					pageType : window.sessionStorage.getItem("pageType"),
+					urlPath: urlpath,
+					orderinfo: {
+						type: Object
+					},
+					fujianinfo: [],
+					files: [],
+					imgs: [],
+					plinfo1: {
+						type: Object,
+						default: function() {
+							return {}
+						}
+					},
+					plinfo2: {
+						type: Object,
+						default: function() {
+							return {}
+						}
+					},
+					pknowInfo: [],
+					LCInfo: {
+						type: Object
+					},
+					noshow: [
+						'提醒方式', '提醒内容', 'SCORE', 'ISSC', '事件号'
+					],
+					cssmap: [
+						'../../Static/Img/gongdan/renren.png', '../../Static/Img/gongdan/renming.png', '../../Static/Img/gongdan/wenti.png', '../../Static/Img/gongdan/renming.png',
+						'../../Static/Img/gongdan/quyu.png', '../../Static/Img/gongdan/hondianhua.png', '../../Static/Img/gongdan/type.png',
+						'../../Static/Img/gongdan/xitong.png', '../../Static/Img/gongdan/wenti.png', '../../Static/Img/gongdan/xiangqing.png',
+						'../../Static/Img/gongdan/jinji.png', '../../Static/Img/gongdan/shizhong.png', '../../Static/Img/gongdan/zhuangtai.png', '../../Static/Img/gongdan/renming.png',
+						'../../Static/Img/gongdan/depart.png', '../../Static/Img/gongdan/shizhong(2).png'
+					],
+					scinfo: '',
+					tjinfo: '',
+					isShow: false,
+					isShow2: false,
+					logactive: true,
+					wayactive: false,
+					knowactive: false,
+					methodctive:false
+				},
+				created: function() {
+					var that = this;
+					$.ajax({
+						type: "get",
+						url: urlpath + "/approval/getApplyInfo",
+						//        async:true,
+						dataType: 'json',
+						xhrFields: {
+							withCredentials: true
+						},
+						data: {
+							'P_APPLY_ID': id
+						},
+						crossDomain: true == !(document.all), //兼容ie
+						success: function(data) {
+							if(data != null && data.length > 0) {
+								that.orderinfo = data[0];
+								that.scinfo = data[0].ISSC > 0 ? true : false;
+							}
+						},
+						complete: function(data) {}
+					});
+
+					$.ajax({
+						type: "post",
+						url: urlpath + "/approval/getEvaluationInfo",
+						//        async:true,
+						dataType: 'json',
+						xhrFields: {
+							withCredentials: true
+						},
+						data: {
+							'P_APPLY_ID': id,
+							'PAGE': 1,
+							"P_TYPE":1,
+							'recPerPage': 4
+						},
+						crossDomain: true == !(document.all), //兼容ie
+						success: function(data) {
+							if(data.pager.recTotal > 4) {
+								that.isShow = true;
+							}
+							if(data != null && data.data.length > 0) {
+								that.plinfo1 = data.data;
+								if(that.plinfo1.length > 0) {
+									that.showsfqu1();
+								}
+							}
+							setTimeout(function() {
+								var userListPage = $('#myPage').data('zui.pager');
+								userListPage.set(data.pager.page, data.pager.recTotal, data.pager.recPerPage);
+								$('#myPage').on('onPageChange', function(e, state, oldState) {
+									if(state.page !== oldState.page) {
+										var par = {
+											'P_APPLY_ID': id,
+											"P_TYPE":1,
+											'PAGE': state.page,
+											'recPerPage': 4
+										};
+										webapi("/approval/getEvaluationInfo", par, function(res) {
+											if(res != null) {
+												that.plinfo1 = res.data;
+											}
+										});
+									}
+								});
+							}, 1000);
+						}
+					});
+					$.ajax({
+						type: "post",
+						url: urlpath + "/approval/getEvaluationInfo",
+						//        async:true,
+						dataType: 'json',
+						xhrFields: {
+							withCredentials: true
+						},
+						data: {
+							'P_APPLY_ID': id,
+							'PAGE':1,
+							"P_TYPE":2,
+							'recPerPage': 4
+						},
+						crossDomain: true == !(document.all), //兼容ie
+						success: function(data) {
+							if(data.pager.recTotal > 4) {
+								that.isShow2 = true;
+							}
+							if(data != null && data.data.length > 0) {
+								that.plinfo2 = data.data;
+								if(that.plinfo2.length > 0) {
+									that.showsfqu2();
+								}
+							}
+							setTimeout(function() {
+								var userListPage = $('#myPage2').data('zui.pager');
+								userListPage.set(data.pager.page, data.pager.recTotal, data.pager.recPerPage);
+								$('#myPage2').on('onPageChange', function(e, state, oldState) {
+									if(state.page !== oldState.page) {
+										var par = {
+											'P_APPLY_ID': id,
+											"P_TYPE":2,
+											'PAGE': state.page,
+											'recPerPage': 4
+										};
+										webapi("/approval/getEvaluationInfo", par, function(res) {
+											if(res != null) {
+												that.plinfo2 = res.data;
+											}
+										});
+									}
+								});
+							}, 1000);
+						}
+					});
+					$.ajax({
+						type: "post",
+						url: urlpath + "/approval/getApplyLogInfo",
+						data: {
+							'P_APPLY_ID': id
+						},
+						xhrFields: {
+							withCredentials: true
+						},
+						crossDomain: true,
+						success: function(data) {
+							if(data != null && data.length > 0) {
+								that.LCInfo = data;
+							}
+						}
+					});
+					$.ajax({
+						type: 'post',
+						url: urlpath + '/approval/getFujian',
+						data: {
+							"P_TABLE_NAME": "TR_BASE_APPLY",
+							"P_FIELD_ID": id
+						},
+						xhrFields: {
+							withCredentials: true
+						},
+						crossDomain: true == !(document.all), //兼容ie
+						success: function(data) {
+							var filesList = [];
+							var imgsList = [];
+							if(data != null && data.length > 0) {
+								for(var i = 0; i < data.length; i++) {
+									if(that.isImg(data[i].FUJIAN_URL)) {
+										filesList.push(data[i]);
+									} else {
+										imgsList.push(data[i]);
+									}
+								}
+							}
+							that.files = filesList;
+							that.imgs = imgsList;
+						}
+
+					});
+					//判断是否有添加事件至知识库权限
+					$.ajax({
+						type: "post",
+						url: urlpath + "/approval/getKnowledgeApply",
+						//        async:true,
+						dataType: 'json',
+						xhrFields: {
+							withCredentials: true
+						},
+						data: {
+							'P_APPLY_ID': id
+						},
+						crossDomain: true == !(document.all), //兼容ie
+						success: function(data) {
+							if(data.isPower < 1) {
+								$(".knowClass").css("display", "none");
+							} else {
+								that.tjinfo = data.isAdd > 0 ? true : false;
+							}
+						},
+						complete: function(data) {}
+					});
+					$.ajax({
+						type: "post",
+						url: urlpath + "/approval/listApplyToKnowledge",
+						//        async:true,
+						dataType: 'json',
+						xhrFields: {
+							withCredentials: true
+						},
+						data: {
+							'P_APPLY_ID': id
+						},
+						crossDomain: true,
+						success: function(data) {
+							if(data.length>0){
+								that.pknowInfo = data;
+								that.showKs();
+							}
+						},
+						complete: function(data) {}
+					});
+				},
+				methods: {
+					mouseOver:function() {
+						var acps = this.$refs.acp;
+						for(var i = 0; i < acps.length; i++) {
+							acps[i].style.display = 'block';
+						}
+					},
+					// 移出
+					mouseLeave:function() {
+						var acps = this.$refs.acp;
+						for(var i = 0; i < acps.length; i++) {
+							acps[i].style.display = 'none';
+						}
+					},
+					showsf: function() {
+						this.logactive = true;
+						this.knowactive = false;
+                        this.wayactive = false;
+						this.methodctive=false;
+					},
+					showsfqu1: function() {
+						this.logactive = false;
+						this.knowactive = false;
+                        this.wayactive = true;
+						this.methodctive=false;
+					},
+					showsfqu2: function() {
+						this.logactive = false;
+						this.knowactive = false;
+                        this.wayactive = false;
+						this.methodctive=true;
+					},
+					showKs: function() {
+						this.logactive = false;
+						this.knowactive = true;
+                        this.wayactive = false;
+						this.methodctive=false;
+					},
+					getplinfo: function() {
+						webapi();
+					},
+					yialan: function(id, file) {
+						var $this = this;
+						$.ajax({
+							type: "get",
+							url: urlpath + "/approval/FileConversion",
+							data: {
+								'P_FUJIAN_ID': file.FUJIAN_ID,
+								'P_FUJIAN_URL': file.FUJIAN_URL
+							},
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true == !(document.all), //兼容ie
+							success: function(data) {
+								if(data != "") {
+									window.open($this.urlPath + data);
+								} else {
+									alert("路径为空!");
+								}
+							}
+						});
+					},
+					Collection: function() {
+						var that = this;
+						$.ajax({
+							type: 'post',
+							url: urlpath + '/approval/addCollectionInfo',
+							dataType: 'text',
+							data: {
+								"P_ID": id
+							},
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true == !(document.all), //兼容ie
+							success: function(data) {
+								if(data == 'SUCCESS') {
+									that.scinfo = !that.scinfo;
+									new $.zui.Messager('收藏成功！', {
+										icon: 'info-sign',
+										placement: 'center', // 定义显示位置
+									}).show();
+								} else {
+									new $.zui.Messager('收藏失败！', {
+										icon: 'info-sign',
+										placement: 'center', // 定义显示位置
+									}).show();
+								}
+							}
+						});
+					},
+					unCollection: function() {
+						var that = this;
+						new $.zui.Messager('警告：确定取消收藏吗？', {
+							type: 'success',
+							close: false,
+							actions: [{
+									name: 'y',
+									icon: 'ok-sign',
+									text: '确定',
+									action: function() {
+										$.ajax({
+											type: 'post',
+											url: urlpath + '/approval/removeCollectionInfo',
+											dataType: 'text',
+											data: {
+												"P_ID": id
+											},
+											xhrFields: {
+												withCredentials: true
+											},
+											crossDomain: true == !(document.all), //兼容ie
+											success: function(data) {
+												if(data == 'SUCCESS') {
+													that.scinfo = !that.scinfo;
+													new $.zui.Messager('取消收藏成功！', {
+														icon: 'info-sign',
+														placement: 'center', // 定义显示位置
+													}).show();
+												} else {
+													new $.zui.Messager('取消收藏失败！', {
+														icon: 'info-sign',
+														placement: 'center', // 定义显示位置
+													}).show();
+												}
+											}
+										});
+									}
+								},
+								{
+									name: 'n',
+									icon: 'undo',
+									text: '撤销',
+									action: function() { // 点击该操作按钮的回调函数
+										return;
+									}
+								}
+							]
+						}).show();
+					},
+					isImg: function(item) {
+						if(item.toLowerCase().lastIndexOf(".png") != -1 || item.toLowerCase().lastIndexOf(".jpg") != -1 || item.toLowerCase().lastIndexOf(".jpeg") != -1 || item.toLowerCase().lastIndexOf(".gif") != -1) {
+							return false;
+						} else {
+							return true;
+						}
+					},
+					unKnowledge: function() {
+						var that = this;
+						new $.zui.Messager('警告：是否要将事件从知识库移除？', {
+							type: 'success',
+							close: false,
+							actions: [{
+									name: 'y',
+									icon: 'ok-sign',
+									text: '是',
+									action: function() {
+										$.ajax({
+											type: 'post',
+											url: urlpath + '/approval/knowledgeApplyDel',
+											dataType: 'text',
+											data: {
+												"P_APPLY_ID": id
+											},
+											xhrFields: {
+												withCredentials: true
+											},
+											crossDomain: true == !(document.all), //兼容ie
+											success: function(data) {
+												if(data == 'SUCCESS') {
+													that.tjinfo = !that.tjinfo;
+													(new $.zui.ModalTrigger({
+														custom: '<div class="alert alert-success with-icon"><i class="icon-warning-sign"></i><div class="content">已将该事件从知识库移除！</div></div>'
+													})).show();
+												} else {
+													(new $.zui.ModalTrigger({
+														custom: '<div class="alert alert-warning with-icon"><i class="icon-warning-sign"></i><div class="content">' +
+															data + '</div></div>'
+													})).show();
+												}
+											}
+										});
+									}
+								},
+								{
+									name: 'n',
+									icon: 'undo',
+									text: '撤销',
+									action: function() { // 点击该操作按钮的回调函数
+										return;
+									}
+								}
+							]
+						}).show();
+					},
+					Knowledge: function() {
+						loadwindow('', '', '关联到知识库', 'cogs', '../../Layout/adminUsers/addApplyToKnowledge.html?p_apply_id=' + id, 'fullscreen');
+					},
+					lookfj: function(item, obj) {
+						var o = obj.target;
+						if($(o).next(".fileinfo").length != 0) {
+							$(o).parent(".item-footer").children(".fileinfo,footer").toggle();
+							return;
+						}
+						var par = {
+							"P_TABLE_NAME": "TR_BASE_APPLY_LC",
+							"P_FIELD_ID": item.LC_ID
+						};
+						webapi("/approval/getFujian", par, function(res) {
+							if(res != "") {
+								var imgstr = '<div style="margin-bottom: 5px;" class="fileinfo">';
+								var filestr = '<div class="fileinfo">';
+								for(var i = 0; i < res.length; i++) {
+									if(checkimg(res[i].FUJIAN_URL)) {
+										imgstr += '<img id="fj' + res[i].FUJIAN_ID + '" data-toggle="lightbox" src="' + res[i].FUJIAN_URL + '" data-image="' + res[i].FUJIAN_URL + '" class="img-thumbnail" alt="" width="140" height="70">';
+									} else {
+										filestr += '<a class="filea" class="item-info" href="' +res[i].FUJIAN_URL + '" download="' + res[i].FUJIAN_NAME + '"><i class="icon icon-file-text-o"></i>' + res[i].FUJIAN_NAME + '</a>';
+									}
+								}
+								imgstr += '</div>';
+								filestr += '</div>';
+								var str = imgstr + filestr;
+								$(o).parent(".item-footer").append(str);
+								for(var i = 0; i < res.length; i++) {
+									$("#fj" + res[i].FUJIAN_ID).lightbox({
+										image: res[i].FUJIAN_URL
+									});
+								}
+							}
+						})
+					},
+					opknow: function(item) {
+						loadwindow('', '', '查看知识库', 'cogs', '../ordinaryUsers/knowledgeBaseConent.html?itemid=' + item.KNOWLEDGE_ID+ '&itemtypeid='+item.TYPE_ID, 'fullscreen');
+					}
+				}
+			});
+
+			function showimg(obj, url) {
+				$(obj).lightbox({
+					image: urlpath + url
+				});
+			}
+
+			function checkimg(item) {
+				if(item.lastIndexOf(".png") != -1 || item.lastIndexOf(".jpg") != -1 || item.lastIndexOf(".jpeg") != -1 || item.lastIndexOf(".gif") != -1) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		</script>
+	</body>
+
+</html>

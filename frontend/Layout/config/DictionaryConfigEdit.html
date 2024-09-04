@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+	<head>
+		<meta charset="UTF-8">
+		<title>字典管理编辑</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/chosen/chosen.min.css">
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.css">
+		<link rel="stylesheet" href="../../Lib/select/css/select-mania.css" />
+		<link rel="stylesheet" href="../../Lib/jsTree/style.min.css">
+
+		<style>
+			.container-fluid {
+				padding: 10px;
+			}
+			
+			.tips {
+				color: red;
+				font-size: 12px;
+				float: right;
+			}
+			
+			#factory_text {
+				display: none;
+			}
+			
+			html,
+			body {
+				overflow-x: hidden;
+				overflow-y: auto;
+			}
+			
+			input {
+				border: 1px solid #95b8e7;
+				border-radius: 5px;
+			}
+			
+			.font {
+				font-family: "微软雅黑";
+				font-size: 12px;
+				width: 100px;
+			}
+			
+			.pwd_level {
+				float: left;
+				width: 50px;
+				height: 23px;
+				margin-right: 10px;
+				background-color: #eeeeee;
+				text-align: center;
+				color: #fff;
+				line-height: 23px;
+			}
+		</style>
+
+	</head>
+
+	<body>
+
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-2">
+					<div class="panel" style="width: 100%;">
+						<div class="panel-body">
+							<form class="form-horizontal" id="form">
+								<div class="form-group">
+									<label for="P_TYPE_ID" class="col-sm-2 required">字典名称</label>
+									<div class="col-sm-10">
+										<select id="P_TYPE_ID" name="P_TYPE_ID" class="form-control">
+											<option value=""></option>
+										</select>
+									</div>
+								</div>
+
+								<div class="form-group">
+									<label for="P_PROMPT" class="col-sm-2 required">字典标识</label>
+									<div class="col-sm-10">
+										<select id="P_PROMPT" name="P_PROMPT" class="form-control">
+											<option value=""></option>
+										</select>
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="P_TEXTR" class="col-sm-2 required">描述</label>
+									<div class="col-sm-10">
+										<input type="text" class="form-control" id="P_TEXTR" name="P_TEXTR">
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="P_VAL" class="col-sm-2 required">VAL值</label>
+									<div class="col-sm-10">
+										<input type="text" class="form-control" id="P_VAL" name="P_VAL">
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="P_DESCR" class="col-sm-2 ">备注</label>
+									<div class="col-sm-10">
+										<textarea class="form-control" rows="6" placeholder="" id="P_DESCR" name="P_DESCR"></textarea>
+									</div>
+								</div>
+								<button class="btn btn-primary" style="float:left;margin-left: 35%;margin-top: 15px;width: 200px;margin-bottom: 10px" onclick="submitBtn()" type="button" data-loading-text="正在提交...">提交</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/jsTree/jstree.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js"></script>
+		<script src="../../Lib/select/js/select-mania.js"></script>
+		<script src="../../Lib/public.js"></script>
+		<script src="../../Lib/jsTree/jstree.js"></script>
+
+		<script type="text/javascript">
+			var P_ID = $.url("P_ID");
+			var TEXTs = "";
+			var IDs = "";
+			$(function() {
+				$('#P_TYPE_ID').selectMania({
+					themes: ['green'],
+					placeholder: '请选择',
+					removable: false,
+					ajax: false,
+				});
+				$('#P_PROMPT').selectMania({
+					themes: ['green'],
+					placeholder: '请选择',
+					removable: false,
+					ajax: false,
+				});
+				getSelectjquery();
+				$('#P_TYPE_ID').on('change', function(e, params) {
+					var selectID = $("#P_TYPE_ID").find("option:selected").val();
+					getValSelect(selectID);
+				});
+				if(P_ID) {
+					setTimeout(function() {
+						loadInfo();
+					}, 100)
+				}
+			});
+
+			function getValSelect(id) {
+				$.ajax({
+					type: 'get',
+					dataType: 'json',
+					data: {
+						"P_TYPE": id
+					},
+					url: urlpath + '/MyTableController/seletbs',
+					success: function(res) {
+						var str = "";
+						if(res.length > 0) {
+							$.each(res, function(i, item) {
+								str += "<option  value=" + item.ID + ">" + item.TEXT + "</option>";
+							});
+							$("#P_PROMPT").append(str);
+							$('#P_PROMPT').selectMania('update');
+						}
+					},
+					error: function(err) {
+						alert("获取下拉数据错误,错误信息为" + err);
+					}
+				})
+			}
+
+			function getSelectjquery() {
+				$.ajax({
+					type: 'get',
+					dataType: 'json',
+					url: urlpath + '/MyTableController/Seletabda',
+					success: function(res) {
+						var str = "";
+						if(res.length > 0) {
+							$.each(res, function(i, item) {
+								str += "<option  value=" + item.ID + ">" + item.TEXT + "</option>";
+							});
+							$("#P_TYPE_ID").append(str);
+							$('#P_TYPE_ID').selectMania('update');
+						}
+					},
+					error: function(err) {
+						alert("获取下拉数据错误,错误信息为" + err);
+					}
+				})
+			}
+
+			//修改时加载数据
+			function loadInfo() {
+				$.ajax({
+					type: 'get',
+					url: urlpath + '/MyTableController/seledat',
+					dataType: 'json',
+					data: {
+						P_ID: P_ID
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all),
+					success: function(data) {
+						getValSelect(data[0].TABLE_NAME);
+						$('#P_DESCR').val(data[0].DSC);
+						$('#P_VAL').val(data[0].VALUE);
+						$('#P_TEXTR').val(data[0].TEXT);
+						$('#P_PROMPT').selectMania('set', [{
+							value: data[0].COLUMN_NAME,
+							text: data[0].COLUMN_NAME
+						}]);
+						$('#P_TYPE_ID').selectMania('set', [{
+							value: data[0].TABLE_NAME,
+							text: data[0].TABLE_NAME
+						}]);
+					}
+				})
+			}
+
+			function submitBtn() {
+				var P_ParentDepartID = $("#parent_id").val();
+				var P_DepartName = $("#P_DepartName").val();
+				var data = $("#form").serializeArray();
+				var url = "/MyTableController/Intetab";
+				if(P_ID != "") {
+					url = "/MyTableController/ProcessUpdate";
+					data.push({
+						name: "P_ID",
+						value: P_ID
+					})
+				}
+				$.ajax({
+					type: "post",
+					url: urlpath + url,
+					data: data,
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'text',
+					success: function(res) {
+						if(res == "SUCCESS") {
+							new $.zui.Messager('提示消息：提交成功', {
+								type: 'success',
+								placement: 'center'
+							}).show();
+							window.parent.closeTrigger();
+							window.parent.updateGrid(); //刷新列表数据
+						} else {
+							new $.zui.Messager('提示消息：提交失败', {
+								type: 'danger',
+								placement: 'center'
+							}).show();
+						}
+					},
+					error: function(err) {
+
+					}
+				});
+			}
+		</script>
+	</body>
+
+</html>

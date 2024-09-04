@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>我的收藏</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../../Lib/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../Lib/layer/theme/default/layer.css">
+    <link rel="stylesheet" href="../../Lib/font-awesome-4.7.0/css/font-awesome.css">
+    <link rel="stylesheet" href="../../Lib/bootstrap-table/dist/bootstrap-table.css" />
+
+    <style>
+        html{
+            height: 93%;
+        }
+        body{
+            height: 100%;
+        }
+        iframe {
+            width: 100%;
+        }
+        .my-fluid{
+            width: 100%;
+            height: 100%;
+        }
+        .my-nav-top{
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3em;
+            background-color: #ffffff;
+            z-index: 1000;
+        }
+        .my-nav-content{
+            margin-top: 3em;
+            width: 100%;
+            height: 100%;
+        }
+        .tab-pane{
+            height: 100%;
+        }
+        .myTabContent{
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div class="my-fluid">
+        <div class="my-nav-top">
+            <ul id="myTab" class="nav nav-tabs">
+                <li class="active">
+                    <a href="#information" data-toggle="tab">工单收藏</a>
+                </li>
+                <li>
+                    <a href="#appraise" data-toggle="tab">知识库收藏</a>
+                </li>
+            </ul>
+        </div>
+        <div class="my-nav-content">
+            <div id="myTabContent" class="tab-content myTabContent">
+                <div class="tab-pane fade in active" id="information" style="height: 100%">
+                    <iframe id="assets" class="iframeurl" frameborder="0" style="height: 100%" seamless></iframe>
+                </div>
+                <div class="tab-pane fade" id="appraise">
+                    <iframe id="item" class="iframeurl" frameborder="0" style="height: 100%" seamless></iframe>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../Lib/jquery-3.4.1.min.js"></script>
+    <script src="../../Lib/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+    <script src="../../Lib/layer/layer.js"></script>
+    <script src="../../Lib/public.js"></script>
+    <script type="text/javascript" src="../../Lib/all.js"></script>
+    <script>
+        var index = 0;
+
+        $(function () {
+            $("#assets").attr("src","MyCollectOrder.html");
+
+            $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+                // 获取已激活的标签页的名称
+                var target = $(this).attr('href');
+                //设置激活标签对应div的高度
+                $(target).css("height","100%");
+                //重新设置加载对应标签中ifram的src,解决标签切换ifram嵌套页面的显示问题
+                if(target === "#appraise" && index === 0){
+                    $(document).ready(function () {
+                        $("#appraise .iframeurl").attr('src',"KnowledgeCollect.html");
+                        index ++ ;
+                    });
+                }
+            });
+
+        })
+    </script>
+</body>
+</html>

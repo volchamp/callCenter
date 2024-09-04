@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>试卷下发情况</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../../../Lib/bootstrap-3.3.7-dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="../../../Lib/bootstrap-table/dist/bootstrap-table.css" />
+    <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .container-fluid {
+            padding: 5px;
+        }
+
+        .row {
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- 顶部搜索框等操作部分 -->
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-inline">
+                    <div class="input-group">
+                                <span class="input-group-btn">
+                                <button class="btn btn-default" type="button"><span
+                                        class="glyphicon glyphicon-search"></span></button>
+                                </span>
+                        <input type="text" class="form-control" id="searchString" placeholder="请输入姓名查询">
+                    </div>
+                    <button type="button" class="btn btn-primary" id="queryBtn">查 询</button>
+                </div>
+            </div>
+
+        </div>
+        <!-- 主体数据表格等内容部分 -->
+        <div class="mainBody row">
+            <div class="col-md-12">
+                <table id="table"></table>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="../../../Lib/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="../../../Lib/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+    <script type="text/javascript" src="../../../Lib/bootstrap-table/dist/bootstrap-table.js"></script>
+    <script type="text/javascript" src="../../../Lib/bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+    <!--弹框-->
+    <script type="text/javascript" src="../../../Lib/layer/layer.js"></script>
+
+    <script type="text/javascript" src="../../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+    <script type="text/javascript" src="../../../Lib/colResizable-1.6.js"></script>
+    <script type="text/javascript" src="../../../Lib/public.js"></script>
+
+    <script type="application/javascript">
+        var Trigger = new $.zui.ModalTrigger();
+        var P_PAPER_ID = $.url("P_PAPER_ID");
+        $(function() {
+            getTable();
+            $("#queryBtn").click(function() {
+                getTable();
+            });
+            $("#table").colResizable({
+                liveDrag: true, //实时显示滑动位置
+                resizeMode:'overflow', //mode can be 'fit', 'flex' or 'overflow'
+                minWidth: 15, //minimum width value in pixels allowed for a column
+                gripInnerHtml:"<div class='grip'></div>",
+                disabledColumns:[0]
+            });
+        });
+
+        function getTable() {
+            $('#table').bootstrapTable('destroy');
+            g = $('#table').bootstrapTable({
+                url: urlpath + '/exam/getSendExamInfo?P_PAPER_ID='+P_PAPER_ID,
+                method: 'get',
+                contentType: "text/json; charset=UTF-8",
+                queryParamsType: "",
+                sidePagination: 'server', //指定服务器端分页
+                dataType: "json",
+                sortable: true, //是否启用排序
+                sortOrder: "asc", //排序方式
+                sortName: "",
+                pagination: true,
+                pageNumber: 1,
+                pageSize: 10, //单页记录数
+                pageList: [10, 15, 20, 30], //分页步进值
+                clickToSelect: true, //点击选中
+                //得到查询的参数
+                queryParams: function(params) {
+                    //这里的键的名字和控制器的变量名必须一致，这边改动，控制器也需要改成一样的
+                    var temp = {
+                        page: params.pageNumber, //初始化加载第一页，默认第一页
+                        rows: params.pageSize, //每页的记录行数
+                        KEYWORD: $("#searchString").val(),
+                        sort: params.sortName,
+                        order: params.sortOrder
+                    };
+                    return temp;
+                },
+                columns: [{
+                    checkbox: true
+                },
+                    {
+                        field: "USER_NAME",
+                        title: "应考人",
+                        align: 'left',
+                        sortable: true,
+                        width: 300
+                    },
+                    {
+                        field: "IS_EXAM",
+                        title: "考试情况",
+                        align: 'left',
+                        width: 200,
+                        formatter:function (value, row, index) {
+                            if (value==0){
+                                return "<span style='color: red'>未考试</span>";
+                            }else{
+                                return "<span style='color:#66f95b;'>已考试</span>"
+                            }
+                        }
+                    },
+                    {
+                        field: "STATR_TIME",
+                        title: "开始时间",
+                        align: 'left',
+                        width: 110
+                    },
+                    {
+                        field: "END_TIME",
+                        title: "结束时间",
+                        align: 'left',
+                        width: 350
+                    },
+                    {
+                        field: "SCORE",
+                        title: "得分",
+                        align: 'left',
+                        width: 120
+                    }
+                ]
+            });
+        };
+
+        function tableRefresh() {
+            $("#table").bootstrapTable('refresh');
+        }
+    </script>
+</body>
+</html>

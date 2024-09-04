@@ -1,0 +1,69 @@
+.frimg {
+	border: 0px;
+	cursor: pointer;
+}
+
+p{
+	padding: 0px;
+	margin: 0px;
+}
+
+.fl {
+	float: left
+}
+
+.fr {
+	float: right
+}
+.close{
+	opacity:1;
+	line-height:30px;
+}
+/*右下角弹出*/
+
+.dingwe {
+	position: relative;
+}
+
+.tipfloat {
+	display: none;
+	z-index: 999;
+	border: 1px #8e9cde solid;
+	position: absolute;
+	bottom: 5px;
+	right: 17px;
+	/*width: 388px;
+	height: 268px;*/
+	width: 235px;
+    height: 115px;
+	background: #fff
+}
+
+.tipfloat_bt {
+	/*height: 49px;
+	line-height: 49px;*/
+	height: 35px;
+    line-height: 35px;
+	background: #8e9cde;
+	padding: 0px 5px;
+	font-size: 18px;
+	color: #fff;
+}
+
+.xx_nrong {
+	font-size: 14px;
+	color: #333;
+	/*text-align: center;*/
+	padding:10px;
+	line-height: 26px;
+}
+.tipconcent{
+	list-style: none;
+	padding: 0px;
+	margin: 0px;
+}
+.tipconcent li{
+	content: '';
+	clear: both;
+	display: block;
+}

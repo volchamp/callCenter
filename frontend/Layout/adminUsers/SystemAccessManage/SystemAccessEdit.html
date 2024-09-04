@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>系统权限添加</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+    <link rel="stylesheet" href="../../../Lib/zui-1.9.1-dist/dist/lib/chosen/chosen.min.css">
+    <link rel="stylesheet" href="../../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.css">
+    <style>
+        html,
+        body {
+            font-family: "微软雅黑";
+            font-size: 14px;
+            background: #F9F9F9;
+        }
+
+        .container-fluid {
+            padding: 20px;
+        }
+        .nonull{
+            color: red;
+        }
+    </style>
+    <script src="../../../Lib/jquery-3.4.1.min.js"></script>
+    <script src="../../../Lib/zui-1.9.1-dist/dist/lib/chosen/chosen.min.js"></script>
+    <script src="../../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+    <script src="../../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.js" ></script>
+    <script src="../../../Lib/public.js"></script>
+    <script src="../../../Lib/vue.js" type="text/javascript"></script>
+</head>
+<body>
+    <div class="container-fluid" id="app">
+        <div class="row">
+            <div class="col-md-2">
+                <div class="panel" style="width: 550px;">
+                    <div class="panel-body">
+                        <form  id="form">
+                            <div class="form-group">
+                                <label for="System" class="required">系统</label>
+                                <select class="form-control" id="System" name="System"></select>
+                            </div>
+                            <div class="form-group">
+                                <label for="AUT_ID" class="required">授权码</label>
+                                <div class="input-group">
+                                    <input  type="text" class="form-control" id="AUT_ID" name="AUT_ID" readonly placeholder="点击按钮生成获取授权码">
+                                    <span class="input-group-btn">
+                                        <button onclick="getRandomCode(20)" class="btn btn-info" type="button">获取授权码</button>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label for="startTime" class="required">授权开始时间</label>
+                                <input type="text" class="form-control form-datetime" id="startTime" name="startTime" readonly="readonly" placeholder="点击选择一个日期">
+                            </div>
+                            <div class="form-group">
+                                <label for="endTime" class="required">授权结束时间</label>
+                                <input  type="text" class="form-control form-datetime" id="endTime" name="endTime" readonly="readonly" placeholder="点击选择一个日期">
+                            </div>
+                            <div class="form-group">
+                                <label for="effective" class="required">有效时间间隔</label>
+                                <div class="input-group">
+                                    <input  class="form-control" id="effective" name="effective" type="number">
+                                    <span class="input-group-addon">分钟</span>
+                                </div>
+                            </div>
+                            <button style="margin-left: 39%; font-size:18px ;" id="submitpress" class="btn btn-primary" type="button">&#12288;提交&#12288;</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var P_ID = $.url("P_ID");
+        $(function () {
+
+            if(P_ID){
+                loadInfo();
+            }
+
+            $(".form-datetime").datetimepicker({
+                    language:  "zh-CN",
+                    weekStart: 1,
+                    todayBtn:  1,
+                    autoclose: 1,
+                    todayHighlight: 1,
+                    startView: 2,
+                    forceParse: 0,
+                    showMeridian: 1,
+                    format: "yyyy-mm-dd hh:ii"
+            });
+
+            $.ajax({
+                type:'get',
+                url:urlpath+'/ProcessHandler/GetProcessType',
+                data:{
+                    "P_TABLE":"TR_BASE_APPLY_XX",
+                    "P_COLUMN":"SYSTEM"
+                },
+                dataType:'json',
+                async:false,
+                xhrFields: {
+                    withCredentials: true
+                },
+                 crossDomain: true == !(document.all),
+                success:function (res) {
+                    var sysoption = '<option value=""></option>';
+                    for(var i=0;i<res.length;i++){
+                        sysoption+="<option value='"+res[i].ID+"'>"+res[i].TEXT+"</option>"
+                    }
+                    $("#System").html(sysoption);
+                },
+                error:function (err) {
+                    // console.log(err);
+                }
+            });
+
+            $('#submitpress').on('click', function() {
+                //接口在KnowledgeController里
+                var urlStr = "/approval/sysAccessAdd";
+                var data1 = $("#form").serializeArray();
+
+                if(P_ID){
+                    var urlStr = "/approval/sysAccessUpdate";
+                    data1.push({
+                        name:"P_ID",
+                        value:P_ID
+                    });
+                }
+                if(checkData()){
+                    $.ajax({
+                        type:"post",
+                        url:urlpath+urlStr,
+                        async:true,
+                        data:data1,
+                        dataType:'text',
+                        xhrFields: {
+                            withCredentials: true
+                        },
+                        crossDomain: true == !(document.all),
+                        success:function(res){
+                            if(res == "SUCCESS") {
+                                new $.zui.Messager('提示消息：提交成功', {
+                                    type: 'success',
+                                    placement: 'center'
+                                }).show();
+                                //调用父页面上的关闭窗口
+                                window.parent.$.zui.modalTrigger.close();
+                                window.parent.reload();
+                            } else {
+                                new $.zui.Messager('提示消息：提交失败', {
+                                    type: 'danger',
+                                    placement: 'center'
+                                }).show();
+                            }
+                        },
+                        error:function(err){
+                            alert("提交信息时出错了");
+                        }
+                    });
+                };
+
+            });
+
+        });
+
+        function loadInfo() {
+            //接口在KnowledgeController里
+            $.ajax({
+                type:'get',
+                url:urlpath+'/approval/sysAccessGetdata',
+                data:{
+                    "P_ID":P_ID
+                },
+                async:true,
+                dataType:'json',
+                xhrFields: {
+                    withCredentials: true
+                },
+                 crossDomain: true == !(document.all),
+                success:function (res) {
+                    $('#System').val(res[0].SYSTEM_ID);
+                    $('#AUT_ID').val(res[0].AUT_CODE);
+                    $('#startTime').val(res[0].START_TIME);
+                    $('#endTime').val(res[0].END_TIME);
+                    $('#effective').val(res[0].EFFECTIVE_TIME);
+                },
+                error:function (err) {
+                    // console.log(err);
+                }
+            })
+        }
+
+        function checkData() {
+            var system = $("#System").val();
+            var aut_id = $("#AUT_ID").val();
+            var starttime = $("#startTime").val();
+            var endtime = $("#endTime").val();
+            var effective = $("#effective").val();
+            if(system=='' || system==null || system==undefined){
+                new $.zui.Messager('提示消息：系统不能为空！', {
+                    type: 'warning',
+                    placement: 'center'
+                }).show();
+                return false;
+            }
+            if(aut_id=='' || aut_id==null || aut_id==undefined){
+                new $.zui.Messager('提示消息：授权码不能为空！', {
+                    type: 'warning',
+                    placement: 'center'
+                }).show();
+                return false;
+            }
+            if(starttime=='' || starttime==null || starttime==undefined){
+                new $.zui.Messager('提示消息：授权开始时间不能为空！', {
+                    type: 'warning',
+                    placement: 'center'
+                }).show();
+                return false;
+            }
+            if(endtime=='' || endtime==null || endtime==undefined){
+                new $.zui.Messager('提示消息：授权结束时间不能为空！', {
+                    type: 'warning',
+                    placement: 'center'
+                }).show();
+                return false;
+            }
+            if(effective=='' || effective==null || effective==undefined){
+                new $.zui.Messager('提示消息：有效时间间隔不能为空！', {
+                    type: 'warning',
+                    placement: 'center'
+                }).show();
+                return false;
+            }
+            return true;
+        }
+
+        /**
+         *生成不重复的序列值
+         */
+        function getRandomCode(length) {
+            var data = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z", "a", "b", "c", "d", "e", "f", "g", "h", "i", "j", "k", "l", "m", "n", "o", "p", "q", "r", "s", "t", "u", "v", "w", "x", "y", "z"];
+            var nums = "";
+            for (var i = 0; i < length; i++) {
+                var r = parseInt(Math.random() * 61);
+                nums += data[r];
+            }
+            $("#AUT_ID").val(nums);
+        }
+
+
+
+        // /ProcessHandler/GetProcessType?P_TABLE=TR_BASE_APPLY_XX&P_COLUMN=SYSTEM
+        // var czvm = new Vue({
+        //     el:"#app",
+        //     data:{
+        //         system:null,
+        //         aut_id:null,
+        //         startTime:null,
+        //         endTime:null,
+        //         effective:null
+        //     },
+        //     created:function () {
+        //         $.ajax({
+        //             type:'get',
+        //             url:urlpath+'/ProcessHandler/GetProcessType',
+        //             data:{
+        //                 "P_TABLE":"TR_BASE_APPLY_XX",
+        //                 "P_COLUMN":"SYSTEM"
+        //             },
+        //             dataType:'json',
+        //             async:false,
+        //             xhrFields: {
+        //                 withCredentials: true
+        //             },
+        //             crossDomain: true,
+        //             success:function (res) {
+        //                 Vue.component('sySelect',{
+        //                     data:function () {
+        //                         return {slects:res};
+        //                     },
+        //                     props: ['value'],
+        //                     template:`<select v-bind:value="value" v-on:input="$emit('input',$event.target.value)">
+        //                         <option value=""></option>
+        //                         <option v-for="re in slects" :value="re.ID">{{re.TEXT}}</option>
+        //                     </select>`
+        //
+        //                 });
+        //             }
+        //         });
+        //     },
+        //     watch:{
+        //         'endTime':function(val) {
+        //             console.log('endTime:'+this.effective+',effe'+val);
+        //         },
+        //         'effective':function (val) {
+        //             console.log('effective:'+val+',system'+this.system);
+        //         }
+        //     }
+        // });
+    </script>
+</body>
+</html>

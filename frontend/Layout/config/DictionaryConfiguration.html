@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>字典管理</title>
+    <link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+    <link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.css">
+    <link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.css">
+    <link rel="stylesheet" href="../../Lib/select/css/select-mania.css" />
+    <link rel="stylesheet" href="../../Lib/jsTree/style.min.css">
+    <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            margin: 0px;
+        }
+
+        .container-fluid {
+            padding: 10px;
+        }
+        #P_TYPE_ID,#P_PROMPT,#P_TEXTR,#P_VAL{
+            float: right;
+            margin-left: 30px;
+        }
+        th{
+            width: 60px;
+            text-align: center;
+            padding: 0 10px;
+        }
+        td{
+            width: 150px;
+        }
+    </style>
+</head>
+
+<body class="support-ie">
+<div class="container-fluid">
+    <!-- 顶部搜索框等操作部分 -->
+    <div class="topHandle row" style="height: 50px;">
+        <table class="col-md-9">
+            <tr>
+                <th>
+                    字典标识
+                </th>
+                <td>
+                    <select id="P_TYPE_ID"  name="P_TYPE_ID" class="form-control">
+                        <option value=""></option>
+                    </select>
+                </td>
+                <th>
+                    字段标识
+                </th>
+                <td>
+                    <select  id="P_PROMPT" name="P_PROMPT" class="form-control">
+                        <option value=""></option>
+                    </select>
+                </td>
+                <th>
+                    描述
+                </th>
+                <td>
+                    <input type="text" placeholder="请输入描述" style="width: 200px;" class="form-control" id="P_TEXTR" name="P_TEXTR">
+                </td>
+                <th>
+                    VAL值
+                </th>
+                <td>
+                    <input type="text" placeholder="请输入val值" class="form-control" id="P_VAL" name="P_VAL">
+                </td>
+                <td>
+                    <span class="input-group-btn">
+                          <button id="queryBtn" style="margin-left: 10px" onclick="search()" class="btn btn-primary" type="button">查询</button>
+                    </span>
+                </td>
+            </tr>
+        </table>
+        <div class="col-md-3" style="text-align: right;">
+            <button class="btn btn-primary" onclick="add()">新增</button>
+            <button class="btn btn-primary" onclick="update()">修改</button>
+            <button class="btn btn-primary" onclick="del()">删除</button>
+        </div>
+    </div>
+    <!-- 主体数据表格等内容部分 -->
+    <div class="mainBody row" style="position: absolute;width: 100%;bottom: 0px;left: 0px;top: 50px;">
+        <div class="col-md-12" style="height: 100%;">
+            <div id="myJobsDG" class="datagrid datagrid-borderless" style="height: 100%;overflow: auto;border: 1px solid #accdea;">
+                <div class="datagrid-container"></div>
+                <div class="pager"></div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="../../Lib/jquery-3.4.1.min.js" type="text/javascript"></script>
+<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js" type="text/javascript"></script>
+<script src="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js" type="text/javascript"></script>
+<script src="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.js" type="text/javascript"></script>
+<script src="../../Lib/public.js" type="text/javascript"></script>
+<script src="../../Lib/select/js/select-mania.js"></script>
+<!--弹框-->
+<script type="text/javascript" src="../../lib/layer/layer.js"></script>
+<script src="../../Lib/jsTree/jstree.js"></script>
+<script type="text/javascript">
+    var newTrigger = new $.zui.ModalTrigger();
+    var myDataGrid;
+    $(function() {
+        Table();
+        getSelectjquery();
+
+        $('#P_TYPE_ID').on('change', function(e, params) {
+            var selectID = $("#P_TYPE_ID").find("option:selected").val();
+            getValSelect(selectID);
+        });
+    });
+    function getValSelect(id){
+        $.ajax({
+            type: 'get',
+            dataType: 'json',
+            data:{
+                "P_TYPE":id
+            },
+            url: urlpath + '/MyTableController/seletbs',
+            success: function(res) {
+                var str = "";
+                if(res.length > 0) {
+                    $.each(res, function(i, item) {
+                        str += "<option  value=" + item.ID + ">" + item.TEXT + "</option>";
+                    });
+                    $("#P_PROMPT").append(str);
+                    var sele = $('#P_PROMPT').selectMania({
+                        themes: ['green'],
+                        placeholder: '请选择',
+                        removable: false,
+                        ajax: false,
+                    });
+                }
+            },
+            error: function(err) {
+                alert("获取下拉数据错误,错误信息为" + err);
+            }
+        })
+    }
+    function getSelectjquery() {
+        $.ajax({
+            type: 'get',
+            dataType: 'json',
+            url: urlpath + '/MyTableController/Seletabda',
+            success: function(res) {
+                var str = "";
+                if(res.length > 0) {
+                    $.each(res, function(i, item) {
+                        str += "<option  value=" + item.ID + ">" + item.TEXT + "</option>";
+                    });
+                    $("#P_TYPE_ID").append(str);
+                    var sele = $('#P_TYPE_ID').selectMania({
+                        themes: ['green'],
+                        placeholder: '请选择',
+                        removable: false,
+                        ajax: false,
+                    });
+                }
+            },
+            error: function(err) {
+                alert("获取下拉数据错误,错误信息为" + err);
+            }
+        })
+    }
+    function Table() {
+        $('#myJobsDG').datagrid({
+            rowDefaultHeight: 50,
+            height: 'page',
+            checkable: true,
+            sortable: true,
+            showRowIndex: false, //不显示序号
+            checkByClickRow: false,
+            dataSource: {
+                cols: [{
+                    name: '',
+                    label: '',
+                    checkbox: true,
+                    sort: false,
+                    width: 50
+                },
+                    {
+                        name: 'ID',
+                        label: 'ID',
+                        align: 'left',
+                        width: 80,
+                        sort: true
+                    },
+                    {
+                        name: 'TABLE_NAME',
+                        label: '字典名称',
+                        align: 'left',
+                        width: 300,
+                        sort: true
+                    },
+                    {
+                        name: 'COLUMN_NAME',
+                        label: '字典标识',
+                        align: 'left',
+                        width: 250,
+                        sort: true
+                    },
+                    {
+                        name: 'TEXT',
+                        label: '描述',
+                        width: 300,
+                        align: 'left'
+                    },
+                    {
+                        name: 'VAL',
+                        label: 'VAL值',
+                        align: 'left',
+                        width: 150
+                    },
+                    {
+                        name: 'CREATE_USER',
+                        label: '创建人',
+                        width: 150,
+                        align: 'left'
+                    },
+                    {
+                        name: 'CREATE_TIME',
+                        label: '创建时间',
+                        align: 'left',
+                        width: 150,
+                        sort: true
+                    },
+                    {
+                        name: 'DSC',
+                        label: '备注',
+                        align: 'left'
+                    }
+                ],
+                remote: function(params) {
+                    return {
+                        // 请求地址
+                        url: urlpath + '/MyTableController/Seletab',
+                        // 请求类型
+                        type: 'post',
+                        // 数据类型
+                        dataType: 'json',
+                        xhrFields: {
+                            withCredentials: true
+                        },
+                        crossDomain: true == !(document.all), //兼容ie
+                    };
+                }
+            },
+            states: {
+                pager: {
+                    page: 1,
+                    recPerPage: 10
+                },
+                sortBy: {}
+            }
+        });
+        // 获取数据表格实例
+        myDataGrid = $('#myJobsDG').data('zui.datagrid');
+    }
+
+    //新增角色
+    function add() {
+        newTrigger.show({
+            iframe: "DictionaryConfigEdit.html?operation=add",
+            height: $('body').height() * 0.62,
+            width: 780,
+            title: "新增角色"
+        });
+    }
+
+    //更新角色
+    function update() {
+        var data = myDataGrid.getCheckItems();
+        if(data.length < 1) {
+            new $.zui.Messager('请选择需要修改的数据！', {
+                type: 'warning' // 定义颜色主题
+            }).show();
+        } else if(data.length > 1) {
+            new $.zui.Messager('您一次只能处理一条数据！', {
+                type: 'warning' // 定义颜色主题
+            }).show();
+        } else {
+            var PID = data[0].ID;
+             newTrigger.show({
+                iframe: "DictionaryConfigEdit.html?operation=update" + "&P_ID=" + PID,
+                height: $('body').height() * 0.62,
+                width: 780,
+                title: "修改角色"
+            });
+        }
+    }
+
+    //删除角色
+    function del() {
+        var data = myDataGrid.getCheckItems();
+        if(data.length < 1) {
+            new $.zui.Messager('请选择需要删除的数据！', {
+                type: 'warning'
+            }).show();
+        } else {
+            //把要删除的id拼接起来
+            var IDS = '';
+            for(var i = 0; i < data.length; i++) {
+                IDS += data[i].ID + ',';
+            }
+            new $.zui.Messager('是否要删除这' + data.length + '条数据？', {
+                type: 'warning',
+                time: 0,
+                actions: [{
+                    name: 'del',
+                    icon: 'remove-sign',
+                    text: '删除',
+                    action: function() {
+                        $.ajax({
+                            type: "post",
+                            url: urlpath + '/MyTableController/updatab',
+                            data: {
+                                'IDS': IDS
+                            },
+                            xhrFields: {
+                                withCredentials: true
+                            },
+                            crossDomain: true,
+                            dataType: 'text',
+                            success: function(res) {
+                                if(res == "SUCCESS") {
+                                    new $.zui.Messager('删除成功！', {
+                                        type: 'success'
+                                    }).show();
+                                    updateGrid();
+                                } else {
+                                    new $.zui.Messager('删除失败！', {
+                                        type: 'danger'
+                                    }).show();
+                                }
+                            }
+                        });
+                    }
+                }, {
+                    name: 'undo',
+                    icon: 'undo',
+                    text: '取消',
+                    action: function() { // 点击该操作按钮的回调函数
+                        return;
+                    }
+                }]
+            }).show();
+        }
+    }
+
+    function updateGrid() {
+       myDataGrid.setDataSource({
+					remote: function(params) {
+						return {
+							// 请求地址
+							url: urlpath +'/MyTableController/Seletab',
+							// 请求类型
+							type: 'post',
+							// 数据类型
+							dataType: 'json',
+							data: {
+								"page": 1,
+								"recPerPage":10
+							},
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true == !(document.all), //兼容ie
+						};
+					}
+				});
+				myDataGrid.render();
+    }
+    function closeTrigger() {
+        newTrigger.close();
+    }
+
+    function search() {
+        myDataGrid.setDataSource({
+            remote: function(params) {
+                return {
+                    // 请求地址
+                    url: urlpath + "/MyTableController/Seletab",
+                    // 请求类型
+                    type: 'post',
+                    // 数据类型
+                    data:{
+                      'V_ZD_ID': $("#P_TYPE_ID").find("option:selected").val(),
+                      'V_ZD_NAME': $("#P_PROMPT").find("option:selected").val(),
+                      'MS_ID': $("#P_TEXTR").val(),
+                      'VAL_ID': $("#P_VAL").val()
+                    },
+                    dataType: 'json',
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    crossDomain: true
+                };
+            },
+            states: {
+                pager: {
+                    page: 1,
+                    recPerPage: 12
+                }
+            }
+        });
+        myDataGrid.render();
+    }
+</script>
+</body>
+
+</html>

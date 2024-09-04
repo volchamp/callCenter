@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>智能呼叫中心系统</title>
+		<link rel="shortcut icon" href="../Static/Img/favicon.ico" rel="external nofollow" type="image/x-icon" />
+		<link rel="stylesheet" href="../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link href="../Static/Css/float.css" rel="stylesheet" />
+		<style>
+			html,
+			body {
+				overflow: hidden;
+			}
+			
+			a {
+				text-decoration: none !important;
+			}
+			
+			a:active {
+				text-decoration: none;
+			}
+			
+			a:focus {
+				text-decoration: none;
+			}
+			
+			#app {
+				width: 100%;
+				height: 100%;
+			}
+			
+			#nav {
+				background: #3BA4FF;
+				width: 100%;
+				border: 0;
+				border-radius: 0;
+				min-height: 60px;
+				padding: 0 20px;
+			}
+			
+			.logo {
+				font-size: 28px;
+				height: 70px;
+				line-height: 70px;
+			}
+			
+			#nav a,
+			#nav span {
+				color: #fff;
+			}
+			
+			.dropdown-menu a {
+				color: #353535 !important;
+			}
+			.dropdown-menu a:hover {
+				color: #fff !important;
+			}
+			#nav>ul>li {
+				list-style-type: none;
+				float: left;
+				margin-left: 5px;
+				font-size: 15px;
+				height: 70px;
+				line-height: 70px;
+				cursor: pointer;
+				padding: 0 5px;
+			}
+			
+			#nav>ul>li:hover {
+				background: #3280FC;
+			}
+			
+			#nav>ul>li>a:hover {
+				border: 0px;
+			}
+			
+			#nav .navbar-right {
+				margin: 0;
+				/*position: relative;*/
+			}
+			
+			#nav .navbar-right .icon {
+				font-size: 18px;
+			}
+			
+			#nav .navbar-right .label-badge {
+				width: 14px;
+				min-width: 14px;
+				height: 14px;
+				padding: 3px 3px;
+				font-size: 10px;
+				line-height: 10px;
+				border-radius: 50%;
+				position: absolute;
+				left: 45px;
+				top: 10px;
+			}
+			
+			#navMenu li a {
+				font-size: 18px;
+				letter-spacing: 1px;
+				display: inline-block;
+				width: 100%;
+				height: 100%;
+			}
+			
+			iframe {
+				width: 100%;
+				height: calc(100% - 70px);
+			}
+			
+			.alert {
+				margin-bottom: 10px;
+				position: relative;
+			}
+			
+			.alert-dismissable .btn-success {
+				position: relative;
+				top: 5px;
+				left: 452px;
+			}
+			.alert-primary-inverse{
+				background-color: #3BA4FF !important;
+				border-color: #3BA4FF !important;
+			}
+			
+			.changeCss {
+				/*background-color: #3280FC;*/
+				background: #2790ea;
+				color: cyan !important;
+			}
+			
+			.dropdown-menu {
+				left: 0px !important;
+			}
+			
+			[v-cloak] {
+				display: none;
+			}
+			
+			#topbu>li {
+				float: left;
+				list-style: none;
+				margin-left: 15px;
+			}
+			
+			#box {
+				width: 500px;
+				margin: auto;
+				overflow: hidden;
+				line-height: 60px;
+				height: 60px;
+				position: relative;
+			}
+			
+			#box ul li {
+				float: left;
+				display: inline;
+				vertical-align: top;
+				height: 60px;
+				line-height: 60px;
+				padding: 0 12px;
+			}
+			
+			#box ul {
+				position: absolute;
+				padding-left: 0px;
+			}
+			
+			#box span {
+				float: left;
+				height: 100%;
+				line-height: 60px;
+				font-size: 26px;
+				/*background: #ccc;*/
+				width: 30px;
+				text-align: center;
+				cursor: pointer;
+				display: none;
+			}
+			
+			#box span:hover {
+				background: #3280FC;
+			}
+			
+			.menu {
+				float: left;
+				width: 90%;
+				overflow: hidden;
+				height: 60px;
+				position: relative;
+			}
+			
+		</style>
+	</head>
+
+	<body>
+		<div id="app" v-cloak>
+			<div class="container-fluid">
+				<div id="nav">
+					<div style="height: 60px;width:25%;float: left;line-height: 60px;padding-left: 40px;">
+					</div>
+					<div style="height: 60px;width: 12%;float: right;line-height: 60px;">
+						<ul class="navbar-right" id="topbu" style="padding-left: 5px;">
+							<li style="position: relative;display: none;" id="messageShow" >
+								<a href="javaScript:;">
+									<i class="icon icon-bell-alt"></i><span class="label label-badge label-danger" v-text="messageNum"></span> 消息
+								</a>
+							</li>
+							<li class="info dropdown  dropdown-hover">
+								<table class="dropdown-toggle" data-toggle="" >
+									<tr>
+										<td><img onclick="getUserInfo1()" :src="img_url?img_url:img" style="cursor: pointer;" width="40px" height="40px" class="img-circle"></td>
+										<td style="line-height: 1.4; padding: 5px ; text-align: center; font-size: 13px;">
+											<span>{{name}}</span><br>
+											<span>{{depart}}</span>
+										</td>
+									</tr>
+								</table>
+								<ul class="dropdown-menu" role="menu">
+									<li>
+										<a class="action-text" href="javaScript:changepass();">修改密码</a>
+									</li>
+									<li v-if="role=='1225'">
+										<a class="action-text" href="javascript:attendance()">在线状态</a>
+									</li>
+									<li class="divider"></li>
+									<li>
+										<a class="action-text" href="javascript:out()">安全退出</a>
+									</li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+					<div id="box" style="height: 60px;width: 50%;float: right;line-height: 60px;">
+						<span class="prev">＜</span>
+						<div class="menu">
+							<ul class="navbar-right" id="navMenu"></ul>
+						</div>
+						<span class="next">＞</span>
+					</div>
+
+				</div>
+				<iframe id="mainframe" name="mainframe" :src="srcurl" frameborder="0"></iframe>
+			</div>
+		</div>
+		<!--超时和催单-->
+		<div>
+			<div id="tipfloat1" class="tipfloat" data-num="1">
+				<p class="tipfloat_bt">
+					<span class="fl">消息</span>
+					<span id="close1" class="fr close"><img class="frimg" src="../Static/Img/float/guanbi.png"></span>
+				</p>
+				<div class="ranklist">
+					<div class="xx_nrong">
+						<ul id="tipconcent1" class="tipconcent">
+							</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--事件处理完成时-->
+		<div>
+			<div id="tipfloat2" class="tipfloat" data-num="1">
+				<p class="tipfloat_bt">
+					<span class="fl">待办提醒</span>
+					<span id="close2" class="fr close"><img class="frimg" src="../Static/Img/float/guanbi.png"></span>
+				</p>
+				<div class="ranklist">
+					<div class="xx_nrong">
+						<ul id="tipconcent2" class="tipconcent">
+							</ul>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../Lib/jquery-3.4.1.min.js" type="text/javascript"></script>
+		<script src="../Lib/zui-1.9.1-dist/dist/js/zui.min.js" type="text/javascript"></script>
+		<script src="../Lib/public.js" type="text/javascript"></script>
+		<script src="../Lib/layer/layer.js"></script>
+		<script src="../Lib/vue.js" type="text/javascript"></script>
+		<script src="../Lib/float.js" type="text/javascript"></script>
+		<script type="text/javascript">
+			var dmo = "";
+			var ini = 0;
+			var oBox = "";
+			var aSpan = "";
+			var oMenu = "";
+			var oUl = "";
+			var aLi = "";
+			var iW = 0;
+			var newTrigger = new $.zui.ModalTrigger();
+			var icon = ['../Static/Img/iconmenu/gongzuo.png', '../Static/Img/iconmenu/biaoqian (2).png','../Static/Img/iconmenu/see.png', 
+				'../Static/Img/iconmenu/wodeguanzhu.png', '../Static/Img/iconmenu/guanzhu.png', '../Static/Img/iconmenu/peizhi.png', 
+				'../Static/Img/iconmenu/peizhi.png','../Static/Img/iconmenu/peizhi.png','../Static/Img/iconmenu/peizhi.png', 
+				'../Static/Img/iconmenu/peizhi.png', '../Static/Img/iconmenu/peizhi.png','../Static/Img/iconmenu/peizhi.png',
+				'../Static/Img/iconmenu/peizhi.png','../Static/Img/iconmenu/peizhi.png','../Static/Img/iconmenu/peizhi.png',
+				'../Static/Img/iconmenu/peizhi.png','../Static/Img/iconmenu/peizhi.png','../Static/Img/iconmenu/peizhi.png'
+			]
+			$(function() {
+				dmo = window.localStorage.getItem("demo");
+				getNavMenu();
+				getMessage();
+			})
+
+			var vim = new Vue({
+				el: '#app',
+				data: {
+					mframe: "",
+					isRouterAlive: true,
+					srcurl: "",
+					name: "",
+					depart: "",
+					role: "",
+					img_url: "",
+					img: "../Static/Img/photo.jpg",
+					urlPath: urlpath,
+					messageNum: "",
+					html: ""
+				},
+				created: function() {
+					this.getMessageNum();
+					this.getUserInfo();
+				},
+				mounted: function() {},
+
+				methods: {
+					getMessageNum: function() {
+						webapi("/newsController/newsCount", "", function(res) {
+							vim.messageNum = res;
+						});
+					},
+					setting: function() {
+						this.srcurl = '../Layout/attentionSetting.html';
+					},
+					reload: function() {
+						this.isRouterAlive = false;
+						this.$nextTick(function() {
+							this.isRouterAlive = true
+						});
+					},
+					getUserInfo: function() {
+						var V_TOKEN=getCookie("V_TOKEN");
+						if(!V_TOKEN)
+						{
+							V_TOKEN=localStorage.getItem("V_TOKEN");
+						}
+						
+						var _this = this;
+						$.ajax({
+							type: "post",
+							url: urlpath + '/UserHander/getUserInfo',
+							data: {},
+							headers:{
+								token:V_TOKEN
+							},
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true == !(document.all),
+							dataType: 'json',
+							success: function(res) {
+								console.log(res);
+								//_this.img_url = res[0].IMG_URL;
+//								_this.role = res[0].ROLE_NAME;
+								if(res&&res[0])
+								{
+									window.localStorage.setItem("role_id",res[0].role_ID);
+								}
+
+                                _this.role = window.localStorage.getItem("role_id");
+								_this.srcurl = res[0].ROLE_HOME_PAGE;
+								_this.depart = res[0].DEPART_NAME;
+								_this.name = res[0].USER_NAME;
+							}
+						});
+					},
+				},
+				watch: {
+
+				}
+			});
+
+			function reschf() {
+				$.ajax({
+					type: "post",
+					url: urlpath + '/UserHander/getUserInfo',
+					data: {},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all),
+					dataType: 'json',
+					success: function(res) {
+						vim.img_url = res[0].IMG_URL;
+					}
+				});
+			}
+
+			function changepass() {
+				loadwindow('300', '450', '修改密码', 'stack', '../Layout/changePassword.html', '');
+			}
+
+			function getUserInfo1() {
+				newTrigger.show({
+					iframe: '../Layout/userInfo.html',
+					height: 390,
+					width: 400,
+					title: '头像修改'
+				});
+			}
+
+			function out() {
+				if(ini == 0) {
+					new $.zui.Messager('警告：确定退出系统吗？', {
+						type: 'success',
+						close: false,
+						placement: 'top-right', //'top'(默认)|'bottom'|'top-left'|'top-right'|'bottom-left'|'bottom-right'|'center'
+						actions: [{
+								name: 'y',
+								icon: 'ok-sign',
+								text: '确定',
+								action: function() { // 点击该操作按钮的回调函数
+									window.localStorage.clear();
+									window.location.href = "../../";
+								}
+							},
+							{
+								name: 'n',
+								icon: 'undo',
+								text: '撤销',
+								action: function() { // 点击该操作按钮的回调函数
+									ini = ini - 1;
+									return true;
+								}
+							}
+						]
+					}).show();
+					ini = ini + 1;
+					setTimeout(function() {
+						ini = 0
+					}, 4000)
+				}
+			}
+
+			function attendance() {
+				loadwindow('300', '400', '在线状态', 'stack', '../Layout/signIn.html', '');
+			}
+			function getNavMenu() {
+				var V_TOKEN=getCookie("V_TOKEN");
+				if(!V_TOKEN)
+				{
+					V_TOKEN=localStorage.getItem("V_TOKEN");
+				}
+				$.ajax({
+					type: "post",
+					dataType: "json",
+					url: urlpath + '/MenuHander/TopMenuQuery',
+					headers:{
+						token:V_TOKEN
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all),
+					data: {
+						"P_ID": "234"
+					},
+					success: function(res) {
+						for(var r in res) {
+							if(r > 55) {
+								$("#navMenu").append("<li  style='display: none;' id='a" + r + "' class='menuli'><a onfocus='this.blur();' href='" + res[r]["MENU_PATH"] + "' target='mainframe'><img style='margin-right: 5px;height: 36px;width: 36px;' src='" + icon[r] + "'/>" + res[r]["MENU_NAME"] + "</a></li>");
+							} else {
+								$("#navMenu").append("<li id='a" + r + "' class='menuli'><a onfocus='this.blur();' href='" + res[r]["MENU_PATH"] + "' target='mainframe'><img style='margin-right: 5px;height: 36px;width: 36px;' src='" + icon[r] + "'/>" + res[r]["MENU_NAME"] + "</a></li>");
+							}
+						}
+						setTimeout(function() {
+							getbiaoqian();
+						}, 500)
+					},
+					complete: function() {
+						var obj = $('.menuli');
+						if(obj.length > 0) {
+							$(obj[0]).addClass('changeCss');
+						}
+						$('.menuli').bind('click', function() {
+							$('.menuli').removeClass('changeCss');
+							$(this).addClass('changeCss');
+						})
+					},
+					error: function() {
+						new $.zui.Messager('警告：菜单获取失败！', {
+							type: 'danger'
+						}).show();
+					}
+				})
+			}
+
+			function getbiaoqian() {
+				$("#a0").click();
+				oBox = document.getElementById('box');
+				aSpan = oBox.getElementsByTagName('span');
+				oMenu = oBox.getElementsByTagName('div')[0];
+				oUl = oMenu.getElementsByTagName('ul')[0];
+				aLi = oUl.getElementsByTagName('li');
+				iW = 0;
+				for(var i = 0; i < aLi.length; i++) {
+					iW += aLi[i].offsetWidth+2;
+				}
+				oUl.style.width = iW + 'px';
+				oUl.style.right =0;
+				if($(".menu")[0].clientWidth > iW) {
+					aSpan[0].style.display = "none";
+					aSpan[1].style.display = "none"
+				} else {
+					aSpan[0].style.display = "block";
+					aSpan[1].style.display = "block";
+					oUl.style.left =0;
+				}
+				var lleft = oUl.offsetLeft;
+				var uleft = oUl.style.right;
+				if(oMenu.offsetWidth < oUl.offsetWidth) {
+					oUl.style.left = lleft + 'px';
+				}
+				aSpan[0].onclick = function() {
+					var uleft = oUl.style.right;
+					if(parseInt(uleft.substring(0, uleft.length - 2)) >= 0) {
+						oUl.style.left = 0 + 'px';
+					} else {
+						oUl.style.right = (parseInt(uleft.substring(0, uleft.length - 2)) + 600) + 'px';
+					}
+				}
+				aSpan[1].onclick = function() {
+					var uleft = oUl.style.left;
+					if(oMenu.offsetWidth < oUl.offsetWidth) {
+						//ul的宽+ul左移动的像素<=oMenu.offsetWidth  div的宽
+						if((oUl.offsetWidth + parseInt(uleft.substring(0, uleft.length - 2))) <= oMenu.offsetWidth) {
+							oUl.style.left = parseInt(uleft.substring(0, uleft.length - 2)) + 'px';
+						} else {
+							oUl.style.left = (parseInt(uleft.substring(0, uleft.length - 2)) - 600) + 'px';
+						}
+					} else {
+						oUl.style.left = lleft + 'px';
+					}
+				}
+			}
+
+			function openTab(url, dmo) {
+				window.localStorage.setItem("demo", dmo);
+				window.localStorage.setItem("page", url);
+				top.window.location.reload();
+			}
+
+			function getMessage() {
+				var html = "";
+				webapi("/newsController/newsList", "", function(res) {
+					if(res == "") {
+						$('#messageShow').modalTrigger({
+							custom: '<div>暂无消息</div>',
+							title: "新消息",
+							className: "messageModel"
+						});
+						return;
+					}
+					for(var i in res) {
+						html += '<div class="alert alert-primary-inverse alert-dismissable">' +
+							'<div class="content">' +
+							'<h4 style="display:inline-block;margin-bottom:0;">' + res[i]["SEND_NAME"] + '</h4>' +
+							'<span style="float:right;">' + res[i]["SEND_TIME"] + '</span>' +
+							'<hr>' +
+							'<p style="text-indent:2rem;">' + res[i]["CONTENT"] + '</p>' +
+							'</div>' +
+							'<button type="button" class="btn btn-success  btn-sm" data-dismiss="alert" aria-hidden="true"' +
+							'onclick="readMessage(' + res[i]["NEWS_ID"] + ',event)">置为已读</button>' +
+							'</div>';
+					}
+					$('#messageShow').modalTrigger({
+						custom: html,
+						title: "新消息",
+						className: "messageModel"
+					});
+				});
+			}
+
+			function readMessage(newsId, e) {
+				webapi("/newsController/newsEdit", {
+					P_NEWS_ID: newsId
+				}, function(res) {
+					var $elem = $("<span></span>");
+					var x = e.pageX;
+					var y = e.pageY;
+					$elem.css({
+						"color": "#38B03F",
+						"z-index": 9999,
+						"position": "absolute",
+						"select": "none",
+						"font-size": Math.random() * 10 + 10 + "px",
+						"left": (x - 5) + "px",
+						"top": (y - 10) + "px"
+					});
+					$elem.html("<i class='icon icon-smile'></i>已读");
+					clearInterval(anim);
+					var increase = 0;
+					var anim;
+					setTimeout(function() {
+						anim = setInterval(function() {
+							if(++increase == 150) {
+								clearInterval(anim);
+								$elem.remove();
+							}
+							$elem.css({
+								"top": (y - 20 - increase) + "px",
+								"opacity": (150 - increase) / 120
+							});
+						}, 8);
+					}, 70);
+					$("body").append($elem);
+					vim.messageNum = vim.messageNum - 1;
+					if(vim.messageNum == 0) {
+						$(".messageModel .modal-body").append('<div>暂无消息</div>');
+					}
+				});
+			}
+			function closeTrigger() {
+				newTrigger.close();
+			}
+		</script>
+	</body>
+
+</html>

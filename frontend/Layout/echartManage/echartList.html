@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="utf-8" />
+		<title></title>
+		<link rel="stylesheet" href="../../Static/Css/ecahart.css" />
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.css" />
+		<link rel="stylesheet" href="../../Lib/jsTree/style.min.css">
+		<style>
+			html,
+			body {
+				height: 100%;
+				width: 100%;
+				margin: 0px;
+				padding: 0px;
+				font-family: "微软雅黑";
+				overflow: hidden;
+			}
+			
+			#content {
+				overflow: hidden;
+			}
+			
+			.pai-ming>li {
+				clear: both;
+				height: 11%;
+				border-bottom: #16478A 1px dashed;
+				line-height: 120%;
+				padding-bottom: 10%;
+			}
+			
+			.pai-ming {
+				padding-left: 10%;
+			}
+			
+			.mingci {
+				margin-left: -15%;
+				list-style: none;
+				padding-top: 3%;
+			}
+			
+			.mingci li {
+				float: left;
+				width: 20%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="layout">
+			<div class="layout-left">
+				<div class="center-left-top">
+					<div style="display: none;" id="echa1" class="nav-left"></div>
+					<div class="nav-left">
+						<div class="title">
+							<div style="float: left;width: 90%; color: #fff;">部门处理量排名</div>
+						</div>
+						<div style="width: 100%;height: 86%;">
+							<ul id="paiming" class="pai-ming" style="list-style: none;color: #F28F18;padding-right: 4%;height: 88%;margin-top: 0%;overflow: auto;padding-bottom: 2px;">
+							</ul>
+						</div>
+					</div>
+					<div id="content" class="nav-right"></div>
+				</div>
+				<div class="center-left-bottom">
+					<div id="echa3" class="nav-left"></div>
+					<div id="echa4" class="nav-right"></div>
+					<div id="sele" style="margin-left: 88%;">
+						<form id="selecttree" style="position: absolute;width: 9%;margin-top: 8px;">
+							<!--<select class="form-control" id="DeptType" name="DeptType" onclick="departComplete()">								
+							</select>-->
+							<input id="factory_text" type="text" readonly class="form-control search-input" placeholder="请选择部门">
+							<input id="factory_id" type="hidden">
+							<div id="tree" style="overflow: auto;display: none;background: #fff;z-index: 99999;max-height: 230px;width: 165px;"></div>
+						</form>
+						<form style="position: absolute;width: 9%;margin-left: -11%;margin-top: 8px;">
+							<select class="form-control" id="DateType" name="DateType" onclick="departComplete()">
+							</select>
+						</form>
+					</div>
+				</div>
+			</div>
+			<div class="layout-right">
+				<div id="echa2" class="center-right-top">
+				</div>
+
+				<div class="center-right-bottom">
+					<div class="title">
+						<div style="float: left;width: 50%; color: #fff;">部门项目统计</div>
+						<div style="width: 24%;float: right;">
+							<form id="project_select" style="position: absolute;width: 6%;">
+								<!--<select class="form-control" id="DeptInfo" name="DeptInfo" onclick="projectNumber(this.value)">
+								</select>-->
+								<input id="project_text" type="text" readonly class="form-control search-input" placeholder="请选择部门">
+								<input id="project_id" type="hidden">
+								<div id="treeproject" style="overflow: auto;display: none;background: #fff;z-index: 99999;max-height: 230px;width: 165px;font-size: 10px;"></div>
+							</form>
+						</div>
+					</div>
+					<div class="depart-center" onclick="lookList(9)">
+						<div class="textcenter">
+							<div class="font-list">
+								<h2 style="margin-top: 5px;">任务总数</h2></div>
+							<div class="number-list">
+								<h1 style="margin-top: 5px;color: #fff;" id="totalNum" style="color: #fff;"></h1></div>
+							<div class="progress">
+								<div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="depart-center" onclick="lookList(11)">
+						<div class="textcenter">
+							<div class="font-list">
+								<h2 style="margin-top: 5px;">已处理</h2></div>
+							<div class="number-list">
+								<h1 id="haveDoneNum" style="margin-top: 5px;color: #fff;"></h1></div>
+							<div class="progress">
+								<div class="progress-bar progress-bar-success" id="success" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="width: 40%">
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="depart-center" onclick="lookList(10) ">
+						<div class="textcenter">
+							<div class="font-list">
+								<h2 style="margin-top: 5px;">待处理</h2></div>
+							<div class="number-list">
+								<h1 id="unDoNum" style="margin-top: 5px;color: #fff;"></h1></div>
+							<div class="progress">
+								<div class="progress-bar progress-bar-warning" id="warning" role="progressbar" aria-valuenow="4" aria-valuemin="0" aria-valuemax="100" style="width: 10%">
+								</div>
+							</div>
+						</div>
+					</div>
+					<div class="depart-center" onclick="lookList(12)">
+						<div class="textcenter">
+							<div class="font-list">
+								<h2 style="margin-top: 5px;">已逾期</h2></div>
+							<div class="number-list">
+								<h1 id="overtimeNum" style="margin-top: 5px;color: #fff;"></h1></div>
+							<div class="progress">
+								<div class="progress-bar progress-bar-danger" id="danger" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 13%">
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../../Static/Js/myEchars.js"></script>
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.js"></script>
+		<script src="../../Static/Js/yunnan.js"></script>
+		<script src="../../Lib/public.js"></script>
+		<script src="../../Lib/Echarts4.1.0/echarts.min.js"></script>
+		<script src="../../Lib/Echarts4.1.0/echarts-gl.js"></script>
+		<script src="../../Lib/jsTree/jstree.js"></script>
+
+	</body>
+	<script type="text/javascript">
+		var myChart1 = echarts.init(document.getElementById('echa1'));
+		var myChart2 = echarts.init(document.getElementById('echa2'));
+		var myChart4 = echarts.init(document.getElementById('echa4'));
+		var myChart5 = echarts.init(document.getElementById('echa3'));
+		var colors = ['#5793f3', '#d14a61', '#675bba'];
+		var colorList = ['rgba(80,255,80,1)', 'rgba(100,80,240,1)', 'rgba(110,200,180,1)', 'rgba(120,180,150,1)', 'rgba(130,170,255,1)', 'rgba(140,160,250,1)', 'rgba(150,150,150,1)', 'rgba(160,160,160,1)', 'rgba(170,170,170,1)', 'rgba(180,180,180,1)', 'rgba(190,190,190,1)', 'rgba(200,200,200,1)', 'rgba(210,110,120,1)', 'rgba(220,80,180,1)'];
+		var colorsques2 = ['rgba(80,255,80,0.65)', 'rgba(100,80,240,0.65)', 'rgba(110,200,180,0.65)', 'rgba(120,180,150,0.65)', 'rgba(130,170,255,0.65)', 'rgba(140,160,250,0.65)', 'rgba(150,150,150,0.65)', 'rgba(160,160,160,0.65)', 'rgba(170,170,170,0.65)', 'rgba(180,180,180,0.65)', 'rgba(190,190,190,0.65)', 'rgba(200,200,200,0.65)', 'rgba(210,110,120,0.65)', 'rgba(220,80,180,0.65)'];
+		var colorsques3 = ['rgba(80,255,80,0.35)', 'rgba(100,80,240,0.35)', 'rgba(110,200,180,0.35)', 'rgba(120,180,150,0.35)', 'rgba(130,170,255,0.35)', 'rgba(140,160,250,0.35)', 'rgba(150,150,150,0.35)', 'rgba(160,160,160,0.35)', 'rgba(170,170,170,0.35)', 'rgba(180,180,180,0.35)', 'rgba(190,190,190,0.35)', 'rgba(200,200,200,0.35)', 'rgba(210,110,120,0.35)', 'rgba(220,80,180,0.35)'];
+		var colorsques4 = ['rgba(80,255,80,0.05)', 'rgba(100,80,240,0.05)', 'rgba(110,200,180,0.05)', 'rgba(120,180,150,0.05)', 'rgba(130,170,255,0.05)', 'rgba(140,160,250,0.05)', 'rgba(150,150,150,0.05)', 'rgba(160,160,160,0.05)', 'rgba(170,170,170,0.05)', 'rgba(180,180,180,0.05)', 'rgba(190,190,190,0.05)', 'rgba(200,200,200,0.05)', 'rgba(210,110,120,0.05)', 'rgba(220,80,180,0.05)'];
+		var colorfuul = ['#d09949', '#0dcbd6', '#35de74', '#c7a005', '#6a78fb', '#D6C1F5', '#9B833B', '#6F9BBC', '#BFD1AF', '#988BCB', '#AD9598'];
+		var colorfuull = ['#fd4717', '#0590ec', '#58f6f8', '#ff8a00', '#41a8f8', '#5D0AE8', '#F7BC05', '#03345A', '#2C4419', '#360AE8', '#E30D1C'];
+		var applyTrigger = new $.zui.ModalTrigger();
+		var outresult = 4;
+		/*窗体改变刷新页面*/
+		$(window).resize(function() {
+			location.reload();
+		})
+		var TEXT = "";
+		var ID = "";
+		var TEXTs = "";
+		var IDs = "";
+		$(document).ready(function() {
+			questionType();
+			departRanking();
+			Apply();
+			getDate();
+			getMap();
+			if($('body').height() <= 657) {
+				$('.depart-center').css({
+					'margin-top': '0px'
+				})
+			} else if($('body').height() <= 719) {
+				$('.depart-center').css({
+					'margin-top': $('body').height() * 0.03
+				})
+			} else if($('body').height() <= 869) {
+				$('.depart-center').css({
+					'margin-top': $('body').height() * 0.04
+				})
+			} else if($('body').height() <= 898) {
+				$('.depart-center').css({
+					'margin-top': $('body').height() * 0.05
+				})
+			} else {
+				$('.depart-center').css({
+					'margin-top': '8%'
+				})
+			}
+
+			$('#tree').jstree({
+				'core': {
+					"multiple": false,
+					'data': {
+						"url": urlpath + "/CommonHander/getDepartTree.action?lazy",
+						"data": function(node) {
+							return {
+								"id": node.id
+							};
+						}
+					},
+					'themes': {
+						'responsive': true
+					}
+				}
+			}).bind('activate_node.jstree', function(obj, e) {
+				TEXT = e.node.text;
+				ID = e.node.id;
+				$("#factory_id").val(ID);
+				$("#factory_text").val(TEXT);
+				departComplete();
+			}).on('loaded.jstree', function(e, data) {
+				var inst = data.instance;
+				var obj = inst.get_node("5300");
+				TEXT = inst.get_node("5300").text;
+				ID = inst.get_node("5300").id;
+				$("#factory_id").val(ID);
+				$("#factory_text").val(TEXT);
+				inst.select_node(obj);
+			});
+			$("#selecttree").on("blur", "#factory_text", function(e) {
+				$("#factory_id").val(ID);
+				$("#factory_text").val(TEXT);
+				setTimeout(function() {
+					$("#tree").hide();
+				}, 200)
+			})
+			$("#selecttree").on("click", "#factory_text", function() {
+				$("#factory_id").val(ID);
+				$("#factory_text").val(TEXT);
+				if($("#tree")[0].style.display == "none") {
+					$("#tree")[0].style.display = "block";
+				} else if($("#tree")[0].style.display == "block") {
+					$("#tree")[0].style.display = "none";
+				}
+			})
+
+			$('#treeproject').jstree({
+				'core': {
+					"multiple": false,
+					'data': {
+						"url": urlpath + "/CommonHander/getDepartTree.action?lazy",
+						"data": function(node) {
+							return {
+								"id": node.id
+							};
+						}
+					},
+					'themes': {
+						'responsive': true
+					}
+				}
+			}).bind('activate_node.jstree', function(obj, e) {
+				TEXTs = e.node.text;
+				IDs = e.node.id;
+				$("#project_id").val(IDs);
+				$("#project_text").val(TEXTs);
+				projectNumber(IDs);
+			}).on('loaded.jstree', function(e, data) {
+				//console.log(data.instance._model.data);
+				var inst = data.instance;
+				var obj = inst.get_node("5300");
+				TEXTs = inst.get_node("5300").text;
+				IDs = inst.get_node("5300").id;
+				$("#project_id").val(IDs);
+				$("#project_text").val(TEXTs);
+				projectNumber(IDs);
+				inst.select_node(obj);
+			});
+			$("#project_select").on("blur", "#project_text", function(e) {
+				//console.log(e.currentTarget.form.childNodes);
+				$("#factory_id").val(IDs);
+				$("#factory_text").val(TEXTs);
+				setTimeout(function() {
+					$("#treeproject").hide();
+				}, 200)
+			})
+			$("#project_select").on("click", "#project_text", function() {
+				$("#factory_id").val(IDs);
+				$("#factory_text").val(TEXTs);
+				if($("#treeproject")[0].style.display == "none") {
+					$("#treeproject")[0].style.display = "block";
+				} else if($("#treeproject")[0].style.display == "block") {
+					$("#treeproject")[0].style.display = "none";
+				}
+			})
+		})
+
+		//获取时间段下拉框
+		function getDate() {
+			$.ajax({
+				type: "post",
+				url: urlpath + "/ProcessHandler/GetProcessType",
+				data: {
+					'P_TABLE': 'TR_BASE_APPLY_LC',
+					'P_COLUMN': 'DATE'
+				},
+				xhrFields: {
+					withCredentials: true
+				},
+				crossDomain: true == !(document.all), //兼容ie
+				dataType: 'json',
+				success: function(res) {
+					for(var i = res.length - 1; i >= 0; i--) {
+						var option = document.createElement("option");
+						$(option).val(res[i].ID);
+						$(option).text(res[i].TEXT);
+						$("#DateType").append(option);
+					}
+					departComplete();
+				},
+				error: function(res) {
+					// console.log("err");
+				}
+			});
+		}
+
+		//获取部门项目统计
+		function projectNumber(DeptId) {
+			$.ajax({
+				type: "post",
+				url: urlpath + '/approval/getCountNum',
+				data: {
+					P_DEPART_ID: DeptId,
+					P_TYPE: '5'
+				},
+				xhrFields: {
+					withCredentials: true
+				},
+				crossDomain: true == !(document.all), //兼容ie
+				dataType: 'json',
+				success: function(res) {
+					var unDoNum = 0;
+					var haveDoneNum = 0;
+					var overtimeNum = 0;
+					$("#totalNum").text(res[0].TOTAL_NUM);
+					$("#unDoNum").text(res[0].READYDO_NUM);
+					$("#haveDoneNum").text(res[0].HAVEDO_NUM);
+					$("#overtimeNum").text(res[0].OVERTIME_NUM);
+					if(res[0].TOTAL_NUM > 0) {
+						unDoNum = parseInt(res[0].READYDO_NUM) / parseInt(res[0].TOTAL_NUM);
+						haveDoneNum = parseInt(res[0].HAVEDO_NUM) / parseInt(res[0].TOTAL_NUM);
+						overtimeNum = parseInt(res[0].OVERTIME_NUM) / parseInt(res[0].TOTAL_NUM);
+					} else {
+						unDoNum = 1;
+						haveDoneNum = 1;
+						overtimeNum = 1;
+					}
+
+					$("#warning").attr('aria-valuenow', unDoNum * 100);
+					$("#warning").css({
+						width: unDoNum * 100 + '%'
+					})
+					$("#success").attr('aria-valuenow', haveDoneNum * 100);
+					$("#success").css({
+						width: haveDoneNum * 100 + '%'
+					})
+					$("#danger").attr('aria-valuenow', overtimeNum * 100);
+					$("#danger").css({
+						width: overtimeNum * 100 + '%'
+					})
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+					// 错误处理
+				}
+			});
+		}
+		//获取问题类型
+		function questionType() {
+			$.ajax({
+				type: "post",
+				url: urlpath + '/approval/getCountNum',
+				data: {
+					P_DEPART_ID: '85300000000',
+					P_TYPE: '1'
+				},
+				xhrFields: {
+					withCredentials: true
+				},
+				crossDomain: true == !(document.all), //兼容ie
+				dataType: 'json',
+				success: function(result) {
+					var $js = [];
+					var $panged = [];
+					var $pangedType = [];
+					for(var i = 0; i < result.length; i++) {
+						$js = {
+							name: result[i].NAME,
+							value: result[i].VALUE,
+							itemStyle: {
+								borderColor: '#fff',
+								borderWidth: 0,
+								label: {
+									position: 'left'
+								},
+								color: {
+									type: 'linear',
+									x: 0,
+									y: 0,
+									x2: 0,
+									y2: 1,
+									colorStops: [{
+										offset: 0,
+										color: colorfuul[i] // 0% 处的颜色
+									}, {
+										offset: 1,
+										color: colorfuull[i] // 100% 处的颜色
+									}],
+									global: false // 缺省为 false
+								}
+							}
+						};
+						$panged.push(result[i].NAME);
+						$pangedType.push($js);
+						$js = [];
+					}
+					myChart5.setOption({
+						title: {
+							text: ['{a|问题类型}'].join(''),
+							left: -6,
+							top: -6,
+							textStyle: {
+								rich: {
+									a: {
+										color: "#fff",
+										fontSize: 16,
+										borderWidth: 1,
+										borderColor: "#fff",
+										height: 50,
+										width: 750,
+										padding: [0, 20]
+									}
+								}
+							}
+						},
+						tooltip: {
+							trigger: 'item',
+							formatter: "{a} <br/>{b} : {c} ({d}%)"
+						},
+						calculable: true,
+						legend: {
+							data: $panged,
+							orient: 'vertical',
+							x: 'right',
+							y: 70,
+							textStyle: {
+								color: '#3943D0',
+							}
+						},
+						calculable: true,
+						series: [{
+							name: '漏斗图',
+							type: 'funnel',
+							left: '-5%',
+							top: 90,
+							//x2: 80,
+							bottom: 60,
+							width: '80%',
+							// height: {totalHeight} - y - y2,
+							min: 0,
+							max: 100,
+							minSize: '0%',
+							maxSize: '100%',
+							sort: 'ascending',
+							gap: 2,
+							label: {
+								show: true,
+								position: 'inside',
+								textStyle: {
+										color: '#fff'
+									}
+							},
+							labelLine: {
+								length: 10,
+								lineStyle: {
+									width: 1,
+									type: 'solid'
+								}
+							},
+							itemStyle: {
+
+							},
+							emphasis: {
+								label: {
+									fontSize: 20,
+									textStyle: {
+										color: '#3943D0'
+									}
+								}
+							},
+							data: $pangedType
+						}]
+					});
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+					alert('获取问题类型失败！'); // 错误处理
+				}
+			});
+		}
+		//获取申请量统计
+		function Apply() {
+			$.ajax({
+				type: "post",
+				url: urlpath + '/approval/getCountNum',
+				data: {
+					P_DEPART_ID: "",
+					P_TYPE: '2'
+				},
+				xhrFields: {
+					withCredentials: true
+				},
+				crossDomain: true == !(document.all), //兼容ie
+				dataType: 'json',
+				success: function(result) {
+					//console.log(result);
+					var $jsy = [];
+					var $jsx = [];
+					var $jsyx = [];
+					var $js = [];
+					var $js1 = [];
+					var number = 0;
+					var data = [];
+					var color1 = "";
+					var color2 = "";
+					var color3 = "";
+					var color4 = "";
+					var max = 0;
+					for(var i = 0; i < result.length; i++) {
+						if($jsy.indexOf(result[i].DEPART_NAME) == -1) {
+							$jsy.push(result[i].DEPART_NAME);
+						}
+						if($jsx.indexOf(result[i].NAME) == -1) {
+							$jsx.push(result[i].NAME);
+							for(var j = 0; j < result.length - 1; j++) {
+								if(result[i].NAME == result[j].NAME) {
+									data.push(result[j].VALUE);
+								}
+								if(max < result[j].VALUE) {
+									max = result[j].VALUE;
+								}
+							}
+
+							color2 = colorsques2[i];
+							color3 = colorsques3[i];
+							color4 = colorsques4[i];
+							$js1 = {
+								name: result[i].NAME,
+								type: 'line',
+								center: ['50%', '60%'],
+								symbol: 'circle',
+								symbolSize: 5,
+								areaStyle: {
+									normal: {
+										color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+											offset: 0,
+											color: color2
+										}, {
+											offset: 0.34,
+											color: color3
+										}, {
+											offset: 1,
+											color: color4
+										}])
+									}
+								},
+								itemStyle: {
+									normal: {
+										color: function(params) {
+											return colorList[params.seriesIndex];
+										},
+										label: {
+											show: true
+										}
+									}
+								},
+								data: data,
+								axisLine: {
+									lineStyle: {
+										color: '#193e70',
+										width: 1,
+									}
+								}
+							};
+							$js.push($js1);
+							$js1 = [];
+							data = [];
+						}
+					}
+					max = max + 2;
+					myChart2.setOption({
+						title: {
+							text: ['{a|申请量统计}'].join(''),
+							left: -6,
+							top: -6,
+							textStyle: {
+								rich: {
+									a: {
+										color: "#fff",
+										fontSize: 16,
+										borderWidth: 1,
+										borderColor: "#15478a",
+										height: 50,
+										width: 750,
+										padding: [0, 20]
+									}
+								}
+							}
+						},
+						calculable: false,
+						grid: {
+							bottom: 30,
+							top: 90
+						},
+						legend: {
+							textStyle: {
+								fontSize: 12, //字体大小
+								color: '#3943D0' //字体颜色
+							},
+							icon: "rect",
+							x: 'center',
+							y: 60,
+							data: $jsx,
+							axisLabel: {
+								textStyle: {
+									color: "#ccc"
+								}
+							}
+						},
+						xAxis: [{
+							type: 'category',
+							axisLabel: {
+								show: true,
+								textStyle: {
+									color: '#ccc'
+								},
+								rotate: 45
+							},
+							data: $jsy,
+							axisLine: {
+								lineStyle: {
+									color: '#193e70',
+									width: 1, //这里是为了突出显示加上的
+								}
+							}
+
+						}],
+						yAxis: [{
+							type: 'value',
+							name: '个',
+							min: 0,
+							max: max,
+							top: 6,
+							position: 'left',
+							axisLine: {
+								lineStyle: {
+									color: colors[2]
+								}
+							},
+							axisLabel: {
+								formatter: '{value}',
+								top: 8
+							},
+							splitLine: {
+								show: true,
+								lineStyle: {
+									color: '#315070',
+									width: 1,
+									type: 'solid'
+								}　　
+							}
+						}],
+						series: $js
+					});
+
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+					alert('获取申请量统计失败！'); // 错误处理
+				}
+			});
+		}
+
+		//获取部门排名
+		function departRanking() {
+			$.ajax({
+				type: "post",
+				url: urlpath + '/approval/getCountNum',
+				data: {
+					P_DEPART_ID: '85300000000',
+					P_TYPE: '3'
+				},
+				xhrFields: {
+					withCredentials: true
+				},
+				crossDomain: true == !(document.all), //兼容ie
+				dataType: 'json',
+				success: function(result) {
+					var html = "";
+					for(var i = 0; i < result.length; i++) {
+						if(result[i].PMBH < 0) {
+							html += '<li><ul class="mingci"><li style="width: 9%;">0' + (i + 1) + '</li><li style="width: 42%;color: #0ccce4;">' + result[i].DEPART_NAME +
+								'</li><li style="width: 30%;color: #0ccce4;">' + result[i].SL + '</li><li style="width: 15%;color: #0ccce4;">' + result[i].PM + '名</li>' +
+								'<li style="width: 4%;"><img src="../../Static/Img/gongdan/jiantoushangsheng (green).png"></li></ul></li>';
+						} else if(result[i].PMBH > 0) {
+							html += '<li><ul class="mingci"><li style="width: 9%;">0' + (i + 1) + '</li><li style="width: 42%;color: #0ccce4;">' + result[i].DEPART_NAME +
+								'</li><li style="width: 30%;color: #0ccce4;">' + result[i].SL + '</li><li style="width: 15%;color: #0ccce4;">' + result[i].PM + '名</li>' +
+								'<li style="width: 4%;"><img src="../../Static/Img/gongdan/jiantouxiajiang (red).png"></li></ul></li>';
+						} else {
+							html += '<li><ul class="mingci"><li style="width: 9%;">0' + (i + 1) + '</li><li style="width: 42%;color: #0ccce4;">' + result[i].DEPART_NAME +
+								'</li><li style="width: 30%;color: #0ccce4;">' + result[i].SL + '</li><li style="width: 15%;color: #0ccce4;">' + result[i].PM + '名</li>' +
+								'<li style="width: 4%;"></li></ul></li>';
+						}
+
+					}
+					$("#paiming").html(html);
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+					alert('获取问题类型失败！'); // 错误处理
+				}
+			});
+		}
+		//部门处理时长
+		function departComplete() {
+			var dateId = $("#DateType").val()
+			$.ajax({
+				type: "post",
+				url: urlpath + '/approval/getCountNum',
+				data: {
+					P_TIME: dateId,
+					P_DEPART_ID: ID,
+					P_TYPE: '4'
+				},
+				xhrFields: {
+					withCredentials: true
+				},
+				crossDomain: true == !(document.all), //兼容ie
+				dataType: 'json',
+				success: function(result) {
+					var $jsy = [];
+					var $jsx = [];
+					for(var i = 0; i < result.length; i++) {
+						$jsy.push(result[i].VALUE);
+						$jsx.push(result[i].NAME);
+					}
+					myChart4.setOption({
+						title: {
+							text: ['{a|部门处理时长}'].join(''),
+							left: -6,
+							top: -6,
+							textStyle: {
+								rich: {
+									a: {
+										color: "#fff",
+										fontSize: 16,
+										borderWidth: 1,
+										borderColor: "#15478a",
+										height: 50,
+										width: 750,
+										padding: [0, 20]
+									}
+								}
+							}
+						},
+						color: ['#3398DB'],
+						tooltip: {
+							trigger: 'axis',
+							axisPointer: { // 坐标轴指示器，坐标轴触发有效
+								type: 'shadow' // 默认为直线，可选为：'line' | 'shadow'
+							}
+						},
+						grid: {
+							left: '4%',
+							right: '4%',
+							bottom: '3%',
+							top: '25%',
+							containLabel: true
+						},
+						xAxis: [{
+							type: 'category',
+							data: $jsx,
+							axisTick: {
+								alignWithLabel: true
+							},
+							axisLine: {
+								lineStyle: {
+									color: "#A4A1FC"
+								}
+							}
+						}],
+						yAxis: [{
+							type: 'value',
+							name: '小时/h',
+							top: 6,
+							position: 'left',
+							nameTextStyle: {
+								color: "#315070"
+							},
+							axisLine: {
+								show: false
+							},
+							axisTick: {
+								show: false
+							},
+							splitLine: {
+								show: true,
+								lineStyle: {
+									color: '#315070',
+									width: 2,
+									type: 'solid'
+								}　　
+							},
+							axisLabel: {
+								textStyle: {
+									color: "#315070"
+								}
+							}
+						}],
+						series: [{
+							name: '处理时长',
+							type: 'bar',
+							itemStyle: {
+								barBorderRadius: [0, 0, 0, 0],
+								color: '#A4A1FC'
+							},
+							barWidth: '20%',
+							data: $jsy,
+							itemStyle: {
+								emphasis: {
+									barBorderRadius: [7, 7, 0, 0]
+								},
+								normal: {
+									barBorderRadius: [7, 7, 0, 0]
+								}
+							}
+
+						}]
+					});
+				},
+				error: function(XMLHttpRequest, textStatus, errorThrown) {
+					alert('获取部门处理时长失败！'); // 错误处理
+				}
+			});
+		}
+
+		function lookList(P_STATE) {
+			var depart = IDs;
+			applyTrigger.show({
+				iframe: "../maintenanceStaff/orderList.html?P_STATE=" + P_STATE + "&DEPART_ID=" + depart,
+				height: $('body').height() * 0.886,
+				width: $('body').width() * 0.85
+			});
+		}
+
+		function getTitle(id) {
+			applyTrigger.show({
+				iframe: "../ordinaryUsers/noteDetail.html?noteid=" + id,
+				height: 600,
+				width: 600
+			});
+		}
+
+		function morenote() {
+			applyTrigger.show({
+				iframe: "../ordinaryUsers/NoteList.html",
+				height: 600,
+				width: 1200
+			});
+		}
+		//		myChart5.setOption(option5);
+
+		function randomNum(year, area_name) {
+			$.ajax({
+				type: "post",
+				url: urlpath + '/ReportHander/getMapInfoById',
+				async: false,
+				xhrFields: {
+					withCredentials: true
+				},
+				data: {
+					P_TODAY: year,
+					P_AREA_NAME: area_name
+				},
+				crossDomain: true == !(document.all), //兼容ie
+				dataType: 'json',
+				success: function(data) {
+					// setTimeout(
+					//   outresult=data.result,10);
+					outresult = data.result;
+				}
+			});
+			//alert(outresult);
+
+			return outresult;
+		}
+
+		function getMap() {
+			$.ajax({
+				type: "post",
+				url: urlpath + '/ReportHander/getMapData',
+				xhrFields: {
+					withCredentials: true
+				},
+				crossDomain: true == !(document.all), //兼容ie
+				dataType: 'json',
+				success: function(data) {
+					var geoCoordMap = '';
+					var geoGpsMap = new Array();
+					var year = [];
+					if(data) {
+						var list = data.list;
+						for(var i = 0; i < list.length; i++) {
+							year.push(list[i].TODAY)
+						}
+						var list1 = data.list1;
+						for(var j = 0; j < list1.length; j++) {
+							// var str1=[];
+							str1 = '[' + list1[j].LATITUDE + ',' + list1[j].LONGITUDE + ']';
+							geoCoordMap = geoCoordMap + ',"' + list1[j].AREA_NAME + '":' + str1;
+						}
+						geoCoordMap = "{" + geoCoordMap.substring(1, geoCoordMap.length) + "}";
+						geoCoordMap = JSON.parse(geoCoordMap);
+						//console.log(geoCoordMap);
+
+						var list2 = data.list2;
+
+						var list3 = data.list3;
+					}
+					createMap(list2, year, geoCoordMap, list3);
+				}
+			});
+		}
+
+		function createMap(list2, year, geoCoordMap, list3) {
+			var uploadedDataURL = "../../Lib/Echarts4.1.0/json/data-1528970362114-r1MK321WQ.json";
+			var colors = [
+				["#1DE9B6", "#F46E36", "#04B9FF", "#5DBD32", "#FFC809", "#FB95D5", "#A349A4", "#546570", "#C4CCD3"],
+				["#37A2DA", "#67E0E3", "#32C5E9", "#9FE6B8", "#FFDB5C", "#FF9F7F", "#FB7293", "#E062AE", "#E690D1", "#E7BCF3", "#9D96F5", "#8378EA", "#8378EA"],
+				["#DD6B66", "#759AA0", "#E69D87", "#8DC1A9", "#EA7E53", "#EEDD78", "#73A373", "#73B9BC", "#7289AB", "#91CA8C", "#F49F42"],
+			];
+			var colorIndex = 0;
+			$(function() {
+				var mapData = [
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[],
+					[]
+				];
+
+				/*柱子Y名称*/
+				var categoryData = [];
+				var barData = [];
+				for(var i = 0; i < list3.length; i++) {
+					for(var key in geoCoordMap) {
+						if($.inArray(key, categoryData) == -1) {
+							categoryData.push(key);
+						}
+						if(list3[i].TODAY == year[0] && list3[i].AREA_NAME == key) {
+							mapData[0].push({
+								"year": year[0],
+								"name": key,
+								"value": list3[i].VALUE
+							});
+						} else if(list3[i].TODAY == year[1] && list3[i].AREA_NAME == key) {
+							mapData[1].push({
+								"year": year[1],
+								"name": key,
+								"value": list3[i].VALUE
+							});
+						} else if(list3[i].TODAY == year[2] && list3[i].AREA_NAME == key) {
+							mapData[2].push({
+								"year": year[2],
+								"name": key,
+								"value": list3[i].VALUE
+							});
+						} else if(list3[i].TODAY == year[3] && list3[i].AREA_NAME == key) {
+
+							mapData[3].push({
+								"year": year[3],
+								"name": key,
+								"value": list3[i].VALUE
+							});
+						} else if(list3[i].TODAY == year[4] && list3[i].AREA_NAME == key) {
+							mapData[4].push({
+								"year": year[4],
+								"name": key,
+								"value": list3[i].VALUE
+							});
+						} else if(list3[i].TODAY == year[5] && list3[i].AREA_NAME == key) {
+							mapData[5].push({
+								"year": year[5],
+								"name": key,
+								"value": list3[i].VALUE
+							});
+							value = list3[i].VALUE;
+						} else if(list3[i].TODAY == year[6] && list3[i].AREA_NAME == key) {
+							mapData[6].push({
+								"year": year[6],
+								"name": key,
+								"value": list3[i].VALUE
+							});
+						}
+					}
+				}
+				//console.log(mapData);
+				for(var i = 0; i < mapData.length; i++) {
+					barData.push([]);
+					for(var j = 0; j < mapData[i].length; j++) {
+						barData[i].push(mapData[i][j].value)
+					}
+				}
+				$.getJSON(uploadedDataURL, function(geoJson) {
+					echarts.registerMap('云南', geoJson);
+					var convertData = function(data) {
+						var res = [];
+						for(var i = 0; i < data.length; i++) {
+							var geoCoord = geoCoordMap[data[i].name];
+							if(geoCoord) {
+								res.push({
+									name: data[i].name,
+									value: geoCoord.concat(data[i].value)
+								});
+							}
+						}
+						return res;
+					};
+
+					var convertToLineData = function(data, list) {
+						var res = [];
+						var dataItem = data[0];
+						if(dataItem && dataItem.year) {
+							var year = dataItem.year;
+							for(var i = 0; i < list.length; i++) {
+								if(year == list[i].TODAY) {
+									if(list[i].VALUE != 0) {
+										var fromCoord = geoCoordMap[list[i].AREA_NAME];
+										var toCoord = []; //郑州
+										toCoord.push(list[i].TOLATITUDE);
+										toCoord.push(list[i].TOLONGITUDE);
+										// toCoord=JSON.parse(toCoord);
+										if(fromCoord && toCoord) {
+											res.push([{
+												coord: fromCoord,
+												value: list[i].VALUE
+											}, {
+												coord: toCoord,
+											}]);
+										}
+									}
+								}
+							}
+						}
+						return res;
+					};
+					var myChart = echarts.init(document.getElementById('content'));
+					optionXyMap01 = {
+						//时间轴
+						timeline: {
+							data: year,
+							axisType: 'category',
+							autoPlay: true,
+							playInterval: 3000,
+							right: '0',
+							bottom: '0',
+							width: '60%',
+							height: '10%',
+							label: {
+								normal: {
+									textStyle: {
+										color: '#ddd',
+										fontSize: 8,
+										align: 'left',
+										padding: [3, 0, 0, 0],
+										verticalAlign: 'bottom'
+
+									}
+								},
+								emphasis: {
+									textStyle: {
+										color: '#fff'
+									}
+								}
+							},
+							itemStyle: {
+								normal: {
+									fontSize: 6
+									// color:'red'
+								},
+							},
+							symbolSize: 10,
+							lineStyle: {
+								color: '#555'
+							},
+							checkpointStyle: {
+								borderColor: '#777',
+								borderWidth: 2
+							},
+							controlStyle: {
+								showNextBtn: true,
+								showPrevBtn: true,
+								itemSize: 12,
+								normal: {
+									color: '#666',
+									borderColor: '#666'
+								},
+								emphasis: {
+									color: '#aaa',
+									borderColor: '#aaa'
+								}
+							},
+
+						},
+						//柱状图
+						baseOption: {
+							animation: true,
+							animationDuration: 1000,
+							animationEasing: 'cubicInOut',
+							animationDurationUpdate: 1000,
+							animationEasingUpdate: 'cubicInOut',
+							grid: {
+								right: '5%',
+								top: '15%',
+								bottom: '15%',
+								width: '35%'
+							},
+							tooltip: {
+								trigger: 'axis', // hover触发器
+								axisPointer: { // 坐标轴指示器，坐标轴触发有效
+									type: 'shadow', // 默认为直线，可选为：'line' | 'shadow'
+									shadowStyle: {
+										color: 'rgba(150,150,150,0.1)' //hover颜色
+									}
+								}
+							},
+							geo: {
+								show: true,
+								map: '云南',
+								roam: true,
+								zoom: 1.1,
+								aspectScale: 1, //长宽比
+								center: [106.43531246, 25.0897395887],
+								label: {
+									emphasis: {
+										show: false
+									}
+								},
+								itemStyle: {
+									normal: {
+										borderColor: 'rgba(147, 235, 248, 1)',
+										borderWidth: 1,
+										areaColor: {
+											type: 'radial',
+											x: 0.5,
+											y: 0.5,
+											r: 0.8,
+											colorStops: [{
+												offset: 0,
+												color: 'rgba(147, 235, 248, 0)' // 0% 处的颜色
+											}, {
+												offset: 1,
+												color: 'rgba(147, 235, 248, .2)' // 100% 处的颜色
+											}],
+											globalCoord: false // 缺省为 false
+										},
+										shadowColor: 'rgba(128, 217, 248, 1)',
+										// shadowColor: 'rgba(255, 255, 255, 1)',
+										shadowOffsetX: -2,
+										shadowOffsetY: 2,
+										shadowBlur: 10
+									},
+									emphasis: {
+										areaColor: '#389BB7',
+										borderWidth: 0
+									}
+								}
+							},
+						},
+						options: []
+
+					};
+					for(var n = 0; n < year.length; n++) {
+						optionXyMap01.options.push({
+							backgroundColor: '#051B4A',
+							title: [{},
+								{
+									id: 'statistic',
+									text: year[n] + "号各地州工单发起情况",
+									left: '65%',
+									top: '1%',
+									textStyle: {
+										color: '#fff',
+										fontSize: 14
+									}
+								}
+							],
+							xAxis: {
+								type: 'value',
+								scale: true,
+								position: 'top',
+								min: 0,
+								boundaryGap: false,
+								splitLine: {
+									show: false
+								},
+								axisLine: {
+									show: false
+								},
+								axisTick: {
+									show: false
+								},
+								axisLabel: {
+									margin: 2,
+									textStyle: {
+										color: '#aaa'
+									}
+								},
+							},
+							yAxis: {
+								type: 'category',
+								//  name: 'TOP 20',
+								nameGap: 16,
+								axisLine: {
+									show: true,
+									lineStyle: {
+										color: '#ddd'
+									}
+								},
+								axisTick: {
+									show: false,
+									lineStyle: {
+										color: '#ddd'
+									}
+								},
+								axisLabel: {
+									interval: 0,
+									textStyle: {
+										color: '#ddd'
+									}
+								},
+								data: categoryData
+							},
+							series: [
+								//未知作用
+								{
+									//文字和标志
+									name: 'light',
+									type: 'scatter',
+									coordinateSystem: 'geo',
+									data: convertData(mapData[n]),
+									symbolSize: function(val) {
+										return val[2] / 20;
+									},
+									label: {
+										normal: {
+											formatter: '{b}',
+											position: 'right',
+											show: true
+										},
+										emphasis: {
+											show: true
+										}
+									},
+									itemStyle: {
+										normal: {
+											color: colors[colorIndex][n]
+										}
+									}
+								},
+								//地图？
+								{
+									type: 'map',
+									map: '云南',
+									geoIndex: 0,
+									left: '-10%',
+									aspectScale: 0.5, //长宽比	
+									layoutCenter: ['10%', '50%'],
+									layoutSize: 200,
+									showLegendSymbol: false, // 存在legend时显示
+									label: {
+										normal: {
+											show: false
+										},
+										emphasis: {
+											show: false,
+											textStyle: {
+												color: '#fff'
+											}
+										}
+									},
+									roam: true,
+									itemStyle: {
+										normal: {
+											areaColor: '#031525',
+											borderColor: '#FFFFFF',
+										},
+										emphasis: {
+											areaColor: '#2B91B7'
+										}
+									},
+									animation: false,
+									data: mapData
+								},
+								//地图点的动画效果
+								{
+									//  name: 'Top 5',
+									type: 'effectScatter',
+									coordinateSystem: 'geo',
+									data: convertData(mapData[n].sort(function(a, b) {
+										return b.value - a.value;
+									}).slice(0, 17)),
+									symbolSize: function(val) {
+										return val[2] / 15;
+									},
+									showEffectOn: 'render',
+									rippleEffect: {
+										brushType: 'stroke'
+									},
+									hoverAnimation: true,
+									label: {
+										normal: {
+											formatter: '{b}',
+											position: 'right',
+											show: true
+										}
+									},
+									itemStyle: {
+										normal: {
+											color: colors[colorIndex][n],
+											shadowBlur: 10,
+											shadowColor: colors[colorIndex][n]
+										}
+									},
+									zlevel: 1
+								},
+								//地图线的动画效果
+								{
+									type: 'lines',
+									zlevel: 2,
+									effect: {
+										show: true,
+										period: 4, //箭头指向速度，值越小速度越快
+										trailLength: 0.02, //特效尾迹长度[0,1]值越大，尾迹越长重
+										symbol: 'arrow', //箭头图标
+										symbolSize: 3, //图标大小
+									},
+									lineStyle: {
+										normal: {
+											color: colors[colorIndex][n],
+											width: 0.1, //尾迹线条宽度
+											opacity: 0.5, //尾迹线条透明度
+											curveness: .3 //尾迹线条曲直度
+										}
+									},
+									//data: convertToLineData(mapData[n], geoGpsMap[Math.ceil(Math.random() * 6)])
+									data: convertToLineData(mapData[n], list2)
+
+								},
+								//柱状图
+								{
+									zlevel: 1.5,
+									type: 'bar',
+									barWidth: 8, // 柱形的宽度
+									symbol: 'none',
+									itemStyle: {
+										normal: {
+											color: colors[colorIndex][n]
+										}
+									},
+									data: barData[n]
+								}
+							]
+						})
+					}
+					myChart.setOption(optionXyMap01);
+				});
+			});
+		}
+	</script>
+
+</html>

@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+		<title>知识库信息新增</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Lib/easyUpload/main.css">
+		<link rel="stylesheet" href="../../Lib/jsTree/style.min.css">
+		<style>
+			html,
+			body {
+				font-family: "微软雅黑";
+				font-size: 14px;
+				background: #F9F9F9;
+				overflow: auto;
+				width: 100%;
+				height: 100%;
+				overflow: hidden;
+			}
+			
+			.container-fluid {
+				padding: 5px;
+				width: 98%;
+				height: 98%;
+			}
+			
+			.row {
+				height: 100%;
+			}
+			
+			.form-group {
+				display: inline-flex;
+				width: 100%;
+			}
+			
+			.col-sm-9 {
+				width: 85%;
+			}
+			
+			.panel-heading {
+				margin: 0px 10px 0px 10px;
+			}
+			
+			#TAG_ID {
+				border: 1px solid #ccc;
+				border-radius: 5px;
+				height: 90px;
+				overflow: auto;
+			}
+			
+			#TAG_ID option {
+				width: auto;
+				height: 20px;
+				background: #ccc;
+				float: left;
+				margin: 3px 8px 3px 8px;
+				text-align: center;
+				cursor: pointer;
+				border-radius: 8px;
+				display: inline-block;
+				min-width: 60px;
+			}
+			
+			#contentDiv textarea {
+				height: 100px;
+			}
+			
+			.form-group {
+				margin-bottom: 0px;
+			}
+			
+			.panel-body {
+				padding: 1px;
+			}
+			
+			.depart-ul {
+				border-radius: 3px;
+				width: 100%;
+				list-style: none;
+				padding: 5px 20px;
+			}
+			
+			.depart-ul li {
+				list-style: none;
+				padding: 0px 12px 0px 5px;
+				border: 1px solid #ccc;
+				margin-left: 3px;
+				margin-top: 3px;
+				border-radius: 3px;
+				cursor: pointer;
+				position: relative;
+			}
+			
+			.depart-ul li span {
+				display: block;
+				position: absolute;
+				top: -2px;
+				right: 8px;
+				width: 10px;
+				font-size: 14px;
+				font-weight: 700;
+				font-family: unset;
+			}
+			
+			.depart-ul li span:hover {
+				color: #3BA4FF;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-12" style="height: 98%;">
+					<div class="panel" style="width: 100%;min-width: 550px;height: 100%;">
+						<div class="panel-body" style="height: 100%;overflow: auto;">
+							<form class="form-horizontal" id="form">
+								<div class="form-group" id="DealName">
+									<label class="col-sm-2 control-label required">解决方案</label>
+									<div class="col-sm-10" id="contentDiv">
+										<script id="editor" type="text/plain" style="width:100%;height:150px;"></script>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2">附件信息</label>
+									<div class="col-sm-10">
+										<div id="uploader"></div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="col-sm-2"></label>
+									<div class="col-sm-10">
+										<ul id="file" class="depart-ul">
+										</ul>
+									</div>
+								</div>
+								<button class="btn btn-primary" style="float:left;margin-left: 36%;margin-top: 15px;width: 200px;" onclick="submitBtn()" type="button" data-loading-text="正在提交...">提交</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script src="../../Lib/easyUpload/easyUploader.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js"></script>
+		<script src="../../Lib/ueditor/jquery.form.js"></script>
+		<script src="../../Lib/ueditor/ueditor.config.js"></script>
+		<script src="../../Lib/ueditor/ueditor.all.js"></script>
+		<!--建议手动加在语言，避免在ie下有时因为加载语言失败导致编辑器加载失败-->
+		<!--这里加载的语言文件会覆盖你在配置项目里添加的语言类型，比如你在配置项目里配置的是英文，这里加载的中文，那最后就是中文-->
+		<script type="text/javascript" charset="utf-8" src="../../Lib/ueditor/lang/zh-cn/zh-cn.js"></script>
+		<script src="../../Lib/jsTree/jstree.js"></script>
+		<script src="../../Lib/public.js"></script>
+		<script type="text/javascript">
+			var newTrigger = new $.zui.ModalTrigger();
+			var butnum = [];
+			var fileid = "";
+			var TEXTs = "";
+			var IDs = "";
+			var ID = $.url("ID");
+			var tabid = $.url("TABID");
+			var ue;
+			var data = [];
+			$(function() {
+				//实例化编辑器
+				//建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
+				ue = UE.getEditor('editor', {
+					// 服务器统一请求接口路径
+					//serverUrl: '<%=basePath%>/styles/ueditor/jsp/controller.jsp',					
+					//focus时自动清空初始化时的内容
+					autoClearinitialprojectBasis: true,
+					//关闭字数统计
+					//wordCount:false,
+					maximumWords: 8000, //允许的最大字符数
+					//关闭elementPath 元素路径
+					elementPathEnabled: false,
+					//默认的编辑区域高度
+					initialFrameHeight: 200,
+					//initialFrameWidth: 100%, //初始化编辑器宽度,默认1000
+					toolbars: [
+						[
+							'fullscreen', 'source', '|', 'undo', 'redo', '|',
+							'bold', 'italic', 'underline', 'fontborder', 'strikethrough', 'superscript', 'subscript', 'removeformat', 'formatmatch', 'autotypeset', 'blockquote', 'pasteplain', '|', 'forecolor', 'backcolor', 'insertorderedlist', 'insertunorderedlist', 'selectall', 'cleardoc', '|',
+							'rowspacingtop', 'rowspacingbottom', 'lineheight', '|',
+							'customstyle', 'paragraph', 'fontfamily', 'fontsize', '|',
+							'directionalityltr', 'directionalityrtl', 'indent', '|',
+							'justifyleft', 'justifycenter', 'justifyright', 'justifyjustify', '|', 'touppercase', 'tolowercase', '|',
+							'link', 'unlink', 'anchor', '|', 'imagenone', 'imageleft', 'imageright', 'imagecenter', '|',
+							'simpleupload', 'insertimage', 'emotion', 'pagebreak', '|',
+							'horizontal', 'date', 'time', 'spechars', '|',
+							'inserttable', 'deletetable', 'insertparagraphbeforetable', 'insertrow', 'deleterow', 'insertcol', 'deletecol', 'mergecells', 'mergeright', 'mergedown', 'splittocells', 'splittorows', 'splittocols', 'charts'
+						]
+					]
+				});
+				//请求自己的接口上传文件
+				UE.Editor.prototype._bkGetActionUrl = UE.Editor.prototype.getActionUrl;
+				UE.Editor.prototype.getActionUrl = function(action) {
+					if(action == 'uploadimage' || action == 'uploadscrawl' || action == 'uploadvideo') {
+						return urlpath + '/attach/uploadFile';
+					} else {
+						return this._bkGetActionUrl.call(this, action);
+					}
+				};
+
+				getdate();
+			});
+
+			// 提交按钮事件
+			function submitBtn() {
+				var liid = "";
+				for(var i = 0; i < $("#file").find('li').length; i++) {
+					if(i == 0) {
+						liid = $("#file").find('li')[i].attributes[0].nodeValue;
+					} else {
+						liid = liid + "," + $("#file").find('li')[i].attributes[0].nodeValue;
+					}
+				}
+				console.log($("#file").find('li'));
+				//				return false;
+				fileid = fileid + liid;
+				if(!UE.getEditor('editor').hasContents()) {
+					new $.zui.Messager('解决方案不能为空！', {
+						type: 'danger',
+						placement: 'center'
+					}).show();
+					return false;
+				}
+				data.push({
+					name: "P_CONTENT",
+					value: UE.getEditor('editor').getContent()
+				});
+				data.push({
+					name: "P_ID",
+					value: ID
+				});
+				if(fileid) {
+					data.push({
+						name: "P_FUJIAN_URL",
+						value: fileid
+					});
+				}
+				// 验证通过，执行提交方法
+				$.ajax({
+					url: urlpath + "/approval/updateKnowContentFj",
+					type: "post",
+					data: data,
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'json',
+					success: function(res) {
+						if(res.result == "SUCCESS") {
+							new $.zui.Messager('提示消息：修改成功', {
+								type: 'success',
+								placement: 'center'
+							}).show();
+							setTimeout(function() {
+								closeBtn();
+							}, 500)
+						} else {
+							new $.zui.Messager('提示消息：修改失败', {
+								type: 'danger',
+								placement: 'center'
+							}).show();
+						}
+					},
+					error: function(res) {
+						alert('请联系管理员！')
+					}
+				});
+			}
+
+			//关闭弹框按钮事件
+			function closeBtn() {
+				window.parent.newTrigger.close();
+			}
+
+			var uploader = easyUploader({
+				id: "uploader",
+				/* 渲染容器id */
+				accept:'.jpg,.png,.gif,.txt,.pdf,.docx,.doc,.xlsx,.xls,.zip,.ppt,.pptx',
+				/* 上传类型 */
+				action: urlpath + "/attach/uploadFile",
+				/* 上传地址 */
+				autoUpload: true,
+				/* 是否开启自动上传 */
+				crossDomain: true,
+				/* 是否允许跨域 */
+				data: null,
+				/* 上传配置参数，依据dataFormat而不同， */
+				dataFormat: 'formData',
+
+				/* 上传表单类型，有formData和base64两种 */
+				dataType: 'json',
+				/* 同$.ajax，�默认返回数据格式为json */
+				headers: {
+					// testKey: 'testValue'
+				},
+				/* 上传的请求头部，视需要配置 */
+				maxCount:10,
+				/* 最大上传文件数 */
+				maxSize: 20,
+				/* 最大上传文件体积，单位M */
+				multiple: true,
+				/* 是否开启多选上传 */
+				name: 'upfile',
+				/* 上传的文件字段名 */
+				previewWidth: 70,
+				/* 压缩预览图的宽度，样式中高度等于宽度 */
+				processData: false,
+				/* 同$.ajax参数，这里默认为false */
+				successKey: 'code',
+				/* 标识上传成功的key */
+				successValue: 200,
+				/* 标识上传成功对应的value */
+				showAlert: true,
+				/* 是否开启alert提示 */
+				timeout: 0,
+				/* ajax请求超时时间，默认值为0，表示永不超时*/
+				withCredentials: true,
+				/* 是否支持发送 cookie 凭证信息 */
+				beforeUpload: null,
+				/* ajax上传前的回调函数 */
+				onAlert: null, //alert时的钩子
+				onChange: null, // input选中时触发
+				onError: function(err) { //上传失败时的钩子
+					new $.zui.Messager('文件上传失败', {
+						icon: 'info-sign',
+						placement: 'center', // 定义显示位置
+						time: 1500,
+						type: 'danger'
+					}).show();
+				},
+				onRemove: function(removedFiles, files) {
+					/*
+					 *批量删除时只返回removedFiles:剩下的文件信息,files为空
+					 *单个删除时返回removedFiles，files,removedFiles:剩下的文件信息,files:删除的文件信息
+					 */
+					//console.log(removedFiles);
+					fileid = "";
+					for(var i = 0; i < removedFiles.length; i++) {
+						if(fileid.indexOf(removedFiles[i].ajaxResponse.original) == -1){
+							fileid += removedFiles[i].ajaxResponse.original + '|' + removedFiles[i].ajaxResponse.url+',';
+						}
+					};
+				}, //移除文件时的钩子
+				onSuccess: function(res) { //上传成功时的钩子
+					if(res.state == "SUCCESS") {
+						if(fileid.indexOf(res.original) == -1) {
+							fileid += res.original + "|" + res.url + ",";
+						}
+					} else {
+						new $.zui.Messager('系统暂只支持上传.jpg,.png,.gif,.txt,.pdf,.docx,.doc,.xlsx,.xls,.zip,.ppt,.pptx格式的文件!', {
+							icon: 'info-sign',
+							placement: 'center', // 定义显示位置
+							time: 1500,
+							type: 'danger'
+						}).show();
+					}
+				}
+			});
+
+			function getdate() {
+				$.ajax({
+					type: "post",
+					url: urlpath + "/approval/getKnowContentFj",
+					data: {
+						'P_ID': ID
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'json',
+					success: function(res) {
+						var fulieid = [];
+						var fuliename = [];
+						var fulieurl = [];
+						var html = "";
+						if(res[0].CONTENT != undefined) {
+							ue.ready(function() {
+								ue.setContent(res[0].CONTENT);
+							})
+						}
+						if(res[0].FUJIAN_ID != undefined) {
+							fulieid = res[0].FUJIAN_ID.split(",");
+							fuliename = res[0].FUJIAN_NAME.split(",");
+							fulieurl = res[0].FUJIAN_URL.split(",");
+						}
+						for(var i = 0; i < fulieid.length; i++) {
+							html += '<li value=' + fuliename[i] + '|' + fulieurl[i] + '><i class="icon icon-folder-open"></i>&nbsp;' + fuliename[i] + '<span onclick="removee(this)"><i class="icon icon-trash"></i></span></li>';
+						}
+						$("#file").html(html);
+					},
+					error: function(res) {
+						new $.zui.Messager('获取数据失败，请联系管理员！', {
+							icon: 'frown',
+							placement: 'center' // 定义显示位置
+						}).show();
+					}
+				});
+			}
+
+			function removee(obj) {
+				$(obj).parent().remove();
+			}
+		</script>
+	</body>
+
+</html>

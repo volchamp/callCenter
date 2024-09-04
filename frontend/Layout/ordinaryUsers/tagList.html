@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>标签管理</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.css">
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.css">
+		<link rel="stylesheet" href="../../Lib/jsTree/style.min.css">
+		<style>
+			html,
+			body {
+				background: #F9F9F9;
+				height: 100%;
+				overflow: hidden;
+			}
+			.row,
+			.panel,
+			.panel-body {
+				height: 100%;
+			}
+			.panel{
+				margin: 0px 20px;
+			}
+			.container-fluid {
+				padding: 10px;
+			}
+			.clearfix h2{
+				margin: 0px ;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="panel">
+				<div class="panel-body">
+					<header class="clearfix">
+						<h2 style="color: rgb(59, 164, 255);">标签列表</h2>
+						<div style="float: right;margin-bottom: 10px;">
+							<button type="button" onclick="add('新增知识库标签')" class="btn btn-primary">新增</button>
+							<button class="btn btn-primary" type="button" onclick="edit('知识库标签编辑')">修改</button>
+							<button class="btn btn-primary" type="button" onclick="del()">删除</button>
+						</div>
+					</header>
+					<div id="myJobsDG" class="datagrid datagrid-borderless" style="height: 85%;overflow: auto;">
+						<div class="datagrid-container"></div>
+						<div class="pager"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		</div>
+		<script src="../../Lib/jquery-3.4.1.min.js" type="text/javascript"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js" type="text/javascript"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js" type="text/javascript">
+		</script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.js" type="text/javascript"></script>
+		<script src="../../Lib/public.js" type="text/javascript"></script>
+		<script>
+			var newTrigger = new $.zui.ModalTrigger();
+			$(document).ready(function() {
+				getDataGrid();
+			})
+
+			function getDataGrid() {
+				$('#myJobsDG').datagrid({
+					rowDefaultHeight: 50,
+					height: 'page',
+					checkable: true,
+					sortable: true,
+					showRowIndex: false,
+					checkByClickRow: false,
+					dataSource: {
+						cols: [{
+								name: '',
+								label: 'ID',
+								checkbox: true,
+								sort: false,
+								width: 0.02
+							},
+							{
+								name: 'TEXT',
+								label: '标签名称',
+								width: 0.1,
+								sort: false
+							},
+							{
+								name: 'VALUE',
+								label: '数值',
+								width: 0.1,
+								html: true,
+								sort: false
+							},
+							{
+								name: 'DSC',
+								label: '描述',
+								width: 0.1,
+								html: true,
+								sort: false
+							},
+							{
+								name: 'CREATE_TIME',
+								label: '创建时间',
+								width: 0.25,
+								sort: false
+							},
+							{
+								name: 'CREATE_USER',
+								label: '创建人',
+								width: 0.1,
+								sort: false
+							}
+						],
+						remote: function(params) {
+							return {
+								// 请求地址
+								url: urlpath + '/approval/zdTagList',
+								// 请求类型
+								type: 'post',
+								// 数据类型
+								dataType: 'json',
+								xhrFields: {
+									withCredentials: true
+								},
+								crossDomain: true == !(document.all), //兼容ie
+							};
+						}
+					},
+					states: {
+						pager: {
+							page: 1,
+							recPerPage: 10
+						},
+						sortBy: {}
+					}
+				});
+				// 获取数据表格实例
+				myDataGrid = $('#myJobsDG').data('zui.datagrid');
+			}
+
+			function add(title) {
+				newTrigger.show({
+					iframe: "tagAdd.html",
+					height: 340,
+					width: 590,
+					title: title
+				});
+			}
+
+			function edit(title) {
+				var data = myDataGrid.getCheckItems();
+				if(data.length < 1) {
+					new $.zui.Messager('请选择需要修改的数据！', {
+						type: 'warning' // 定义颜色主题
+					}).show();
+				} else if(data.length > 1) {
+					new $.zui.Messager('您一次只能处理一条数据！', {
+						type: 'warning' // 定义颜色主题
+					}).show();
+				} else {
+					var PID = data[0].ID;
+					$.ajax({
+						type: "post",
+						url: urlpath + '/approval/zdBaseCount',
+						data: {
+							'P_ID': PID
+						},
+						xhrFields: {
+							withCredentials: true
+						},
+						crossDomain: true == !(document.all), //兼容ie
+						dataType: 'json',
+						success: function(res) {
+							if(parseInt(res) > 0) {
+								new $.zui.Messager("此操作将会修改所有关联知识标签，您确定要修改吗？", {
+									type: 'warning',
+									time: 0,
+									actions: [{
+										name: 'del',
+										icon: 'remove-sign',
+										text: '修改',
+										action: function() {
+											newTrigger.show({
+												iframe: "tagAdd.html?PID=" + PID,
+												height: 340,
+												width: 590,
+												title: title
+											})
+										}
+									}, {
+										name: 'undo',
+										icon: 'undo',
+										text: '取消',
+										action: function() { // 点击该操作按钮的回调函数
+											return;
+										}
+									}]
+								}).show()
+							} else {
+								newTrigger.show({
+									iframe: "tagAdd.html?PID=" + PID,
+									height: 340,
+									width: 590,
+									title: title
+								})
+							}
+						},
+						error: function() {
+							new $.zui.Messager('数据获取失败！', {
+								type: 'danger'
+							}).show();
+						}
+					});
+				}
+			}
+
+			function del() {
+				var data = myDataGrid.getCheckItems();
+				if(data.length < 1) {
+					new $.zui.Messager('请选择需要删除的数据！', {
+						type: 'warning'
+					}).show();
+				} else {
+					//把要删除的id拼接起来
+					var P_KNOWLEDGE_ID = '';
+					for(var i = 0; i < data.length; i++) {
+						if(data[i] == null) {
+							P_KNOWLEDGE_ID = P_KNOWLEDGE_ID;
+						} else {
+							P_KNOWLEDGE_ID += data[i].ID + ',';
+						}
+					}
+					if(P_KNOWLEDGE_ID != '' && P_KNOWLEDGE_ID.length > 0) {
+						P_KNOWLEDGE_ID = P_KNOWLEDGE_ID.substring(0, P_KNOWLEDGE_ID.length - 1);
+					}
+					$.ajax({
+						type: "post",
+						url: urlpath + '/approval/zdBaseCount',
+						data: {
+							'P_ID': P_KNOWLEDGE_ID
+						},
+						xhrFields: {
+							withCredentials: true
+						},
+						crossDomain: true == !(document.all), //兼容ie
+						dataType: 'json',
+						success: function(res) {
+							if(parseInt(res) > 0) {
+								delHandle("此操作将会删除关联知识，您确定删除这" + data.length + "条数据？", P_KNOWLEDGE_ID);
+							} else {
+								delHandle("您确定删除这" + data.length + "条数据？", P_KNOWLEDGE_ID);
+							}
+						},
+						error: function() {
+							new $.zui.Messager('数据获取失败！', {
+								type: 'danger'
+							}).show();
+						}
+					});
+
+				}
+			}
+
+			function delHandle(msg, P_KNOWLEDGE_ID) {
+				new $.zui.Messager(msg, {
+					type: 'warning',
+					time: 0,
+					actions: [{
+						name: 'del',
+						icon: 'remove-sign',
+						text: '删除',
+						action: function() {
+							$.ajax({
+								type: "post",
+								url: urlpath + '/approval/zdTagDelete',
+								data: {
+									'P_ID': P_KNOWLEDGE_ID
+								},
+								xhrFields: {
+									withCredentials: true
+								},
+								crossDomain: true == !(document.all), //兼容ie
+								dataType: 'json',
+								success: function(res) {
+									if(res.result == "SUCCESS") {
+										new $.zui.Messager('删除成功！', {
+											type: 'success'
+										}).show();
+										setTimeout(function() {
+											updateGrid();
+										}, 1000)
+									} else {
+										new $.zui.Messager('删除失败！', {
+											type: 'danger'
+										}).show();
+									}
+								}
+							});
+						}
+					}, {
+						name: 'undo',
+						icon: 'undo',
+						text: '取消',
+						action: function() { // 点击该操作按钮的回调函数
+							return;
+						}
+					}]
+				}).show();
+			}
+
+			function closeTrigger() {
+				newTrigger.close();
+			}
+			//更新表格数据
+			function updateGrid() {
+				myDataGrid.setDataSource({
+					remote: function(params) {
+						return {
+							// 请求地址
+							url: urlpath + '/approval/zdTagList',
+							// 请求类型
+							type: 'post',
+							// 数据类型
+							dataType: 'json',
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true == !(document.all), //兼容ie
+						};
+					}
+				});
+				myDataGrid.render();
+				totalNum();
+			}
+		</script>
+	</body>
+
+</html>

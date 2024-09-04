@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>我的待办</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+    <link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.css">
+    <link rel="stylesheet" href="../../Lib/select/css/select-mania.css" />
+    <style type="text/css">
+    #center{
+        width: 98%;
+        height: 100px;
+        background: #fff8ee;
+        border: 1px solid #ffe9c9;
+        color: #333333;
+        font-size: 12px;
+        margin: 10px 0 10px 1%;
+    }
+    #center,.event_fill{
+        float: left;
+        min-height: 24px;
+        line-height: 26px;
+    }
+    #center th,#center td{
+        font-weight: normal;
+        text-align: left;
+        padding: 0px;
+    }
+     #center td{
+         line-height: 100px;
+     }
+    #center a{
+        margin: 0 0 5px 10px;
+        text-decoration: none;
+    }
+    #center a.retrievebtn {
+         padding: 0 20px;
+         border: 1px solid #0066cc;
+         border-radius: 3px;
+         display: inline-block;
+         font: 12px "宋体";
+         line-height: 24px;
+         cursor: pointer;
+     }
+     #center a.retrievebtn:hover{
+         color: #fff;
+         background: #13a2ff;
+         border-color: #028feb;
+     }
+     #center .retrievebtn:focus{
+         color: #fff;
+         background: #13a2ff;
+         border-color: #028feb;
+     }
+     .form-control{
+          display: inline-block !important;
+     }
+     .formselect {
+         width: 30%;
+         display: inline-block;
+         margin-left: 30px;
+         margin-bottom: 10px;
+     }
+    .brselect{
+        margin-top: 15px;
+    }
+    #bottom{
+        margin: 10px 1%;
+        width: 98%;
+        height: auto;
+        float: left;
+    }
+    #bottom .order_list {
+        margin-bottom: 15px;
+        border: 1px solid #dbdcdb;
+        color: #3c3c3c;
+        font-size: 12px;
+    }
+     #bottom .ol_title {
+         padding: 0 15px;
+         background: #eaf8ff;
+         height: 35px;
+         color: #3c3c3c;
+         line-height: 35px;
+     }
+     #bottom h3{
+         font-size: 16px;
+         margin-top: 10px;
+         margin-bottom: 10px;
+         font-family: "Helvetica Neue", Helvetica, Tahoma, Arial, 'PingFang SC', 'Source Han Sans CN', 'Source Han Sans', 'Source Han Serif', 'Hiragino Sans GB', 'WenQuanYi Micro Hei', 'Microsoft YaHei', sans-serif;
+         font-weight: 700;
+         line-height: 1.1;
+         color: inherit;
+         width: 50%;
+         display: inline-block;
+     }
+     #bottom  .order_list .ol_title a {
+         float: right;
+         display: block;
+         height: 16px;
+         width: 60px;
+         color: inherit;
+         text-decoration: none;
+         cursor: pointer;
+         background-color: transparent;
+         color: #7FC2FF;
+     }
+     #bottom .order_list .ol_con {
+            padding: 10px;
+            position: relative;
+     }
+     #bottom.order_list .ol_con table {
+         width: auto;
+         border-collapse: collapse;
+         border-spacing: 0;
+     }
+     #bottom th {
+         font-weight: bold;
+         text-align: -internal-center;
+         display: table-cell;
+         vertical-align: inherit;
+     }
+     #bottom .order_list .ol_con th a {
+         float: left;
+         margin: 0 20px 0 5px;
+         border: 1px solid #ebebeb;
+         /*padding: 5px 10px;*/
+         display: block;
+         text-align: center;
+         width: 60px;
+         height: 60px;
+         color: inherit;
+         text-decoration: none;
+         cursor: pointer;
+     }
+     #bottom .order_list .ol_con th a span {
+         margin-top: 2px;
+         display: block;
+         color: #999999;
+         font-weight: normal;
+         width: 58px;
+     }
+     #bottom .order_list .ol_con td {
+         line-height: 24px;
+     }
+     #bottom .order_list .ol_con td em {
+         color: #008bc9;
+     }
+     em, i {
+         font-style: normal;
+     }
+     #bottom  .order_list .ol_con td span.olc_txt {
+         margin-right: 10px;
+         padding-right: 10px;
+         background: url(../../Static/Img/cut-off-line.gif) no-repeat right;
+         display: inline-block;
+     }
+     #bottom  .yellow_txt {
+         color: #eb6100;
+     }
+     #bottom .order_list .ol_con td span.olc_txt.last {
+         background: none;
+         padding-right: 0px;
+     }
+     #from{
+        padding-top: 10px;
+      }
+    </style>
+
+</head>
+<body>
+<div id="center">
+    <table>
+        <tbody>
+            <tr>
+                <th width="85%">
+                    <form id="from" >
+                        <div class="formselect">
+                            <label>工单编号</label>
+                            <div style="display: inline-block;width: 80%;"><input type="text" class="form-control" id="P_DB_ID" name="P_DB_ID" placeholder="请输入编号" /></div>
+                        </div>
+                        <div class="formselect">
+                            <label>工单名称</label>
+                            <div style="display: inline-block;width: 80%;">
+                            <input type="text" class="form-control" id="P_ORDER_NAME" name="P_ORDER_NAME" placeholder="请输入名称" />
+                            </div>
+                        </div>
+                        <div class="formselect">
+                            <label>系统</label>
+                            <div style="display: inline-block;width: 80%;">
+                            <select class="form-control" id="P_SYSTEM_NAME" name="P_SYSTEM_NAME" >
+                                <option value="">全部</option>
+                            </select>
+                            </div>
+                        </div>
+                        <div class="formselect">
+                            <label>问题来源</label>
+                            <div style="display: inline-block;width: 80%;">
+                            <select class="form-control" id="P_ORDER_SOURCE" name="P_ORDER_SOURCE" >
+                                <option value="">全部</option>
+                            </select>
+                            </div>
+                        </div>
+                        <div class="formselect">
+                            <label>紧急程度</label>
+                            <div style="display: inline-block;width: 80%;">
+                            <select class="form-control" id="P_EMER_LEVEL" name="P_EMER_LEVEL">
+                                <option value="">全部</option>
+                            </select>
+                            </div>
+                        </div>
+                        <div class="formselect ">
+                            <label>类型</label>
+                            <div style="display: inline-block;width: 80%;">
+                            <select class="form-control" id="P_ORDER_CLASS" name="P_ORDER_CLASS">
+                                <option value="">全部</option>
+                            </select>
+                            </div>
+                        </div>
+
+
+                    </form>
+                </th>
+                 <td width="15%">
+                    <a class="retrievebtn" href="javascript:reset()" id="reset">重&nbsp;置</a>
+                    <a class="retrievebtn" href="javascript:psearch();">查&nbsp;询</a>
+                </td>
+             </tr>
+        </tbody>
+    </table>
+</div>
+<div id="bottom">
+    <div id="content"></div>
+    <footer>
+        <ul class="pager" data-ride="pager" id="page">
+        </ul>
+    </footer>
+</div>
+
+
+
+<script src="../../Lib/jquery-3.4.1.min.js"></script>
+<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+<script src="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.js"></script>
+<script src="../../Lib/select/js/select-mania.js"></script>
+<script src="../../Lib/public.js"></script>
+ <script type="text/javascript">
+     var type=$.url("P_TYPE");
+    $(document).ready(function() {
+        getSelect('TR_BASE_APPLY_XX', 'TYPE', 'P_ORDER_CLASS');
+        GetProject();
+        getSelect('TR_BASE_APPLY_XX', 'SOURCE', 'P_ORDER_SOURCE');
+        getSelect('TR_BASE_APPLY_XX', 'EM_LEVEL', 'P_EMER_LEVEL');
+        $('#P_ORDER_CLASS').selectMania({
+            themes: ['green'],
+            placeholder: '请选择',
+            removable: false,
+            ajax: false,
+        });
+        $('#P_SYSTEM_NAME').selectMania({
+            themes: ['green'],
+            placeholder: '请选择',
+            removable: false,
+            ajax: false,
+        });
+        $('#P_ORDER_SOURCE').selectMania({
+            themes: ['green'],
+            placeholder: '请选择',
+            removable: false,
+            ajax: false,
+        });
+        $('#P_EMER_LEVEL').selectMania({
+            themes: ['green'],
+            placeholder: '请选择',
+            removable: false,
+            ajax: false,
+        });
+        getdate();
+        GetTest();
+    });
+
+    function changeParams(id){
+        alert(id);
+    }
+    function psearch(){
+        var orderid=$('#P_DB_ID').val();
+        var orderName=$('#P_ORDER_NAME').val();
+        var orderClasee=$('#P_ORDER_CLASS').val();
+        var systemName=$('#P_SYSTEM_NAME').val();
+        var orderSource=$('#P_ORDER_SOURCE').val();
+        var emerLevel=$('#P_EMER_LEVEL').val();
+        var par = {
+            "P_TYPE":2,
+            "P_COUNT_TYPE":"",
+            "P_EVENT_ID": "",
+            'P_DB_ID': orderid,
+            "P_ORDER_NAME":orderName,
+            'P_SYSTEM_NAME':systemName,
+            "P_ORDER_SOURCE":orderSource,
+            'P_ORDER_CLASS': orderClasee,
+            "P_EMER_LEVEL": emerLevel,
+            'PAGE': 1,
+            'recPerPage': 10
+        };
+        webapi("/order/OperationQuery", par, function(res) {
+            $("#content").html("");
+            if(res.result == 'success') {
+                for(var i = 0; i < res.data.length; i++) {
+                    conenter(res.data[i].DB_ID, res.data[i].EVENT_ID, res.data[i].OPER_NAME, res.data[i].OPER_DSC, res.data[i].OPER_TIME, res.data[i].OPER_USER, res.data[i].STEP_NAME);
+                }
+            }
+            var userListPage = $('#page').data('zui.pager');
+            userListPage.set(res.pager.page, res.pager.recTotal, res.pager.recPerPage);
+            $('#page').on('onPageChange', function(e, state, oldState) {
+                if(state.page !== oldState.page) {
+                    var par = {
+                        "P_TYPE":2,
+                        "P_COUNT_TYPE":"",
+                        "P_EVENT_ID": "",
+                        'P_DB_ID': "",
+                        "P_ORDER_NAME": "",
+                        'P_SYSTEM_NAME': "",
+                        "P_ORDER_SOURCE": "",
+                        'P_ORDER_CLASS': "",
+                        "P_EMER_LEVEL": "",
+                        'PAGE': state.page,
+                        'recPerPage': 10
+                    };
+                    webapi("/order/OperationQuery", par, function(res) {
+                        if(res.result == 'success') {
+                            $("#content").html("");
+                            for(var i = 0; i < res.data.length; i++) {
+                                conenter(res.data[i].DB_ID, res.data[i].EVENT_ID, res.data[i].OPER_NAME, res.data[i].OPER_DSC, res.data[i].OPER_TIME, res.data[i].OPER_USER, res.data[i].STEP_NAME,res.data[i].SYSTEM_NAME,res.data[i].ORDER_SOURCE,res.data[i].ORDER_CLASS);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    }
+    function reset(){
+        $('#P_DB_ID').val("");
+        $('#P_ORDER_NAME').val("");
+        getSelect('TR_BASE_APPLY_XX', 'TYPE', 'P_ORDER_CLASS');
+        getSelect('TR_BASE_APPLY_XX', 'SOURCE', 'P_ORDER_SOURCE');
+        getSelect('TR_BASE_APPLY_XX', 'EM_LEVEL', 'P_EMER_LEVEL');
+        GetProject();
+    }
+
+    function getdate() {
+        var par = {
+            "P_EVENT_ID": "",
+            'P_DB_ID': "",
+            "P_ORDER_NAME": "",
+            'P_SYSTEM_NAME': "",
+            "P_ORDER_SOURCE": "",
+            'P_ORDER_CLASS': "",
+            "P_EMER_LEVEL": "",
+             'PAGE': 1,
+            'recPerPage': 10
+         };
+        webapi("/order/OperationQuery", par, function(res) {
+            if(res.result == 'success') {
+                for(var i = 0; i < res.data.length; i++) {
+                    conenter(res.data[i].DB_ID, res.data[i].EVENT_ID, res.data[i].OPER_NAME, res.data[i].OPER_DSC, res.data[i].OPER_TIME, res.data[i].OPER_USER, res.data[i].STEP_NAME);
+                }
+            }
+            var userListPage = $('#page').data('zui.pager');
+            userListPage.set(res.pager.page, res.pager.recTotal, res.pager.recPerPage);
+            $('#page').on('onPageChange', function(e, state, oldState) {
+                if(state.page !== oldState.page) {
+                    var par = {
+                        "P_EVENT_ID": "",
+                        'P_DB_ID': "",
+                        "P_ORDER_NAME": "",
+                        'P_SYSTEM_NAME': "",
+                        "P_ORDER_SOURCE": "",
+                        'P_ORDER_CLASS': "",
+                        "P_EMER_LEVEL": "",
+                        'PAGE': state.page,
+                        'recPerPage': 10
+                    };
+                    webapi("/order/OperationQuery", par, function(res) {
+                        if(res.result == 'success') {
+                            $("#content").html("");
+                            for(var i = 0; i < res.data.length; i++) {
+                                conenter(res.data[i].DB_ID, res.data[i].EVENT_ID, res.data[i].OPER_NAME, res.data[i].OPER_DSC, res.data[i].OPER_TIME, res.data[i].OPER_USER, res.data[i].STEP_NAME,res.data[i].SYSTEM_NAME,res.data[i].ORDER_SOURCE,res.data[i].ORDER_CLASS);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+    }
+    function GetTest(){
+        $.ajax({
+            type: 'get',
+            dataType: 'json',
+            data:{
+                "P_EVENT_ID ":"1010",
+                "P_DB_ID":"1000000038"
+            },
+            url: urlpath + '/order/getOrderBaseInfo',
+            success: function(res) {
+
+            },
+            error: function(err) {
+                alert("获取下拉数据错误,错误信息为" + err);
+            }
+        })
+    }
+    function GetProject(){
+        $.ajax({
+            type: 'get',
+            dataType: 'json',
+            url: urlpath + '/ProcessHandler/GetProject',
+            success: function(res) {
+                if(res.length > 0) {
+                    var opStr = "<option value=\"\"></option>";
+                    $.each(res, function(i, item) {
+                        opStr += "<option value=" + item.ID + ">" + item.TEXT + "</option>";
+                    });
+                    $("#P_SYSTEM_NAME").html(opStr);
+                    var sele = $('#P_SYSTEM_NAME').selectMania({
+                        themes: ['green'],
+                        placeholder: '请选择',
+                        removable: false,
+                        ajax: false,
+                    });
+                    $('#P_SYSTEM_NAME').selectMania('update');
+                }
+            },
+            error: function(err) {
+                alert("获取下拉数据错误,错误信息为" + err);
+            }
+        })
+    }
+
+    //下拉框获取数据
+    function getSelect(tableName, columnName, useId) {
+        $.ajax({
+            type: 'get',
+            dataType: 'json',
+            url: urlpath + '/ProcessHandler/GetProcessType',
+            data: {
+                "P_TABLE": tableName,
+                "P_COLUMN": columnName
+            },
+            success: function(res) {
+                if(res.length > 0) {
+                    var opStr = "<option value=\"\"></option>";
+                    $.each(res, function(i, item) {
+                        opStr += "<option value=" + item.ID + ">" + item.TEXT + "</option>";
+                    });
+                    $("#" + useId).html(opStr);
+                    var sele = $('#' + useId).selectMania({
+                        themes: ['green'],
+                        placeholder: '请选择',
+                        removable: false,
+                        ajax: false,
+                    });
+                    $('#'+useId).selectMania('update');
+                }
+            },
+            error: function(err) {
+                alert("获取下拉数据错误,错误信息为" + err);
+            }
+        })
+    }
+
+    function conenter(DB_ID, EVENT_ID, OPER_NAME,OPER_DSC,OPER_TIME,OPER_USER,STEP_NAME,SYSTEM_NAME,ORDER_SOURCE,ORDER_CLASS) {
+        var html = "";
+        html = '<div class="order_list">' +
+            '<div class="ol_title">' +
+            '<h3>工单编号：'+DB_ID+'</h3>' +
+            '<a href="javascript:toDetails('+DB_ID+','+EVENT_ID+')">查看详情</a>' +
+            '</div>' +
+            '<div class="ol_con">' +
+            '<table>' +
+            '<tbody><tr style="background-color: rgb(255, 255, 255);">' +
+            '<th rowspan="3">' +
+            '<a>' +
+            '<img src="../../Static/Img/fixStart.gif" alt="">' +
+            '<span>发布管理</span>' +
+            '</a>' +
+            '</th>' +
+            '<td>' +
+            '<em>系统名称：</em>' +
+            '<span class="olc_txt yellow_txt ">'+SYSTEM_NAME+'</span>' +
+            '<em>来源：</em>' +
+            '<span class="olc_txt">'+ORDER_SOURCE+'</span>' +
+            '<em>类型：</em>' +
+            '<span class="olc_txt">'+ORDER_CLASS+'</span>' +
+            '<em>紧急程度：</em>' +
+            '<span class="olc_txt">'+EVENT_ID+'</span>' +
+            '<em>当前节点：</em>' +
+            '<span class="olc_txt">'+STEP_NAME+'</span>' +
+            '<em>创建时间：</em>' +
+            '<span class="olc_txt">' +OPER_TIME+'</span>' +
+            '<em>创建人名称：</em>' +
+            '<span class="olc_txt last">'+OPER_USER+'</span>' +
+            '</td>' +
+            '</tr>' +
+            '<tr style="background-color: rgb(255, 255, 255);"><td><em>名称：</em>'+OPER_NAME+'</td></tr>' +
+            '<tr style="background-color: rgb(255, 255, 255);"><td><em>内容概述：</em>'+OPER_DSC+'</td></tr>' +
+            '</tbody></table>' +
+            '</div>' +
+            '</div>'
+
+        $("#content").append(html);
+    }
+    function toDetails(dbid,eventid){
+    alert(dbid+"--"+eventid);
+    }
+   </script>
+</body>
+</html>

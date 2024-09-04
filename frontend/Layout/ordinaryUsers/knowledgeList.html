@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>知识库</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.css">
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.css">
+		<link rel="stylesheet" href="../../Lib/jsTree/style.min.css">
+		<style>
+			html,
+			body {
+				background: #F9F9F9;
+				height: 98%;
+			}
+			
+			.row,
+			.col-md-3,
+			.col-md-9,
+			.panel,
+			.panel-body {
+				height: 100%;
+			}
+			
+			.panel-body {
+				overflow: auto;
+				padding: 0 15px;
+			}
+			
+			.container-fluid {
+				padding: 10px;
+			}
+			
+			.progressBox {
+				padding-top: 20px;
+				height: 70px;
+				line-height: 30px;
+				font-weight: 600;
+				font-size: 14px;
+			}
+			
+			.progressBox p span {
+				float: right;
+				color: #8798AD;
+			}
+			
+			.progress {
+				height: 5px;
+			}
+			
+			form {
+				padding: 20px 0;
+			}
+			
+			.form-group {
+				margin-bottom: 25px;
+			}
+			
+			form>button {
+				float: right;
+				margin-top: 15px;
+			}
+			
+			.clearfix {
+				height: 70px;
+				line-height: 70px;
+			}
+			
+			.clearfix h2 {
+				display: inline-block;
+				margin: 0;
+			}
+			
+			.css-a:hover {
+				text-decoration: none;
+				background: #bfcce0 !important;
+				border-radius: 2px;
+				padding: 2%;
+			}
+			
+			.css-a:focus {
+				text-decoration: none;
+				background: #bfcce0 !important;
+				border-radius: 2px;
+				padding: 2%;
+			}
+			
+			#TAG_ID {
+				/*border: 1px solid #ccc;*/
+				/*border-radius: 5px;*/
+				height: 90px;
+				overflow: auto;
+				list-style: none;
+				padding-left: 0px;
+			}
+			
+			#TAG_ID li {
+				width: auto;
+				float: left;
+				height: 24px;
+				background: #fff;
+				border:1px solid #ccc ;
+				margin: 3px 8px;
+				text-align: center;
+				cursor: pointer;
+				border-radius: 3px;
+				min-width: 60px;
+				line-height: 16px;
+				padding: 4px 8px;
+				color: #987b7b;
+			}
+			.tagChecked
+			{
+				border-color:blueviolet!important;
+				color:blueviolet!important;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-3">
+					<div class="panel">
+						<div class="panel-body" style="padding: 2px 15px 15px 15px">
+							<div style="height: 94%;">
+								<div class="input-group">
+									<div class="input-control search-box has-icon-left has-icon-right search-example" id="searchbox">
+										<input id="inputSearchExample4" type="search" class="form-control search-input empty" placeholder="问题标题搜索">
+										<label for="inputSearchExample4" class="input-control-icon-left search-icon"><i class="icon icon-search"></i></label>
+									</div>
+									<span class="input-group-btn">
+                                 	<button onclick="search()" class="btn btn-primary" type="button">搜索</button>
+                                </span>
+								</div>
+								<div class="progressBox">
+									<p>知识库问题总数 <span id="totalNum">0个</span></p>
+									<div class="progress">
+										<div class="progress-bar" role="progressbar" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100" style="width: 70%">
+										</div>
+									</div>
+								</div>
+								<div class="form-group">
+									<label class="control-label">标签</label>
+									<div class="col-sm-12" id="bqDiv" style="padding-left: 0px;">
+										<ul id="TAG_ID" name="TAG_ID">
+										</ul>
+									</div>
+								</div>
+								<div class="form-group">
+									<div class="col-sm-12" style="margin-top: 5px;margin-left: -10px;">
+											<label  class="control-label">类型</label>
+											<a href="javascript:void(0)" style="float: right;font-size: 16px;" id="addType">类型管理</a>
+									</div>
+									<div class="col-sm-12" id="bqDiv">
+										<div style="width: 100%;overflow: auto;height:260px;border: 1px  solid #acd2f3;border-radius: 3px;padding: 5px;">
+											<div  id="jsTree"></div>
+										</div>
+									</div>
+								</div>
+								<form class="">
+									<div class="form-group"  >
+										<label style="margin-top: 10px;" for="exampleInputMoney1">创建时间（开始）</label>
+										<div class="input-group date form-date" data-date="" data-date-format="dd MM yyyy" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+											<input class="form-control" size="16" type="text" value="" readonly id="timeStart">
+											<span class="input-group-addon"><span class="icon-remove"></span></span>
+											<span class="input-group-addon"><span class="icon-calendar"></span></span>
+										</div>
+										<label style="margin-top: 10px;" for="exampleInputMoney1">创建时间（结束）</label>
+										<div class="input-group date form-date" data-date="" data-date-format="dd MM yyyy" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+											<input class="form-control" size="16" type="text" value="" readonly id="timeEnd">
+											<span class="input-group-addon"><span class="icon-remove"></span></span>
+											<span class="input-group-addon"><span class="icon-calendar"></span></span>
+										</div>
+									</div>
+									<input type="hidden" id="zym" value="" />
+									<button style="margin-left: 50%;" class="btn btn-primary" type="button" onclick="javascript:search()">&#12288;查询&#12288;</button>
+								</form>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-9">
+					<div class="panel">
+						<div class="panel-body">
+							<div id="myJobsDG" class="datagrid datagrid-borderless">
+								<header class="clearfix">
+									<h2 style="color: rgb(59, 164, 255);">知识库</h2>
+									<div style="float: right;">
+										<button type="button" onclick="add('新增知识库')" class="btn btn-primary">新增</button>
+										<button class="btn btn-primary" type="button" onclick="edit('知识库编辑')">修改</button>
+										<button class="btn btn-primary" type="button" onclick="dele()">删除</button>
+									</div>
+								</header>
+								<div class="datagrid-container"></div>
+								<div class="pager"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="../../Lib/jquery-3.4.1.min.js" type="text/javascript"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js" type="text/javascript"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js" type="text/javascript"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.js" type="text/javascript"></script>
+		<script src="../../Lib/public.js" type="text/javascript"></script>
+		<script src="../../Lib/jsTree/jstree.js"></script>
+		<script type="text/javascript">
+			var column_data = [];
+			var Vsearch;
+			var butnum = [];
+			var del = 0;
+			var textname = "";
+			var newTrigger = new $.zui.ModalTrigger();
+			var treeid = "";
+			var $tree = $("#jsTree");
+			var selid = '';
+			var serchid = "";
+			$(function() {
+				//知识库数量
+				totalNum();
+				//获取标签
+				getTag();
+				//获取数据表格
+				getDataGrid();
+				// 初始化搜索框，并在选项中指定搜索文本变更事件回调函数，这样当搜索框文本发送变化时获得通知。
+				$('#searchbox').searchBox({
+					escToClear: true, // 设置点击 ESC 键清空搜索框
+					onSearchChange: function(searchKey, isEmpty) {
+						Vsearch = searchKey;
+					},
+					onPressEnter: function(event) {
+						// 处理按下 Enter 键事件
+						search();
+					}
+				});
+
+				$(".form-date").datetimepicker({
+					language: "zh-CN",
+					weekStart: 1,
+					todayBtn: 1,
+					autoclose: 1,
+					todayHighlight: 1,
+					startView: 2,
+					minView: 2,
+					forceParse: 0,
+					format: "yyyy-mm-dd"
+				});
+
+				column_data.push({
+					label: 'ID',
+					name: "KNOWLEDGE_ID",
+					width: 0.1
+				});
+				getTree();
+				$tree.on("changed.jstree", function(e, node) { //触发事件
+					if(node.selected.length) {
+
+						treeid = node.instance.get_node(node.selected[0]).id;
+ 					} //输出点击的内容
+				});
+				$("#addType").click(function() {
+					addType();
+				});
+			});
+
+			function getTree() {
+				$("#jsTree").jstree({
+					'core': {
+						"multiple": false,
+						"check_callback": true, //默认为flase，会导致无法使用修改树结构。
+						"expand_selected_onload": true,
+						'data': {
+							"url": urlpath + "/approval/getEditTypeTree?lazy",
+							"data": function(node) {
+								return {
+									"id": node.id
+								};
+							}
+						}
+					}
+				});
+				$('#jsTree').jstree().open_all();
+			}
+			//添加类型
+			function addType() {
+				newTrigger.show({
+					iframe: "newAddTree.html",
+					height: 650,
+					width: 800,
+					title: "类型配置"
+				});
+			};
+			//加载标签
+			function getTag() {
+				$.ajax({
+					type: "post",
+					url: urlpath + "/ProcessHandler/GetProcessType",
+					data: {
+						'P_TABLE': 'TR_KNOWLEDGE_TAG',
+						'P_COLUMN': 'TAG_ID'
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'json',
+					success: function(res) {
+						for(var i = 0; i < res.length; i++) {
+							var option = document.createElement("li");
+							$(option).val(res[i].ID);
+							$(option).text(res[i].TEXT);
+							$("#TAG_ID").append(option);
+						}
+						$('#TAG_ID li').on('click', function() {					
+							if($(this).hasClass("tagChecked"))
+							{
+								for(var i = 0; i < butnum.length; i++) {
+									if($(this).val() == butnum[i]) {
+										butnum.splice(i, 1);
+									}
+								}
+							}
+							else
+							{
+								butnum.push($(this).val());
+							}
+							$(this).toggleClass("tagChecked");
+/* 							var aa = 0;
+							if(butnum.length > 0) {
+								for(var i = 0; i < butnum.length; i++) {
+									if($(this).val() == butnum[i]) {
+										butnum.splice(i, 1);
+										$(this).css("border-color", "blueviolet");
+										$(this).css("color", "blueviolet");
+										aa = -1;
+									}
+								}
+								if(aa == 0) {
+									butnum.push($(this).val());
+									$(this).css("border-color", "#ccc");
+									$(this).css("color", "#987b7b");
+								}
+							} else {
+								$(this).css("border-color", "blueviolet");
+								$(this).css("color", "blueviolet");
+								butnum.push($(this).val());
+							} */
+							
+						});
+					},
+					error: function(err, error) {
+						//console.log(err);
+					}
+				});
+			}
+
+			function getDataGrid(data1) {
+				$('#myJobsDG').datagrid({
+					rowDefaultHeight: 50,
+					height: 'page',
+					checkable: true,
+					sortable: true,
+					showRowIndex: false,
+					checkByClickRow: false,
+					dataSource: {
+						cols: data1,
+						cols: [{
+								name: '',
+								label: '',
+								checkbox: true,
+								sort: false,
+								width: 0.05
+							},
+							{
+								name: 'TITLE',
+								label: '问题标题',
+								width: 0.2,
+								html: true,
+								sort: false,
+								valueOperator: {
+									getter: function(dataValue, cell, dataGrid) {
+										var KNOWLEDGE_ID = cell.config.data.KNOWLEDGE_ID;
+										var CONTENT_TOTAL = cell.config.data.CONTENT_TOTAL;
+										var html = "<a class='css-a' style='color:#3280FC; font-family: 微软雅黑;' href='javascript:lookDetails(" + KNOWLEDGE_ID + "," + CONTENT_TOTAL + ")'>" + cell.config.data.TITLE; + "</a>";
+
+										return html;
+									}
+								}
+							},
+							{
+								name: 'TYPE_NAME',
+								label: '问题类型',
+								width: 0.1
+							},
+							{
+								name: 'TAG_TOTAL',
+								label: '标签数量',
+								width: 0.1,
+								sort: false
+							},
+							{
+								name: 'CONTENT_TOTAL',
+								label: '解决办法数',
+								width: 0.1,
+								html: true,
+								sort: false
+							},
+							{
+								name: 'CREATE_TIME',
+								label: '创建时间',
+								width: 0.15
+							},
+							{
+								name: 'USER_NAME',
+								label: '创建人',
+								width: 0.1
+							},
+							{
+								name: 'CZ',
+								label: '操作',
+								width: 0.2,
+								html: true,
+								sort: false,
+								valueOperator: {
+									getter: function(dataValue, cell, dataGrid) {
+										var KNOWLEDGE_ID = cell.config.data.KNOWLEDGE_ID;
+										return "<a class='btn btn-primary' href='javascript:addContent(" + KNOWLEDGE_ID + ")'>内容补充</a>";
+									}
+								}
+							}
+						],
+						remote: function(params) {
+							return {
+								// 请求地址
+								url: urlpath + '/approval/getKnowledgeList',
+								// 请求类型
+								type: 'post',
+								// 数据类型
+								dataType: 'json',
+								xhrFields: {
+									withCredentials: true
+								},
+								crossDomain: true == !(document.all), //兼容ie
+							};
+						}
+					},
+					states: {
+						pager: {
+							page: 1,
+							recPerPage: 10
+						},
+						sortBy: {}
+					}
+				});
+				// 获取数据表格实例
+				myDataGrid = $('#myJobsDG').data('zui.datagrid');
+			}
+
+			function search() {
+				var timeStart = $("#timeStart").val();
+				var timeEnd = $("#timeEnd").val();
+
+				var str = butnum.join(","); //标签的值
+				var ID = treeid; //树的ID
+				var searchData;
+				myDataGrid.setDataSource({
+					remote: function(params) {
+						return {
+							// 请求地址
+							url: urlpath + '/approval/getKnowledgeList?P_START_TIME=' + timeStart + '&P_END_TIME=' + timeEnd + '&KEYWORD=' + Vsearch +
+								'&P_TYPE_ID=' + ID + '&P_TAG_ID=' + str,
+							// 请求类型
+							type: 'post',
+							// 数据类型
+							dataType: 'json',
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true == !(document.all), //兼容ie
+						};
+					},
+					states: {
+						pager: {
+							page: 1,
+							recPerPage: 12
+						}
+					}
+				});
+				myDataGrid.render();
+			}
+
+			function searchzy() {
+				var id = $("#zym").val();
+				myDataGrid.setDataSource({
+					remote: function(params) {
+						return {
+							// 请求地址
+							url: urlpath + '/approval/getKnowledgeList?P_START_TIME=' + '' + '&P_END_TIME=' + '' + '&KEYWORD=' + '' +
+								'&P_TYPE_ID=' + id + '&P_TAG_ID=' + '',
+							// 请求类型
+							type: 'post',
+							// 数据类型
+							dataType: 'json',
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true == !(document.all), //兼容ie
+						};
+					},
+					states: {
+						pager: {
+							page: 1,
+							recPerPage: 12
+						}
+					}
+				});
+				myDataGrid.render();
+			}
+
+			function add(title) {
+				newTrigger.show({
+					iframe: "knowledgeAddNew.html",
+					height: 790,
+					width: 850,
+					title: title
+				});
+			}
+
+			function edit(title) {
+				var data = myDataGrid.getCheckItems();
+				if(data.length < 1) {
+					new $.zui.Messager('请选择需要修改的数据！', {
+						type: 'warning' // 定义颜色主题
+					}).show();
+				} else if(data.length > 1) {
+					new $.zui.Messager('您一次只能处理一条数据！', {
+						type: 'warning' // 定义颜色主题
+					}).show();
+				} else {
+					var PID = data[0].KNOWLEDGE_ID;
+					newTrigger.show({
+						iframe: "knowledgeEdit.html?PID=" + PID,
+						height: 440,
+						width: 600,
+						title: title
+					});
+				}
+			}
+
+			function dele() {
+				var data = myDataGrid.getCheckItems();
+				if(data.length < 1) {
+					new $.zui.Messager('请选择需要删除的数据！', {
+						type: 'warning'
+					}).show();
+				} else {
+					//把要删除的id拼接起来
+					var P_KNOWLEDGE_ID = '';
+					for(var i = 0; i < data.length; i++) {
+						if(data[i] == null) {
+							P_KNOWLEDGE_ID = P_KNOWLEDGE_ID;
+						} else {
+							P_KNOWLEDGE_ID += data[i].KNOWLEDGE_ID + ',';
+						}
+					}
+					new $.zui.Messager('是否要删除这' + data.length + '条数据？', {
+						type: 'warning',
+						time: 0,
+						actions: [{
+							name: 'del',
+							icon: 'remove-sign',
+							text: '删除',
+							action: function() {
+								$.ajax({
+									type: "post",
+									url: urlpath + '/approval/knowledgeDelete',
+									data: {
+										'P_ID': P_KNOWLEDGE_ID
+									},
+									xhrFields: {
+										withCredentials: true
+									},
+									crossDomain: true == !(document.all), //兼容ie
+									dataType: 'json',
+									success: function(res) {
+										if(res == "success") {
+											new $.zui.Messager('删除成功！', {
+												type: 'success'
+											}).show();
+											setTimeout(function() {
+												updateGrid();
+											}, 500)
+										} else {
+											new $.zui.Messager('删除失败！', {
+												type: 'danger'
+											}).show();
+										}
+									}
+								});
+							}
+						}, {
+							name: 'undo',
+							icon: 'undo',
+							text: '取消',
+							action: function() { // 点击该操作按钮的回调函数
+								return;
+							}
+						}]
+					}).show();
+				}
+			}
+
+			function totalNum() {
+				$.ajax({
+					url: urlpath + '/approval/getKnowledgeCount',
+					type: 'post',
+					data: {},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'json',
+					success: function(res) {
+						$('#totalNum').text(res + "个");
+					}
+				});
+			}
+
+			//更新表格数据
+			function updateGrid() {
+				myDataGrid.setDataSource({
+					remote: function(params) {
+						return {
+							// 请求地址
+							url: urlpath + '/approval/getKnowledgeList',
+							// 请求类型
+							type: 'post',
+							// 数据类型
+							dataType: 'json',
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true == !(document.all), //兼容ie
+						};
+					}
+				});
+				myDataGrid.render();
+				totalNum();
+			}
+
+			function closeTrigger() {
+				newTrigger.close();
+			}
+			//添加内容
+			function addContent(KNOWLEDGE_ID) {
+				newTrigger.show({
+					iframe: "knowledgeContentAdd.html?PID=" + KNOWLEDGE_ID,
+					height: 800,
+					width: 850,
+					title: "知识库内容添加"
+				});
+			}
+
+			function lookDetails(KNOWLEDGE_ID, TOTAL) {
+				newTrigger.show({
+					backdrop: false,
+					iframe: "knowledgeDetails.html?PID=" + KNOWLEDGE_ID + "&P_TOTAL=" + TOTAL,
+					height: $('body').height() * 0.95,
+					width: $('body').width() * 0.80
+				});
+			}
+		</script>
+	</body>
+
+</html>

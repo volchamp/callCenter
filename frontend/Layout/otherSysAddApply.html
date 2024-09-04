@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>外围系统访问</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+    <link rel="stylesheet" href="../Lib/easyUpload/main.css">
+    <link rel="stylesheet" href="../Static/Css/default.css">
+    <link rel="stylesheet" href="../Static/Css/normalize.css">
+
+    <style>
+        .loading {
+            z-index: 101;
+            width: 100%;
+            height: 100%;
+        }
+
+        .load-indicator:before {
+            background-color: rgba(255, 255, 255, .85);
+        }
+
+        #loaderr {
+            z-index: 102;
+            position: absolute;
+            top: 48%;
+            left: 49%;
+            width: 28px;
+        }
+
+        #hanging {
+            height: 60px;
+            line-height: 60px;
+            text-align: center;
+            color: #fff;
+            cursor: pointer;
+            width: 60px;
+            border-radius: 50%;
+            padding: 0;
+            background: #3280FC;
+            position: absolute;
+            right: 0;
+            top: 45%;
+            z-index: 100;
+        }
+
+        #hanging:active {
+            background-color: #0358de;
+            -webkit-box-shadow: inset 0 4px 6px rgba(0, 0, 0, .15);
+            box-shadow: inset 0 4px 6px rgba(0, 0, 0, .15);
+        }
+
+        .modal {
+            will-change: visibility, opacity;
+            display: -webkit-box;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-box-align: center;
+            -webkit-align-items: center;
+            -ms-flex-align: center;
+            align-items: center;
+            -webkit-box-pack: center;
+            -webkit-justify-content: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow-y: auto;
+            overflow-x: hidden;
+            z-index: 1000;
+            visibility: hidden;
+            opacity: 0;
+            -webkit-transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            -webkit-transition-delay: 0s;
+            transition-delay: 0s;
+        }
+
+        .modal--active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .modal--align-top {
+            -webkit-box-align: start;
+            -webkit-align-items: flex-start;
+            -ms-flex-align: start;
+            align-items: flex-start;
+        }
+
+        .modal__bg {
+            background: transparent;
+        }
+
+        .modal__dialog {
+            height: 100%;
+            width: 80%;
+        }
+
+        .modal__content {
+            height: 100%;
+            will-change: transform, opacity;
+            position: relative;
+            padding: 1rem 2rem;
+            background: #fff;
+            background-clip: padding-box;
+            box-shadow: 0 12px 15px 0 rgba(0, 0, 0, 0.25);
+            opacity: 0;
+            -webkit-transition: all 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+            transition: all 0.25s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .modal__content iframe {
+            width: 100%;
+            height: calc(100% - 32px);
+        }
+
+        .modal__content--active {
+            opacity: 1;
+        }
+
+        .modal__close {
+            z-index: 1100;
+            cursor: pointer;
+        }
+
+        .modal__trigger {
+            position: relative;
+            display: inline-block;
+            padding: 1.2rem 2.4rem;
+            color: rgba(0, 0, 0, 0.7);
+            line-height: 1;
+            cursor: pointer;
+            background: #ffebee;
+            box-shadow: 0 2px 5px 0 rgba(0, 0, 0, 0.26);
+            -webkit-transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .modal__trigger--active {
+            z-index: 10;
+        }
+
+        .modal__trigger:hover {
+            background: #e5d3d6;
+        }
+
+        #modal__temp {
+            will-change: transform, opacity;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: #3280FC;
+            -webkit-transform: none;
+            -ms-transform: none;
+            transform: none;
+            opacity: 1;
+            -webkit-transition: opacity 0.1s ease-out, -webkit-transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            transition: opacity 0.1s ease-out, transform 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .close_btn {
+            position: absolute;
+            top: 0;
+            right: 0;
+            margin: 0.5rem;
+            padding: 0.6rem;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 50%;
+            -webkit-transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+        }
+
+        .close_btn svg {
+            width: 24px;
+            height: 24px;
+            fill: #fff;
+            pointer-events: none;
+            vertical-align: top;
+        }
+
+        .close_btn:hover {
+            background: rgba(0, 0, 0, 0.6);
+        }
+
+        .rightPanel {
+            width: auto;
+            min-width: 460px;
+            height: auto;
+            border-radius: 0;
+            position: absolute;
+        }
+
+        .rightPanel .panel-heading {
+            background: #fff;
+        }
+
+        .rightPanel .form-horizontal {
+            padding: 0 45px;
+        }
+
+        .rightPanel .form-horizontal .form-group>label {
+            position: relative;
+            bottom: 6px;
+        }
+
+        .rightPanel .list-group-item {
+            border: 0;
+        }
+
+        #loadingBtn {
+            width: 70%;
+            margin-left: 15%;
+        }
+
+        .urgent {
+            display: inline-block;
+            width: 23%;
+            cursor: pointer;
+        }
+
+        .urgent .label:empty {
+            display: inline-block;
+            width: 45px;
+            position: absolute;
+            background: #E4E4E4;
+        }
+
+        .urgent span:first-child {
+            font-size: 12px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+        <div data-loading="正在验证权限..." class="load-indicator loading" id="loading"></div>
+
+        <script src="../Lib/jquery-3.4.1.min.js"></script>
+        <script src="../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+        <script src="../Lib/easyUpload/easyUploader.js"></script>
+        <!--    <script src="../demo/node_modules/babel-polyfill/dist/polyfill.min.js"></script>-->
+        <script src="../Lib/public.js"></script>
+        <script src="../Static/Js/modal.js"></script>
+        <script src="../Lib/vue.js" type="text/javascript"></script>
+
+        <script>
+            var ACCESS_CODE = $.url("ACCESS_CODE");
+            var VALID_DATA = $("DATA");
+            $(function () {
+                $.ajax({
+                    url:urlpath+'/approval/checkSysAccess',
+                    data:{
+                        "ACCESS_CODE":ACCESS_CODE,
+                        "DATA":DATA
+                    },
+                    dataType: 'json',
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    crossDomain: true == !(document.all),
+                    success:function () {
+                        
+                    }
+                    
+                })
+            });
+        </script>
+</body>
+</html>

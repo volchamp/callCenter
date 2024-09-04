@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>知识库信息编辑</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Lib/easyUpload/main.css">
+		<link rel="stylesheet" href="../../Lib/jsTree/style.min.css">
+		<style>
+			html,
+			body {
+				font-family: "微软雅黑";
+				font-size: 14px;
+				background: #F9F9F9;
+				overflow: auto;
+			}
+			
+			.container-fluid {
+				padding: 20px;
+			}
+			
+			.form-group {
+				display: inline-flex;
+				width: 100%;
+			}
+			
+			.col-sm-9 {
+				width: 85%;
+			}
+			
+			.panel-heading {
+				margin: 0px 10px 0px 10px;
+			}
+			
+			#TAG_ID {
+				border: 1px solid #ccc;
+				border-radius: 5px;
+				height: 90px;
+				overflow: auto;
+			}
+			
+			#TAG_ID option {
+				width: auto;
+				/*height: 20px;*/
+				padding: 1px 5px;
+				background: #ccc;
+				float: left;
+				margin: 3px 8px 3px 8px;
+				text-align: center;
+				cursor: pointer;
+				border-radius: 8px;
+				display: inline-block;
+			}
+			
+			#contentDiv textarea {
+				height: 100px;
+				/*margin-bottom: 20px;*/
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-2">
+					<div class="panel" style="width: 550px;">
+						<div class="panel-body">
+							<form class="form-horizontal" id="form">
+								<div class="form-group">
+									<label class="col-sm-3 required">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;类型</label>
+										<div class="col-sm-9" id="project_select">
+										<!--<select class="chosen-select control-label form-control" data-max_drop_width="200" id="lexing"></select>-->
+										<input id="project_text" type="text" readonly class="form-control search-input" placeholder="请选择类型">
+										<input id="project_id" type="hidden">
+										<div id="treeproject" style="position:absolute;border:1px solid #3BA4FF;border-radius: 3px;border-top:0px;-moz-border-radius-topleft:0px ;-moz-border-radius-topright: 0px;overflow: auto;display: none;background: #fff;z-index:9999;max-height: 230px;width: 95.5%;font-size: 10px;"></div>
+									</div>								
+								</div>
+
+								<div class="form-group">
+									<label class="col-sm-3 control-label required">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;标题</label>
+									<div class="col-sm-9">
+										<input class="form-control" type="text" id="P_TITLE" name="P_TITLE">
+									</div>
+								</div>
+								<div class="form-group" id="bqName">
+									<label class="col-sm-3 control-label required">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;标签</label>
+									<div class="col-sm-9" id="bqDiv">
+										<div id="TAG_ID" name="TAG_ID"></div>
+									</div>
+								</div>
+								<button class="btn btn-primary" style="float:left;margin-left: 33%;margin-top: 15px;width: 200px;" onclick="submitBtn()" type="button" data-loading-text="正在提交...">提交</button>
+								<!--<button class="btn btn-primary" style="float:left;margin-left: 1%;margin-top: 15px;" onclick="closeBtn()" type="button">取消</button>-->
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script src="../../Lib/easyUpload/easyUploader.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js"></script>
+		<script src="../../Lib/jsTree/jstree.js"></script>
+		<script src="../../Lib/public.js"></script>		
+		<script>
+			var newTrigger = new $.zui.ModalTrigger();
+			var butnum = [];
+			var fileid = "";
+			var P_ID =$.url("PID");
+			var TEXTs = "";
+			var IDs = "";
+			$(function(){
+				getTag();				
+				//类型添加事件
+				var $tree = $('#treeproject').jstree({
+					'core': {
+						"multiple": false,
+						'data': {
+							"url": urlpath + "/approval/getTypeSelect?lazy",
+							"data": function(node) {
+								return {
+									"id": node.id 
+								};
+							}
+						}
+					},
+					"plugins": ["checkbox", "search"],
+					"search": {
+						"show_only_matches": true,
+						"show_only_matches_children": true
+					}
+				});
+				$tree.bind('activate_node.jstree', function(obj, e) {
+					TEXTs = e.node.text;
+					IDs = e.node.id;
+					$("#project_id").val(IDs);
+					$("#project_text").val(TEXTs);
+				})
+
+				$("#project_select").on("blur", "#project_text", function(e) {
+					$("#factory_id").val(IDs);
+					$("#factory_text").val(TEXTs);
+					setTimeout(function() {
+						$("#treeproject").hide();
+					}, 200)
+				})
+				$("#project_select").on("click", "#project_text", function() {
+					$("#factory_id").val(IDs);
+					$("#factory_text").val(TEXTs);
+					if($("#treeproject")[0].style.display == "none") {
+						$("#treeproject")[0].style.display = "block";
+					} else if($("#treeproject")[0].style.display == "block") {
+						$("#treeproject")[0].style.display = "none";
+					}
+				})
+				setTimeout(function(){
+					loadInfo(P_ID);
+				},500)
+				
+			});
+
+			//加载标签
+			function getTag(){
+				$.ajax({
+					type: "post",
+					url: urlpath + "/ProcessHandler/GetProcessType",
+					data: {
+						'P_TABLE': 'TR_KNOWLEDGE_TAG',
+						'P_COLUMN': 'TAG_ID'
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain:true==!(document.all),//兼容ie
+					dataType: 'json',
+					success: function(res) {
+						for(var i = 0; i < res.length; i++) {
+							var option = document.createElement("option");
+							$(option).val(res[i].ID);
+							$(option).text(res[i].TEXT);
+							$("#TAG_ID").append(option);
+						}
+						$('#TAG_ID option').on('click', function() {
+							var aa = 0;
+							if(butnum.length > 0) {
+								for(var i = 0; i < butnum.length; i++) {
+									if($(this).val() == butnum[i]) {
+										butnum.splice(i, 1);
+										$(this).css("background", "#CCC");
+										$(this).css("color", "black");
+										aa = -1;
+										break;
+									}
+								}
+								if(aa == 0) {
+									butnum.push($(this).val());
+									$(this).css("background", "#469AFD");
+									$(this).css("color", "white");
+								}
+							} else {
+								butnum.push($(this).val());
+								$(this).css("background", "#469AFD");
+								$(this).css("color", "white");
+							}
+						});
+					},
+					error: function(err,error) {
+						//console.log(err);
+					}
+				});
+			}
+			//获取修改时的知识库信息
+			function loadInfo(P_ID) {
+				$.ajax({
+					type: "post",
+					url: urlpath + "/approval/getKnowledgeInfoById",
+					data: {
+						'P_KNOWLEDGE_ID': P_ID
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain:true==!(document.all),//兼容ie
+					dataType: 'json',
+					success: function(res) {
+						if(res.length = 1) {
+							$("#P_TITLE").val(res[0].TITLE);
+							$("#project_id").val(res[0].TYPE_ID);							
+							var id=res[0].TYPE_ID+"";
+							var node = $('#treeproject').jstree("get_node",id);
+							$("#project_text").val(res[0].TYPE_NAME);
+							var IDS = res[0].TAG_IDS.split(',');
+							for(var i = 0; i < IDS.length; i++) {
+								$("#TAG_ID").find("option[value='" + IDS[i] + "']").css("background", "#469AFD");
+								$("#TAG_ID").find("option[value='" + IDS[i] + "']").css("color", "white");
+								butnum.push($("#TAG_ID").find("option[value='" + IDS[i] + "']").val());
+							}
+						}
+					},
+					error: function(res) {
+						// console.log("err");
+					}
+				});
+			}
+
+			// 提交按钮事件
+			function submitBtn() {
+				var P_TITLE = $("#P_TITLE").val();
+				var P_TYPE_ID=$("#project_id").val();
+				var str = butnum.join(",");
+				var data = $("#form").serializeArray();
+				if(P_TYPE_ID== ""){
+					new $.zui.Messager('类型不能为空！', {
+						type: 'danger',
+						placement: 'center'
+					}).show();
+					return false;
+				}
+				if(P_TITLE== ""){
+					new $.zui.Messager('标题不能为空！', {
+						type: 'danger',
+						placement: 'center'
+					}).show();
+					return false;
+				}
+
+				if(str.length == 0){
+					new $.zui.Messager('标签不能为空！', {
+						type: 'danger',
+						placement: 'center'
+					}).show();
+					return false;
+				}
+				data.push({
+					name: "P_TAG_ID",
+					value: str
+				});
+				data.push({
+					name: "P_TYPE_ID",
+					value: P_TYPE_ID
+				});
+				data.push({
+					name: "P_KNOWLEDGE_ID",
+					value: P_ID
+				});
+				// 验证通过，执行提交方法
+				$.ajax({
+					url: urlpath + "/approval/updateKnowledgeInfo",
+					type: "post",
+					data: data,
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain:true==!(document.all),//兼容ie
+					dataType: 'json',
+					success: function(res) {
+						if(res == "success") {
+							new $.zui.Messager('提示消息：提交成功', {
+								type: 'success',
+								placement: 'center'
+							}).show();
+							window.parent.closeTrigger();
+							window.parent.updateGrid(); //刷新列表数据
+						} else {
+							new $.zui.Messager('提示消息：提交失败', {
+								type: 'danger',
+								placement: 'center'
+							}).show();
+						}
+					},
+					error: function(res) {}
+				});
+			}
+
+			//关闭弹框按钮事件
+			function closeBtn(){
+				window.parent.closeTrigger();
+			}
+
+		</script>
+	</body>
+
+</html>

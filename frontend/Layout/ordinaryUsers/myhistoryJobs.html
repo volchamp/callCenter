@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>历史事件</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.css">
+		<link rel="stylesheet" href="../../Lib/select/css/select-mania.css" />
+		<style>
+			html,
+			body {
+				background: #F9F9F9;
+				overflow: hidden;
+			}
+			
+			.row,
+			.col-md-2,
+			.col-md-10,
+			.panel,
+			.panel-body {
+				height: 100%;
+			}
+			
+			.panel-body {
+				overflow: hidden;
+				padding: 0 15px;
+			}
+			
+			.container-fluid {
+				padding: 10px;
+			}
+			
+			.progressBox {
+				padding-top: 20px;
+				height: 70px;
+				line-height: 30px;
+				font-weight: 600;
+				font-size: 14px;
+			}
+			
+			.progressBox p span {
+				float: right;
+				color: #8798AD;
+			}
+			
+			.progress {
+				height: 5px;
+			}
+			
+			form {
+				padding: 20px 0;
+			}
+			
+			.form-group {
+				margin-bottom: 25px;
+			}
+			
+			form>button {
+				float: right;
+				margin-top: 15px;
+			}
+			
+			.clearfix {
+				height: 70px;
+				line-height: 70px;
+			}
+			
+			.clearfix h2 {
+				display: inline-block;
+				margin: 0;
+			}
+			
+			.btn-primary-new {
+				background-color: #fff;
+				border-color: #1970fc;
+				color: #3280fc;
+			}
+			
+			.btn-primary-new .active,
+			.btn-primary-new:active,
+			.btn-primary-new:focus,
+			.btn-primary-new:hover {
+				color: #fff;
+				background-color: #0a67fb;
+				border-color: #0354d4;
+				-webkit-box-shadow: 0 2px 1px rgba(0, 0, 0, .1);
+				box-shadow: 0 2px 1px rgba(0, 0, 0, .1)
+			}
+			
+			.datagrid-cell {
+				line-height: 36px;
+			}
+			
+			.datagrid-row-head .datagrid-cell {
+				padding: 0 8px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-2">
+					<div class="panel">
+						<div class="panel-body" style="padding: 30px 15px 15px 15px">
+							<!--							<div class="input-group">-->
+							<!--								<div class="input-control search-box has-icon-left has-icon-right search-example" id="searchbox">-->
+							<!--									<input id="inputSearchExample4" type="search" class="form-control search-input empty" placeholder="请输入问题名称查询">-->
+							<!--									<label for="inputSearchExample4" class="input-control-icon-left search-icon"><i class="icon icon-search"></i></label>-->
+							<!--								</div>-->
+							<!--								<span class="input-group-btn">-->
+							<!--                            <button onclick="search()" class="btn btn-primary" type="button">搜索</button>-->
+							<!--                        </span>-->
+							<!--							</div>-->
+							<input class="form-control" size="16" type="text" value="" id="inputSearch" placeholder="请输入问题名称查询">
+							<form>
+								<div class="form-group">
+									<label>问题类型</label>
+									<select class="form-control" id="jobsType" name="jobsType">
+										<option value="">全部</option>
+									</select>
+								</div>
+								<div class="form-group">
+									<label for="exampleInputMoney1">开始时间</label>
+									<div class="input-group date form-date" data-date="" data-date-format="dd MM yyyy" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+										<input class="form-control" size="16" type="text" value="" readonly id="timeStart">
+										<span class="input-group-addon"><span class="icon-remove"></span></span>
+										<span class="input-group-addon"><span class="icon-calendar"></span></span>
+									</div>
+									<!--<p style="text-align: center;margin:8px 0;color:#D2D2D2;">——</p>-->
+									<label for="exampleInputMoney1">结束时间</label>
+									<div class="input-group date form-date" data-date="" data-date-format="dd MM yyyy" data-link-field="dtp_input2" data-link-format="yyyy-mm-dd">
+										<input class="form-control" size="16" type="text" value="" readonly id="timeEnd">
+										<span class="input-group-addon"><span class="icon-remove"></span></span>
+										<span class="input-group-addon"><span class="icon-calendar"></span></span>
+									</div>
+								</div>
+								<button class="btn btn-primary" type="button" onclick="javascript:search()">&#12288;查询&#12288;</button>
+							</form>
+						</div>
+					</div>
+				</div>
+
+				<div class="col-md-10">
+					<div class="panel">
+						<div class="panel-body">
+							<header class="clearfix">
+								<h2 id="titleName">我的事件</h2>
+								<div style="float: right;">
+									<button class="btn btn-primary" type="button" onclick="myorderhistory()">我的事件</button>
+									<button class="btn btn-primary" type="button" onclick="myorderalready()" type="button">我的已办</button>
+								</div>
+							</header>
+							<div id="myJobsDG" class="datagrid datagrid-borderless" style="height: 86%;overflow: auto;">
+								<div class="datagrid-container datagrid-striped"></div>
+								<div class="pager"></div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="../../Lib/jquery-3.4.1.min.js" type="text/javascript"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js" type="text/javascript"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js" type="text/javascript"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.js" type="text/javascript"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/selectable/zui.selectable.min.js"></script>
+		<script src="../../Lib/select/js/select-mania.js"></script>
+		<script src="../../Lib/public.js"></script>
+		<script>
+			var column_data = [];
+			applyTrigger = new $.zui.ModalTrigger();
+			var Vsearch;
+			var searchUrl = "/approval/getApplyList?P_PASS=" + 1;
+			var buttonId = 108;
+			$(function() {
+
+				$.ajax({
+					type: "post",
+					url: urlpath + "/ProcessHandler/GetProcessType",
+					data: {
+						'P_TABLE': 'TR_BASE_APPLY_XX',
+						'P_COLUMN': 'TYPE'
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'json',
+					success: function(res) {
+						for(var i = 0; i < res.length; i++) {
+							var option = document.createElement("option");
+							$(option).val(res[i].TEXT);
+							$(option).text(res[i].TEXT);
+							$("#jobsType").append(option);
+						}
+						var sele = $('#jobsType').selectMania({
+							themes: ['green'],
+							placeholder: '请选择',
+							removable: false,
+							ajax: false,
+						});
+					},
+					error: function(res) {
+						// console.log("err");
+					}
+				});
+
+				$(".form-date").datetimepicker({
+					language: "zh-CN",
+					weekStart: 1,
+					todayBtn: 1,
+					autoclose: 1,
+					todayHighlight: 1,
+					startView: 2,
+					minView: 2,
+					forceParse: 0,
+					format: "yyyy-mm-dd"
+				});
+
+				column_data.push({
+					label: 'ID',
+					name: "APPLY_ID",
+					width: 0.1
+				});
+
+				//获取要显示的表格信息
+				$.ajax({
+					type: "get",
+					url: urlpath + "/approval/getApprovalColumn",
+					dataType: 'json',
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					success: function(data) {
+						if(data != null && data.length > 0) {
+							//利用循环拼接表头信息
+							$.each(data, function(i, item) {
+								if(item.name == 'EM_LEVEL') {
+									column_data.push({
+										'name': item.name,
+										'label': item.label,
+										'width': Number(item.width),
+										'html': true,
+										"sort": false,
+										'valueOperator': {
+											getter: function(dataValue, cell, dataGrid) {
+												if(dataValue == "特急" || dataValue == "紧急") {
+													return "<span style='color:red;'>紧急</span>";
+												} else if(dataValue == "加急" || dataValue == "高") {
+													return "<span style='color:#f4e60d;'>高</span>";
+												} else if(dataValue == "较急" || dataValue == "中") {
+													return "<span style='color:orange;'>中</span>";
+												} else if(dataValue == "一般" || dataValue == "低") {
+													return "<span style='color:#11bae1;'>低</span>";
+												} else {
+													return dataValue;
+												}
+											}
+										}
+									});
+								} else {
+									column_data.push({
+										'name': item.name,
+										'label': item.label,
+										'width': Number(item.width)
+									});
+								}
+
+							});
+							//向表头中加入发起时间，停留时间，和操作
+							column_data.push({
+								name: 'DEAL_USER',
+								label: '处理人',
+								html: true,
+								width: 80,
+								sort: false
+							});
+							column_data.push({
+								name: 'APPLY_STATE',
+								label: '处理状态',
+								html: true,
+								width: 80,
+								sort: false
+							});
+							column_data.push({
+								name: 'CREATE_TIME',
+								label: '发起时间',
+								html: true,
+								width: 140
+							});
+							column_data.push({
+								name: 'STAY_TIME',
+								label: '停留时间',
+								html: true,
+								width: 100,
+								sort: false
+							});
+							column_data.push({
+								name: 'RESEND_NUM',
+								label: '重发次数',
+								html: true,
+								sort: false,
+								width: 100,
+								valueOperator: {
+									getter: function(dataValue, cell, datagrid) {
+										if(dataValue == "0") {
+											return "<span style='color: #65CA4B'>无重发记录</span>";
+										} else {
+											return "<span style='color:#de1c31;'>重发" + dataValue + "次</span>";
+										}
+									}
+								}
+							});
+							column_data.push({
+								name: 'OP_TYPE',
+								label: '操作',
+								html: true,
+								sort: false,
+								width: 250,
+								valueOperator: {
+									getter: function(dataValue, cell, dataGrid) {
+										var apply_id = cell.config.data.APPLY_ID;
+										var button_id = cell.config.data.OP_TYPE;
+										var button_type = cell.config.data.APPLY_STATUS;
+										var jjcd = cell.config.data.EM_LEVEL;
+										switch(jjcd) {
+											case "特急":
+											case "紧急":
+												jjcd = 1;
+												break;
+											case "加急":
+											case "高":
+												jjcd = 2;
+												break;
+											case "较急":
+											case "中":
+												jjcd = 3;
+												break;
+											case "一般":
+											case "低":
+												jjcd = 4;
+												break;
+											default:
+												0
+												break;
+										}
+										if(button_id) {
+											var res = dataValue.replace(/openwindow\(101,PP_APPLY_ID/g,
+													"openwindowByzp(101," + apply_id + "," + button_type + "," + jjcd)
+												.replace(/PP_APPLY_ID/g, apply_id + "," + button_type);
+											return res;
+										}
+									}
+								}
+							});
+							//生成datagrid
+							getDataGrid(column_data);
+
+						}
+					},
+					error: function(err) {
+						alert('链接后台错误');
+					}
+				});
+
+			})
+
+			function getDataGrid(data1) {
+				$('#myJobsDG').datagrid({
+					rowDefaultHeight: 50,
+					height: 'page',
+					showRowIndex: false, //不显示序号
+					hoverCell: true,
+					sortable: true,
+					dataSource: {
+						cols: data1,
+						remote: function(params) {
+							return {
+								// 请求地址
+								url: urlpath + '/approval/getApplyList?P_PASS=' + 1,
+								// 请求类型
+								type: 'post',
+								// 数据类型
+								dataType: 'json',
+								xhrFields: {
+									withCredentials: true
+								},
+								crossDomain: true == !(document.all), //兼容ie
+							};
+						}
+					},
+					states: {
+						pager: {
+							page: 1,
+							recPerPage: 10
+						},
+						sortBy: {},
+						fixedLeftUntil: 1 // 固定左侧ID列
+					}
+				});
+				// 获取数据表格实例
+				myDataGrid = $('#myJobsDG').data('zui.datagrid');
+
+			}
+
+			function search() {
+				var jobsType = $("#jobsType").val();
+				var jobState = " ";
+				var timeStart = $("#timeStart").val();
+				var timeEnd = $("#timeEnd").val();
+				var keyword = $("#inputSearch").val()
+				var searchData;
+				myDataGrid.setDataSource({
+					cols: column_data,
+					remote: function(params) {
+						return {
+							// 请求地址
+							url: urlpath + searchUrl + "&P_TYPE_ID=" + jobsType + "&P_APPLY_STATE=" + jobState + "&P_START_TIME=" + timeStart + "&P_END_TIME=" + timeEnd + "&KEYWORD=" + keyword,
+							// 请求类型
+							type: 'post',
+							//							data: {
+							//								"P_TYPE_ID": jobsType,
+							//								"P_APPLY_STATE": jobState,
+							//								"P_START_TIME": timeStart,
+							//								"P_END_TIME": timeEnd
+							//							},
+							// 数据类型
+							dataType: 'json',
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true == !(document.all), //兼容ie
+						};
+					},
+					states: {
+						pager: {
+							page: 1,
+							recPerPage: 10
+						}
+					}
+				});
+				myDataGrid.render();
+
+				//			myDataGrid.search(jobState+' '+jobsType);
+			}
+
+			//催办
+			function pressorder(apply_id) {
+				applyTrigger.show({
+					height: 600,
+					width: 600,
+					title: '事件催办',
+					iframe: 'pressorder.html?P_APPLY_ID=' + apply_id
+				});
+			}
+
+			//办结按钮点击事件
+			function setOver(applyid) {
+				//使用对话框对象创建新的对话框
+				applyTrigger.show({
+					height: 400,
+					width: 600,
+					title: '事件办结',
+					iframe: 'transferredorder.html?P_APPLY_ID=' + applyid
+				});
+			}
+
+			//批量催办
+			function batchPress() {
+				var selectedItems = myDataGrid.getCheckItems();
+				if(selectedItems.length > 0) {
+					var selids = ''
+					for(var i = 0; i < selectedItems.length; i++) {
+						selids += selectedItems[i].APPLY_ID + ',';
+					}
+					selids = selids.substring(0, selectedItems.length - 1);
+					//  		applyTrigger.show({
+					//	    		height:600,
+					//	    		width:600,
+					//	    		title:'事件催办',
+					//	    		iframe:'pressorder.html?P_APPLY_ID='+apply_id
+					//  		});
+				} else {
+					(new $.zui.ModalTrigger({
+						custom: '<div class="alert alert-warnings with-icon"><i class="icon-warning-sign"></i><div class="content">请先选择数据!</div></div>'
+					})).show();
+				}
+
+			}
+
+			//关闭对话框
+			function closeDialog() {
+				applyTrigger.close();
+				//重新设置数据源信息
+				myDataGrid.setDataSource({
+					cols: column_data,
+					remote: function(params) {
+						return {
+							// 请求地址
+							url: urlpath + '/approval/getApplyList',
+							// 请求类型
+							type: 'post',
+							// 数据类型
+							dataType: 'json',
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true == !(document.all), //兼容ie
+						};
+					}
+				});
+				myDataGrid.render();
+			}
+
+			// 查询我的事件的历史信息
+			function myorderhistory() {
+				document.getElementById('titleName').textContent = "我的事件";
+				myDataGrid.setDataSource({
+					cols: column_data,
+					remote: function(params) {
+						return {
+							// 请求地址
+							url: urlpath + '/approval/getApplyList?P_PASS=' + 1,
+							// 请求类型
+							type: 'post',
+							// 数据类型
+							dataType: 'json',
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true == !(document.all), //兼容ie
+						};
+					},
+					states: {
+						pager: {
+							page: 1,
+							recPerPage: 10
+						}
+					}
+				});
+				myDataGrid.render();
+				searchUrl = "/approval/getApplyList?P_PASS=" + 1
+
+			};
+
+			function myorderalready() {
+				document.getElementById('titleName').textContent = "我的已办";
+				myDataGrid.setDataSource({
+					cols: column_data,
+					remote: function(params) {
+						return {
+							// 请求地址
+							url: urlpath + '/approval/getApplyDborderList?P_PASS=' + 1,
+							// 请求类型
+							type: 'post',
+							// 数据类型
+							dataType: 'json',
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true == !(document.all), //兼容ie
+						};
+					},
+					states: {
+						pager: {
+							page: 1,
+							recPerPage: 10
+						},
+						sortBy: {}
+					}
+				});
+				myDataGrid.render();
+				searchUrl = "/approval/getApplyDborderList?P_PASS=" + 1
+
+			}
+
+			function reload() {
+				//重新设置数据源信息
+				//重新设置数据源信息
+				myDataGrid.setDataSource({
+					cols: column_data,
+					remote: function(params) {
+						return {
+							// 请求地址
+							url: urlpath + '/approval/getApplyList',
+							// 请求类型
+							type: 'post',
+							// 数据类型
+							dataType: 'json',
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true == !(document.all), //兼容ie
+						};
+					}
+				});
+				myDataGrid.render();
+			}
+		</script>
+	</body>
+
+</html>

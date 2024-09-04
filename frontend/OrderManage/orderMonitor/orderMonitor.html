@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>人工调配</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.css">
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/chosen/chosen.min.css">
+		<link rel="stylesheet" href="../../Lib/layer/theme/default/layer.css">
+		<!--<link rel="stylesheet" href="../../Static/Css/oprationList.css" />-->
+		<link rel="stylesheet" href="../../Static/Css/moveDrop.css" />
+		<style>
+			* {
+				margin: 0px;
+			}
+			
+			html,
+			body {
+				height: 97.8%;
+			}
+			
+			.container1 {
+				width: 100%!important;
+				padding: 10px;
+				height: 100%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container1" id="multiDroppableContainer">
+			<div class="row" style="height: 100%;overflow: auto;" id="removeJobsContainer">
+				<div class="col-md-6" style="height: 100%;">
+					<div class="card" style="padding-top: 0px;">
+						<div id="daichuli" class="datagrid datagrid-borderless">
+							<header class="clearfix" style="padding: 10px 0px;">
+								<table id="myInput">
+									<tbody>
+										<tr id="order">
+
+											<td>
+												<a href="javascript:getWork(1020)">
+
+													<img src="../../Static/Img/icon/order.png" height="34" width="34" /><em>
+										<b>事件工单</b>
+										<i id="SJ"></i>
+									</em>
+												</a>
+											</td>
+											<td>
+												<a href="javascript:getWork(10100)">
+													<img src="../../Static/Img/icon/pingjia.png" height="34" width="34" />
+													<em>
+											<b>需求工单</b>
+											<i id="XQ"></i>
+										</em>
+												</a>
+											</td>
+											<td>
+												<a href="javascript:getWork(1011)">
+													<img src="../../Static/Img/icon/tiaodu.png" height="34" width="34" />
+													<em>
+											<b>发布工单</b>
+											<i id="FB"></i>
+										</em>
+												</a>
+											</td>
+											<td style="padding-right: 0px;">
+												<a href="javascript:void(0);">
+													<img src="../../Static/Img/icon/banjie.png" height="34" width="34" />
+													<em>
+											<b>全部</b>
+											<i id="all"></i>
+										</em>
+												</a>
+											</td>
+										</tr>
+									</tbody>
+								</table>
+							</header>
+							<div id="bottom" style="margin: 0px;width: 100%;">
+								<div id="content"></div>
+								<footer>
+									<ul class="pager" data-ride="pager" id="page">
+									</ul>
+								</footer>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6" style="height: 100%;">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="input-control search-box has-icon-right" id="SearchUser">
+								<input style="height: 34px;" id="Search" type="search" class="form-control search-input" placeholder="处理人/处理人所在部门或者厂家">
+								<label for="Search" class="input-control-icon-right search-icon">
+									<i class="icon icon-search"></i></label>
+							</div>
+						</div>
+
+					</div>
+					<div id="userList">
+					</div>
+					<ul class="pager" style="margin-top: 0px;" id="userListPage" data-ride="pager"></ul>
+				</div>
+
+			</div>
+		</div>
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/chosen/chosen.min.js"></script>
+		<script src="../../Lib/layer/layer.js"></script>
+		<script src="../../Static/Js/emLevel.js"></script>
+		<script src="../../Lib/public.js"></script>
+		<script src="../../Lib/all.js"></script>
+		<script type="text/javascript">
+			var myDataGrid;
+			var Emergency = 0;
+			var newTrigger = new $.zui.ModalTrigger();
+			var jobUsersPage = 1;
+			var jobUsersSerach = "";
+			var oderpage = 1;
+			var EVENTID = "";
+			$(function() {
+				WorkStatistics("");
+				multiDroppableContainer();
+				removejobs();
+				removecard();
+				//监听页码变更
+				$('#userListPage').on('onPageChange', function(e, state, oldState) {
+					if(state.page !== oldState.page) {
+						jobUsersPage = state.page;
+						getJobUsers(EVENTID);
+					}
+				});
+				$("#userList").on("mousemove", ".show-hide", function(e) {
+					var ali = document.getElementById('userList');
+					var all = ali.getElementsByClassName('show-hide');
+				});
+
+				$('#page').on('onPageChange', function(e, state, oldState) {
+					if(state.page !== oldState.page) {
+						oderpage = state.page;
+						getWork(EVENTID);
+					}
+				});
+
+			});
+
+			function getWork(eventid) {
+				EVENTID = eventid;
+				$("#" + EVENTID).children('em').css('background', '#d2d2e5');
+				$("#" + EVENTID).parent().siblings().find('a').find('em').css('background-color', '#e9eff1');
+				var parems = {
+					"P_COUNT_TYPE": 2, //工单状态
+					"P_EVENT_ID": EVENTID, //事件ID
+					"P_DB_ID": "", //--工单ID
+					"P_ORDER_NAME": "", //--工单名称
+					"P_SYSTEM_NAME": "", //--来源系统名称
+					"P_ORDER_SOURCE": "", //--工单来源名称
+					"P_ORDER_CLASS": "", //--工单类型名称
+					"P_EMER_LEVEL": "", //--紧急程度名称
+					"PAGE": oderpage, //--当前页
+					"PAGESIZE": 8, //--页码数
+				}
+				webapi("/order/getOrderManageList", parems, function(res) {
+					$("#content").html("");
+					if(res.data.length == 0) {
+						$("#content").html("<div class='loadpos'>" +
+							"<span class='nodata'></span>" +
+							"</div>");
+					} else {
+						for(var i = 0; i < res.data.length; i++) {
+							conenter(res.data[i]);
+						}
+					}
+					var userListPage = $('#page').data('zui.pager');
+					userListPage.set(res.pager.page, res.pager.recTotal, res.pager.recPerPage);
+					getJobUsers(EVENTID);
+				}, function(err) {
+					layer.alert("工单加载失败！");
+				});
+			}
+
+			function WorkStatistics(id) {
+				webapi("/order/GetOrderDddCount", "", function(res) {
+					if(res.length > 0) {
+						var num = 0;
+						var html = "";
+						var arr = ["order.png", "pingjia.png", "banjie.png", "order.png", "tiaodu.png"];
+						for(var i = 0; i < res.length; i++) {
+							html += '<td><a id=\"' + res[i].EVENT_ID + '\" onclick="getWork(' + res[i].EVENT_ID + ',this)">' +
+								'<img src="../../Static/Img/icon/' + arr[i] + '" height="34" width="34" /><em>' +
+								'<b>' + res[i].FORM_NAME + '</b><i>' + res[i].DDD_COUNT + '</i></em></a></td>';
+							num += res[i].DDD_COUNT;
+						}
+						html += '<td><a href="javascript:void(0);">' +
+							'<img src="../../Static/Img/icon/' + arr[4] + '" height="34" width="34" /><em>' +
+							'<b>全部</b><i>' + num + '</i></em></a></td>';
+						$("#order").html(html);
+						if(id == "") {
+							EVENTID = res[0].EVENT_ID;
+						} else {
+							EVENTID = id;
+						}
+						getWork(EVENTID);
+						$('#SearchUser').searchBox({
+							escToClear: true, // 设置点击 ESC 键清空搜索框
+							onSearchChange: function(searchKey, isEmpty) {
+								jobUsersSerach = searchKey;
+								getJobUsers(EVENTID);
+							}
+						});
+					}
+				}, function(err) {
+					layer.alert("工单统计加载失败！");
+				})
+			}
+			//用户拼接
+			function getJobUsers(id) {
+				var par = {
+					"P_EVENT_ID": id,
+					"P_KEYWORD": jobUsersSerach,
+					"page": jobUsersPage,
+					"recPerPage": 15, //每页条数
+					"P_SORT": "",
+					"P_ORDER": ""
+				};
+				webapi("/order/GetOrderUserDealList", par, function(result) {
+					$("#userList").empty();
+					var res = result.data;
+					var html = "";
+					var mgimg = "";
+					for(var r = 0; r < res.length; r++) {
+						html += '<div class="cardBox">' +
+							'<div class="card">' +
+							'<div class="show-hide">';
+						if(res[r].IMG_URL == undefined) {
+							mgimg = "../../Static/Img/photo.jpg";
+						} else {
+							mgimg = "";
+							mgimg = res[r].IMG_URL;
+						}
+						if(res[r].DCL_NUM == undefined) {
+							res[r].DCL_NUM = 0;
+						}
+						if(res[r].CSGD_NUM == undefined) {
+							res[r].CSGD_NUM = 0;
+						}
+						if(res[r].PJCLSC == undefined) {
+							res[r].PJCLSC = 0;
+						}
+						if(res[r].FPGD_NMU == undefined) {
+							res[r].FPGD_NMU = 0;
+						}
+						if(res[r].SIGN_STATE == 1) {
+							html += '<img src="' + mgimg + '" width="60px" height="60px" class="img-circle">' +
+								' <span style="display:none" class="rades"></span>' +
+								'<span class="text-line backgrounds2"></br></br></br>在线</span>';
+						} else if(res[r].SIGN_STATE == 2) {
+							html += '<img src="' + mgimg + '" width="60px" height="60px" class="img-circle titttt">' +
+								'<span  style="display:none" class="rades"></span><span class="text-line backgrounds2"></br></br></br>外出</span>';
+						} else {
+							html += '<img src="' + mgimg + '" width="60px" height="60px" class="img-circle titttt">' +
+								'<span style="display:none" class="rades offline"></span><span class="text-line backgrounds1"></br></br></br>离线</span>';
+						}
+						html += '<p>' +
+							'<span>' + res[r].USER_NAME + '</span><br>' +
+							'<span>' + res[r].DEPART_NAME + '</span>' +
+							'<span class="typeName"></span>' +
+							'<span class="userId">' + res[r].USER_ID + '</span>' +
+							' </p>' +
+							'</div>' +
+							'<ul>' +
+							'<li data-toggle="collapse" data-target="#pending' + r + '" data-parent="#accordion' + r + '" onclick="getPending(' + r + ')">' +
+							' <span class="pending">' + res[r].DCL_NUM + '</span><br>' +
+							'<span>待处理</span>' +
+							' </li>' +
+							' <li data-toggle="collapse" data-target="#outTime' + r + '" data-parent="#accordion' + r + '" onclick="getOutTime(' + r + ')">' +
+							' <span class="outTime">' + res[r].CSGD_NUM + '</span><br>' +
+							'<span>未处理超时</span>' +
+							' </li>' +
+							'<li>' +
+							' <span class="assignedAmount">' + res[r].FPGD_NMU + '</span><br>' +
+							'<span>分配量</span>' +
+							'</li>' +
+							' <li>' +
+							' <span class="average">' + res[r].PJCLSC + '</span><br>' +
+							'<span>平均时长</span>' +
+							'</li>' +
+							'</ul>' +
+							'</div>' +
+							'<div id="accordion' + r + '">' +
+							'<div class="collapse" id="pending' + r + '"style="min-width:290px;width:30%;position: relative;bottom: 30px;">' +
+							'<div class="panel"style="border-top:0;border-bottom:0;border-bottom-left-radius: 10px;">' +
+							'<div class="panel-body pendingDro" style="padding: 0">' +
+							'</div>' +
+							' </div>' +
+							'</div>' +
+
+							' <div class="collapse" id="outTime' + r + '"style="min-width:290px;width:30%;position: relative;bottom: 30px;">' +
+							' <div class="panel"style="border-top:0;border-bottom:0;border-bottom-left-radius: 10px;">' +
+							'<div class="panel-body outTimeDro" style="padding: 0">' +
+							'</div>' +
+							' </div>' +
+							'</div>' +
+
+							'<div class="collapse" id="assignedAmount' + r + '"style="min-width:290px;width:30%;position: relative;bottom: 30px;">' +
+							' <div class="panel" style="border-top:0;border-bottom:0;border-bottom-left-radius: 10px;">' +
+							'<div class="panel-body assignedAmountDro" style="padding: 0">' +
+							' </div>' +
+							'</div>' +
+							'</div>' +
+							' </div>' +
+							'</div>';
+						$("#userList").append(html);
+						html = "";
+					}
+					// 手动进行初始化
+					var userListPage = $('#userListPage').data('zui.pager');
+					userListPage.set(jobUsersPage, result.pager.recTotal, result.pager.recPerPage);
+				});
+			}
+			//待处理点击下拉显示操作
+			function getPending(r) {
+				if($("#pending" + r + " .pendingDro .collapseJobs .ajaxed").length != 0) {
+					return false;
+				}
+				var par = {
+					P_STATE: "1",
+					P_USER_ID: $("#accordion" + r).parent(".cardBox").find(".userId").text(),
+					P_EVENT_ID: EVENTID
+				};
+				webapi("/order/GetUserOrderItem", par, function(res) {
+					$("#pending" + r + " .pendingDro").empty();
+					for(var i = 0; i < res.length; i++) {
+						$("#pending" + r + " .pendingDro").append('<div id=\"' + res[i].DB_ID + '\" class="panel collapseJobs apply' + res[i].DB_ID + '">' +
+							'<div class="panel-body ajaxed" data-toggle="popover" data-tip-class="popover-success" ' +
+							' data-content="' + res[i].ORDER_NAME + '" title="' + res[i].CREATE_TIME + '" data-placement="top">' +
+							'<p>' + res[i].ORDER_NAME + '<span>' + res[i].CREATE_TIME + '</span></p>' +
+							' </div>' +
+							'</div>');
+						if(res[i].ORDER_NAME.length > 6) {
+							$('[data-toggle="popover"]').popover({
+								trigger: "hover"
+							});
+						}
+					}
+				})
+			}
+			//待处理超时的点击显示下拉操作
+			function getOutTime(r) {
+				if($("#outTime" + r + " .outTimeDro .collapseJobs .ajaxed").length != 0) {
+					return false;
+				} else {
+					var par = {
+						P_STATE: "2",
+						P_USER_ID: $("#accordion" + r).parent(".cardBox").find(".userId").text(),
+						P_EVENT_ID: EVENTID
+					};
+					webapi("/order/GetUserOrderItem", par, function(res) {
+						$("#outTime" + r + " .outTimeDro").empty();
+						for(var i in res) {
+							$("#outTime" + r + " .outTimeDro").append('<div id=\"' + res[i].DB_ID + '\" class="panel collapseJobs apply' + res[i].DB_ID + '">' +
+								'<div class="panel-body outTimeBody ajaxed" data-toggle="popover" data-tip-class="popover-success"' +
+								'data-content="' + res[i].ORDER_NAME + '" title="' + res[i].CREATE_TIME + '" data-placement="top">' +
+								'<p>' + res[i].ORDER_NAME + '<span>' + res[i].CREATE_TIME + '</span></p>' +
+								' </div>' +
+								'</div>');
+							if(res[i].ORDER_NAME > 6) {
+								$('[data-toggle="popover"]').popover({
+									trigger: "hover"
+								});
+							}
+						}
+					})
+				}
+
+			}
+			//拼接工单管理内容
+			function conenter(obj) {
+				var html = "";
+				if(obj.FORM_NAME == "事件管理" || obj.FORM_NAME == "发布管理") {
+					html = '<div class="order_list">' +
+						'<div class="ol_title">' +
+						'<h3 id=\"' + obj.DB_ID + '\">' + obj.FORM_NAME + ' &nbsp;编号：' + obj.DB_ID + '</h3>' +
+						'<a href="javascript:toDetails(' + obj.DB_ID + ',' + obj.EVENT_ID + ')">查看详情</a>' +
+						'<a href="javascript:toDeal(' + obj.DB_ID + ',' + obj.EVENT_ID + ')">处理</a>' +
+						'</div>' +
+						'<div class="ol_con">' +
+						'<table>' +
+						'<tbody><tr style="background-color: rgb(255, 255, 255);">' +
+						'<th rowspan="3">' +
+						'<a>' +
+						'<img src="../../Static/Img/fixStart.gif" alt="">' +
+						'<span>' + obj.FORM_NAME + '</span>' +
+						'</a>' +
+						'</th>' +
+						'<td>' +
+						'<em>系统名称：</em>' +
+						'<span class="olc_txt yellow_txt ">' + obj.SYSTEM_NAME + '</span>' +
+						'<em>来源：</em>' +
+						'<span class="olc_txt">' + obj.ORDER_SOURCE + '</span>' +
+						'<em>类型：</em>' +
+						'<span class="olc_txt">' + obj.ORDER_CLASS + '</span>' +
+						'<em>当前节点：</em>' +
+						'<span class="olc_txt last" style="color:#F4E60D;">' + obj.STEP_NAME + '</span>' +
+						'</td>' +
+						'</tr>' +
+						'<tr style="background-color: rgb(255, 255, 255);"><td><em>名称：</em>' + obj.ORDER_NAME + '</td></tr>' +
+						'<tr style="background-color: rgb(255, 255, 255);"><td><em>内容概述：</em>' + obj.ORDER_DSC + '</td></tr>' +
+						'</tbody></table>' +
+						'</div>' +
+						'</div>';
+				} else {
+					html = '<div class="order_list">' +
+						'<div class="ol_title">' +
+						'<h3 id=\"' + obj.DB_ID + '\">' + obj.FORM_NAME + ' &nbsp;编号：' + obj.DB_ID + '</h3>' +
+						'<a href="javascript:toDetails(' + obj.DB_ID + ',' + obj.EVENT_ID + ')">查看详情</a>' +
+						'<a href="javascript:toDeal(' + obj.DB_ID + ',' + obj.EVENT_ID + ')">处理</a>' +
+						'</div>' +
+						'<div class="ol_con">' +
+						'<table>' +
+						'<tbody><tr style="background-color: rgb(255, 255, 255);">' +
+						'<th rowspan="3">' +
+						'<a>' +
+						'<img src="../../Static/Img/fixStart.gif" alt="">' +
+						'<span>' + obj.FORM_NAME + '</span>' +
+						'</a>' +
+						'</th>' +
+						'<td>' +
+						'<em>系统名称：</em>' +
+						'<span class="olc_txt yellow_txt ">' + obj.SYSTEM_NAME + '</span>' +
+						'<em>来源：</em>' +
+						'<span class="olc_txt">' + obj.ORDER_SOURCE + '</span>' +
+						'<em>类型：</em>' +
+						'<span class="olc_txt">' + obj.ORDER_CLASS + '</span>' +
+						'<em>紧急程度：</em>' +
+						'<span class="olc_txt">' + setEmLevel(obj.EMER_LEVEL) + '</span>' +
+						'<em>当前节点：</em>' +
+						'<span class="olc_txt last" style="color:#F4E60D;">' + obj.STEP_NAME + '</span>' +
+						'</td>' +
+						'</tr>' +
+						'<tr style="background-color: rgb(255, 255, 255);"><td><em>名称：</em>' + obj.ORDER_NAME + '</td></tr>' +
+						'<tr style="background-color: rgb(255, 255, 255);"><td><em>内容概述：</em>' + obj.ORDER_DSC + '</td></tr>' +
+						'</tbody></table>' +
+						'</div>' +
+						'</div>';
+				}
+				$("#content").append(html);
+			}
+
+			//跳转到详情
+			function toDetails(dbid, eventid) {
+				switch(eventid) {
+					case 1000:
+						window.location = "../QuestionManage/QuestionInfo.html?P_DB_ID=" + dbid + "&P_EVENT_ID=" + eventid;
+						break;
+					case 1011:
+						window.location = '../ReleaseManage/ReleaseDetail.html?P_DB_ID=' + dbid + "&P_EVENT_ID=" + eventid;
+						break;
+					case 1020:
+						window.location = "../EventManage/EventBaseInfo.html?P_DB_ID=" + dbid + "&P_EVENT_ID=" + eventid;
+						break;
+					case 1010:
+						window.location = "../ChanageManage/ChangeBaseInfo.html?P_DB_ID=" + dbid + "&P_EVENT_ID=" + eventid;
+						break;
+				}
+			}
+
+			function toDeal(dbid, eventid) {
+				switch(eventid) {
+					case 1000:
+						window.location = "../QuestionManage/QuestionDeal.html?P_DB_ID=" + dbid + "&P_EVENT_ID=" + eventid;
+						break;
+					case 1011:
+						window.location = "../ReleaseManage/ReleaseDeal.html?P_DB_ID=" + dbid + "&P_EVENT_ID=" + eventid;
+						break;
+					case 1020:
+						window.location = "../EventManage/EventDeal.html?P_DB_ID=" + dbid + "&P_EVENT_ID=" + eventid;
+						break;
+					case 1010:
+						window.location = "../ChanageManage/ChangeDeal.html?P_DB_ID=" + dbid + "&P_EVENT_ID=" + eventid;
+						break;
+				}
+			}
+			//拖动操作
+			function multiDroppableContainer() {
+				var strid = "";
+				$('#multiDroppableContainer').droppable({
+					selector: '.order_list', // 定义允许拖放的元素
+					target: '.cardBox', //定义可放置元素
+					stopPropagation: true,
+					move: true,
+					always: function(e) {},
+					before: function(e) {},
+					start: function(e) { //开始拖动
+						$('#multiDroppableContainer .cardBox .card').append("<div class='mask'></div>");
+						$('#multiDroppableContainer .cardBox .card').mousemove(function(e) {
+							this.style.background = 'rgba(59, 164, 255, 0.97)';
+							e.currentTarget.childNodes[0].childNodes[3].childNodes[0].style.color = "#fff";
+							e.currentTarget.childNodes[0].childNodes[3].childNodes[2].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[0].childNodes[1].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[0].childNodes[3].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[2].childNodes[1].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[2].childNodes[3].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[3].childNodes[1].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[3].childNodes[3].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[5].childNodes[1].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[5].childNodes[3].style.color = "#fff";
+						});
+						$('#multiDroppableContainer .cardBox .card').mouseout(function(e) {
+							this.style.background = '#fff';
+							e.currentTarget.childNodes[0].childNodes[3].childNodes[0].style.color = "#9F9F9F";
+							e.currentTarget.childNodes[0].childNodes[3].childNodes[2].style.color = "#9F9F9F";
+							e.currentTarget.childNodes[1].childNodes[0].childNodes[1].style.color = "#E98B7F";
+							e.currentTarget.childNodes[1].childNodes[0].childNodes[3].style.color = "#9F9F9F";
+							e.currentTarget.childNodes[1].childNodes[2].childNodes[1].style.color = "#A92727";
+							e.currentTarget.childNodes[1].childNodes[2].childNodes[3].style.color = "#9F9F9F";
+							e.currentTarget.childNodes[1].childNodes[3].childNodes[1].style.color = "#4F9FE3";
+							e.currentTarget.childNodes[1].childNodes[3].childNodes[3].style.color = "#9F9F9F";
+							e.currentTarget.childNodes[1].childNodes[5].childNodes[1].style.color = "#393939";
+							e.currentTarget.childNodes[1].childNodes[5].childNodes[3].style.color = "#9F9F9F";
+						});
+					},
+					drop: function(event) { //拖动完成
+						$('#multiDroppableContainer .cardBox .card .mask').remove();
+						if(event.target) {
+							var DB_ID = event.element[0].firstChild.firstChild.id
+							var par = {
+								"P_DB_IDS": DB_ID,
+								"P_DATA_USER_ID": event.target.find(".userId").text(),
+								"P_OPER_ID": 1003,
+								"P_OPER_DSC": "",
+								"P_FUJIAN_STR": "",
+								"P_SCORE": "",
+								"P_EMER_LEVEL": ""
+							}
+							webapi("/order/orderOperAdd", par, function(res) {
+								if(res.RESULT == "SUCCESS") {
+									var assigned = event.target.find('.assignedAmount');
+									if(assigned.text() == 0) {
+										assigned.text('+1')
+									} else {
+										assigned.text('+' + (parseInt(assigned.text().substr(1)) + 1))
+									}
+									layer.alert(res.MESSAGE);
+									WorkStatistics(EVENTID);
+									getJobUsers(EVENTID);
+								} else {
+									layer.alert(res.MESSAGE);
+								}
+							})
+						}
+					},
+					drag: function(event) {}, //拖动过程
+					finish: function(e) { //拖动完成
+						$('#multiDroppableContainer .cardBox .card .mask').remove();
+					}
+				});
+			}
+
+			function removecard() {
+				$('#userList').droppable({
+					selector: '.collapseJobs', // 定义允许拖放的元素
+					target: '.cardBox',
+					start: function(e) {
+						$('#userList .cardBox .card').append("<div class='mask'></div>");
+						$('#userList .cardBox .card').mousemove(function(e) {
+							this.style.background = 'rgba(59, 164, 255, 0.97)';
+							e.currentTarget.childNodes[0].childNodes[3].childNodes[0].style.color = "#fff";
+							e.currentTarget.childNodes[0].childNodes[3].childNodes[2].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[0].childNodes[1].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[0].childNodes[3].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[2].childNodes[1].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[2].childNodes[3].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[3].childNodes[1].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[3].childNodes[3].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[5].childNodes[1].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[5].childNodes[3].style.color = "#fff";
+						});
+						$('#userList .cardBox .card').mouseout(function(e) {
+							this.style.background = '#fff';
+							e.currentTarget.childNodes[0].childNodes[3].childNodes[0].style.color = "#9F9F9F";
+							e.currentTarget.childNodes[0].childNodes[3].childNodes[2].style.color = "#9F9F9F";
+							e.currentTarget.childNodes[1].childNodes[0].childNodes[1].style.color = "#E98B7F";
+							e.currentTarget.childNodes[1].childNodes[0].childNodes[3].style.color = "#9F9F9F";
+							e.currentTarget.childNodes[1].childNodes[2].childNodes[1].style.color = "#A92727";
+							e.currentTarget.childNodes[1].childNodes[2].childNodes[3].style.color = "#9F9F9F";
+							e.currentTarget.childNodes[1].childNodes[3].childNodes[1].style.color = "#4F9FE3";
+							e.currentTarget.childNodes[1].childNodes[3].childNodes[3].style.color = "#9F9F9F";
+							e.currentTarget.childNodes[1].childNodes[5].childNodes[1].style.color = "#393939";
+							e.currentTarget.childNodes[1].childNodes[5].childNodes[3].style.color = "#9F9F9F";
+						});
+					},
+					drop: function(event) { //拖动完成
+						$('#userList .cardBox .card .mask').remove();
+						if(event.target) {
+							var BD_ID = event.element[0].id;
+							var par = {
+								"P_DB_IDS": BD_ID,
+								"P_DATA_USER_ID": event.target.find(".userId").text(),
+								"P_OPER_ID": 1003,
+								"P_OPER_DSC": "",
+								"P_FUJIAN_STR": "",
+								"P_SCORE": "",
+								"P_EMER_LEVEL": ""
+							}
+							webapi("/order/orderOperAdd", par, function(res) {
+								if(res.RESULT == "SUCCESS") {
+									var assigned = event.target.find('.assignedAmount');
+									if(assigned.text() == 0) {
+										assigned.text('+1')
+									} else {
+										assigned.text('+' + (parseInt(assigned.text().substr(1)) + 1))
+									}
+									event.target.find('.pending').text(parseInt(event.target.find('.pending').text()) + 1);
+									layer.alert("成功重派");
+									WorkStatistics(EVENTID);
+									getJobUsers(EVENTID);
+								} else {
+									layer.alert("重派失败");
+								}
+							})
+						}
+					},
+					finish: function(event) {
+
+					},
+					drag: function(event) {} //拖动过程
+				});
+			}
+
+			function removejobs() {
+				$('#removeJobsContainer').droppable({
+					selector: '.collapseJobs', // 定义允许拖放的元素
+					target: '#content',
+					start: function() {
+
+					},
+					drop: function(event) { //拖动完成
+						if(event.target) {
+							/*逻辑复杂
+							1.判断移除的事件是新增的还是超时的
+							2.移除超时事件不影响·待处理·和·分配量·
+							3.从·分配量·移除事件时，待处理数量-1
+							4.从·待处理·移除事件时，需判断是否是新分配的：
+							    (1)新分配的，·分配量·数量-1；
+							    (2)不是新分配的不影响·分配量·
+							*/
+							var par = {
+								"P_DB_IDS": event.element[0].id,
+								"P_DATA_USER_ID": "",
+								"P_OPER_ID": 1008,
+								"P_OPER_DSC": "",
+								"P_FUJIAN_STR": "",
+								"P_SCORE": "",
+								"P_EMER_LEVEL": ""
+							}
+							webapi("/order/orderOperAdd", par, function(res) {
+								if(res.RESULT == "SUCCESS") {
+									layer.alert(res.MESSAGE);
+									WorkStatistics(EVENTID);
+									getJobUsers(EVENTID);
+								} else {
+									layer.alert(res.MESSAGE);
+								}
+								//								var judge = event.element.parent().attr("class");
+								//								var pending = event.element.parents(".cardBox").find(".pending");
+								//								var assigned = event.element.parents(".cardBox").find(".assignedAmount");
+								//
+								//								if(judge.indexOf("outTime") != -1) { //超时订单移除
+								//									var outTime = event.element.parents(".cardBox").find(".outTime");
+								//									outTime.text(outTime.text() - 1);
+								//									event.element[0].remove();
+								//								} else if(judge.indexOf("assignedAmount") != -1) { //从·分配量·移除新分配
+								//									pending.text(pending.text() - 1);
+								//									assigned.text('+' + (parseInt(assigned.text().substr(1)) - 1));
+								//									event.element.parents('div[id^="accordion"]').find(".apply" + apply_id).remove();
+								//								} else if(judge.indexOf("pending") != -1) { //从·待处理·移除
+								//									var applyId = event.element.parents('div[id^="accordion"]').find(".assignedAmountDro").children(".collapseJobs").attr("class");
+								//									if(applyId != undefined) {
+								//										applyId = applyId.split(" ")[2].substr(5);
+								//									}
+								//									if(applyId == apply_id) { //新增加的
+								//										assigned.text('+' + (parseInt(assigned.text().substr(1)) - 1));
+								//									}
+								//									pending.text(pending.text() - 1);
+								//									event.element.parents('div[id^="accordion"]').find(".apply" + apply_id).remove();
+								//								}
+								//								//刷新表格
+							}, function(err) {
+
+							})
+						}
+					},
+					drag: function(event) {
+
+					},
+					finish: function(event) {
+						$('#removeJobsContainer .cardBox .card .mask').remove();
+					}
+
+				});
+			}
+		</script>
+	</body>
+
+</html>

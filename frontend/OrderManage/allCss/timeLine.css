@@ -1,0 +1,177 @@
+.container-fluid {
+    height: 100%;
+    overflow: auto;
+}
+
+
+.form-control {
+    display: inline-block;
+    width: 60%;
+}
+
+.timeline {
+    margin: 0 0 45px;
+    padding: 0;
+    position: relative;
+}
+
+.timeline::before {
+    border-radius: 0.25rem;
+    background: #dee2e6;
+    bottom: 0;
+    content: '';
+    left: 31px;
+    margin: 0;
+    position: absolute;
+    top: 0;
+    width: 4px;
+}
+
+.timeline>div {
+    margin-bottom: 15px;
+    margin-right: 10px;
+    position: relative;
+}
+
+.timeline>div::before,
+.timeline>div::after {
+    content: "";
+    display: table;
+}
+
+.timeline>div>.timeline-item {
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0.125), 0 1px 3px rgba(0, 0, 0, 0.2);
+    border-radius: 0.25rem;
+    background: #ffffff;
+    color: #495057;
+    margin-left: 60px;
+    margin-right: 15px;
+    margin-top: 0;
+    padding: 0;
+    position: relative;
+}
+
+.timeline>div>.timeline-item>.time {
+    color: #999;
+    float: right;
+    font-size: 12px;
+    padding: 10px;
+}
+
+.timeline>div>.timeline-item>.timeline-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+    color: #495057;
+    font-size: 16px;
+    line-height: 1.1;
+    margin: 0;
+    padding: 10px;
+}
+
+.timeline>div>.timeline-item>.timeline-header>a {
+    font-weight: 600;
+}
+
+.timeline>div>.timeline-item>.timeline-body,
+.timeline>div>.timeline-item>.timeline-footer {
+    padding: 10px;
+}
+
+.timeline>div>.timeline-item>.timeline-body>img {
+    margin: 10px;
+}
+
+.timeline>div>.timeline-item>.timeline-body>dl,
+.timeline>div>.timeline-item>.timeline-body ol,
+.timeline>div>.timeline-item>.timeline-body ul {
+    margin: 0;
+}
+
+.timeline>div>.timeline-item>.timeline-footer>a {
+    color: #ffffff;
+}
+
+.timeline>div>.fa,
+.timeline>div>.fas,
+.timeline>div>.far,
+.timeline>div>.fab,
+.timeline>div>.glyphicon,
+.timeline>div>.ion {
+    background: #adb5bd;
+    border-radius: 50%;
+    font-size: 20px;
+    /*height: 30px;*/
+    left: 19px;
+    /*line-height: 30px;*/
+    position: absolute;
+    text-align: center;
+    top: 0;
+    width: 30px;
+    padding:2px 0;
+}
+
+.timeline>.time-label>span {
+    border-radius: 4px;
+    background-color: #ffffff;
+    display: inline-block;
+    font-weight: 600;
+    padding: 5px;
+}
+
+.timeline-inverse>div>.timeline-item {
+    box-shadow: none;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+}
+
+.timeline-inverse>div>.timeline-item>.timeline-header {
+    border-bottom-color: #dee2e6;
+}
+
+.bg-yellow {
+    color: white !important;
+    background-color: #ffc107 !important;
+}
+
+.bg-blue {
+    color: white !important;
+    background-color: #007bff !important;
+}
+
+.bg-red {
+    color: white !important;
+    background-color: #dc3545 !important;
+}
+
+.bg-green {
+    color: white !important;
+    background-color: #28a745 !important;
+}
+
+.bg-cyan {
+    color: white !important;
+    background-color: #17a2b8 !important;
+}
+
+.bg-gray {
+    color: white !important;
+    background-color: #6c757d !important;
+}
+
+.person-info {
+    font-size: 12px;
+    color: gray;
+}
+
+.person-info >span{
+    padding-right:10px;
+}
+
+.bg-ok{
+    color: #009688 !important;
+    background-color: #ffffff !important;
+}
+
+.bg-undo{
+    color: #e91e63 !important;
+    background-color: #ffffff !important;
+}

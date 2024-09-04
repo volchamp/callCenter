@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+	<head>
+		<meta charset="UTF-8">
+		<title>规则配置</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<link rel="stylesheet" href="../../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../../Lib/zui-1.9.1-dist/dist/lib/chosen/chosen.min.css">
+		<link rel="stylesheet" href="../../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.css">
+		<link rel="stylesheet" href="../../../Lib/select/css/select-mania.css" />
+		<link rel="stylesheet" href="../../../Lib/jsTree/style.min.css">
+
+		<style>
+			.container-fluid {
+				padding: 10px;
+			}
+			
+			.tips {
+				color: red;
+				font-size: 12px;
+				float: right;
+			}
+			#factory_text{
+				display: none;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<div class="panel" style="padding: 5px;color: red;border:0px;background-color: #ffffff;border: 0px;box-shadow: inset 0 0 0 rgba(0, 0, 0, 0);">
+				<b>操作说明：</b>先在添加条件栏中添加规则需要的条件，添加条件后，点击添加按钮，之后选择规则对象，点击保存完成条件的配置
+			</div>
+			<div class="panel " style="padding: 0">
+				<div class="panel-heading">添加条件</div>
+				<div class="panel-body table-responsive">
+					<form class="form-horizontal" style="min-height: 120px;">
+						<div class="form-group">
+							<label class="col-sm-2 required">字&nbsp;&nbsp;&nbsp;&nbsp;段</label>
+							<div class="col-sm-4">
+								<select class="form-control" data-max_drop_width="200" id="ziduan">
+								</select>
+							</div>
+						</div>
+						<div class="form-group">
+							<label class="col-sm-2 required">字段值</label>
+							<div class="col-sm-9" id="ziduanzhi">
+							</div>
+						</div>
+					</form>
+					<button style="margin-left: 125px; font-size:14px ;margin-bottom: 10px;" class="btn btn-primary" id="add" onclick="addCon()" type="button">添加</button>
+				</div>
+			</div>
+
+			<div class="panel " style="padding: 0">
+<!--				<div class="panel-heading">已有条件</div>-->
+				<div class="panel-body table-responsive">
+					<table class="table table-bordered" id="rulestable">
+						<tr style="background-color: #F5F5F5;">
+							<td>字段</td>
+							<td>字段值</td>
+							<td>操作</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+
+			<div class="panel" style="padding: 0">
+				<form class="form-horizontal" style="margin-top: 20px;">
+					<div class="form-group">
+						<label class="col-sm-2 required">规则对象</label>
+						<div class=" col-sm-9">
+							<input type="hidden" class="form-control" readonly="readonly" style="width: 90px;display: inline-block;" id="factory_user" />
+							<input class="form-control" readonly="readonly" style="width: 90px; " id="factory_text" />
+							<a style="display: inline-block;font-size: 15px;margin-right: 5px;padding-top: 4px;" onclick="selectTree()" class="form-label a-hover"><i class="icon icon-plus"></i>点击选择</a>
+							<input id="factory_id" type="hidden">
+						</div>
+					</div>
+				</form>
+			</div>
+			<button style="margin-left: 40%; font-size:16px ;margin-bottom: 20px;" class="btn btn-primary" id="save" onclick="submitRule()" type="button">&#12288;保存&#12288;</button>
+		</div>
+		<script src="../../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../../Lib/jsTree/jstree.js"></script>
+		<script src="../../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script src="../../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js"></script>
+		<script src="../../../Lib/select/js/select-mania.js"></script>
+		<script src="../../../Lib/public.js"></script>
+		<script type="text/javascript">
+			var P_ID = $.url("P_ID");
+			var RULES_ID ="";
+			$(function() {
+				if(P_ID) {
+					loadInfo();
+					RULES_ID = P_ID;
+				}
+				getSelected();
+			});
+
+			function selectTree() {
+				loadwindow('450', '400', '选择规则对象', 'cogs', '../../../Layout/adminUsers/RuleManage/RuleTree.html');
+			}
+
+			//修改时加载数据
+			function loadInfo() {
+				$.ajax({
+					type: 'get',
+					url: urlpath + '/rulesconfig/ruleGetData',
+					dataType: 'json',
+					data: {
+						P_RULE_ID: P_ID
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all),
+					success: function(res) {
+						var conditions = res.condition;
+						var factorys=res.factory;
+						$("#factory_user").val(factorys[0].PD_TYPE);
+						$("#factory_text").val(factorys[0].USER_NAME);
+						$("#factory_id").val(factorys[0].USER_ID);
+						var conStr = "";
+						for(var i = 0; i < conditions.length; i++) {
+							conStr += "<tr><td style='display:none;'>" + conditions[i].FIELD + "</td><td style='display:none;'>" + conditions[i].FIELD_VALUE + "</td><td>" + conditions[i].FIELD_NAME + "</td><td>" + conditions[i].FILED_VAL + "</td><td><a onclick='delCon(this)'>删除</a></td></tr>";
+						}
+						$('#rulestable').append(conStr);
+					}
+				})
+			}
+
+			//删除条件
+			function delCon(obj) {
+				$(obj).parent().parent().remove();
+			}
+
+			//添加条件
+			function addCon() {
+				var ziduanzhi_val = "";
+				var ziduanzhi_text="";
+				var ziduan_val="";
+				var ziduan_text="";
+				var obj = document.getElementsByName("ziduanzhi");
+				for(i in obj) {
+					if(obj[i].checked) {
+						ziduanzhi_val += obj[i].value + ',';
+						ziduanzhi_text+=obj[i].offsetParent.textContent+',';
+					}
+				}
+				ziduan_val=$("#ziduan").val();
+				ziduan_text=$("#ziduan").find("option:selected")[0].text;				
+				ziduanzhi_val = ziduanzhi_val.substring(0, ziduanzhi_val.length - 1);
+				ziduanzhi_text=ziduanzhi_text.substring(0,ziduanzhi_text.length-1);
+				if($("#ziduan").val() == "") {
+					new $.zui.Messager('"字段"不能为空！', {
+						type: 'danger',
+						placement: 'center'
+					}).show();
+					return false;
+				} else if(ziduanzhi_val == "") {
+					new $.zui.Messager('"字段值"不能为空！', {
+						type: 'danger',
+						placement: 'center'
+					}).show();
+					return false;
+				}else{
+					for(var i=0;i<$('#rulestable').find('tr').length;i++){
+						if($('#rulestable').find('tr')[i].childNodes[2].textContent==ziduan_text){
+							$($('#rulestable').find('tr')[i]).remove();
+						}
+					}
+					var tdStr = "<tr><td style='display:none;'>"+ziduan_val+"</td><td style='display:none;'>"+ziduanzhi_val+"</td><td>" +$("#ziduan").find("option:selected")[0].text+ "</td><td>" +ziduanzhi_text + "</td><td><a onclick='delCon(this)'>删除</a></td></tr>";
+					$('#rulestable').append(tdStr);
+				}
+			}
+
+			function submitRule() {
+				var factory = $("#factory_id").val();
+				var factoryuser=$("#factory_user").val();
+				var type="";
+				for(var i=1;i<$("#rulestable").find('tr').length;i++){
+					if(i==1){
+						type=$('#rulestable').find('tr')[i].childNodes[0].textContent+"|"+$('#rulestable').find('tr')[i].childNodes[1].textContent;
+					}else{
+						type=type+"&"+$('#rulestable').find('tr')[i].childNodes[0].textContent+"|"+$('#rulestable').find('tr')[i].childNodes[1].textContent;
+					}
+					
+				}
+				if(factory == "") {
+					new $.zui.Messager('规则对象不能为空！', {
+						type: 'danger',
+						placement: 'center'
+					}).show();
+					return false;
+				}
+				if(type==""){
+					new $.zui.Messager('条件不能为空！', {
+						type: 'danger',
+						placement: 'center'
+					}).show();
+					return false;
+				}
+				var data = {
+					P_RULE_ID: RULES_ID,
+					P_FACTORY_ID: factory,
+					P_TYPE:factoryuser,
+                    P_GUIZEINFO:type
+				}
+				webapi('/rulesconfig/ruleConfigSave', data, function(res) {
+					if(res.result == "SUCCESS") {
+						new $.zui.Messager('提示消息：' + res.message, {
+							type: 'success',
+							placement: 'center'
+						}).show();
+						window.parent.newTrigger.close();
+						window.parent.updateGrid();
+					} else {
+						new $.zui.Messager('提示消息：' + res.message, {
+							type: 'danger',
+							placement: 'center'
+						}).show();
+					}
+				})
+			}
+
+			function getSelected() {
+				// 字段
+				$.ajax({
+					type: "post",
+					url: urlpath + "/ProcessHandler/GetProcessType",
+					data: {
+						'P_TABLE': 'TR_RULES_CONFIG',
+						'P_COLUMN': 'FIELD'
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all),
+					dataType: 'json',
+					success: function(res) {
+						var html = '';
+						var id=res[0]["TEXT"];
+						for(var r in res) {
+							html += '<option value="' + res[r]["TEXT"] + '">' + res[r]["DSC"] + '</option>'
+						}
+						getFileValueInfo(id);
+						$("#ziduan").html(html);
+						var sele = $('#ziduan').selectMania({
+							themes: ['green'],
+							placeholder: '请选择',
+							removable: false,
+							ajax: false,
+						});
+					},
+					error: function(res) {
+						new $.zui.Messager('字段获取失败', {
+							type: 'danger',
+							placement: 'center'
+						}).show();
+					}
+				});
+
+				$("#ziduan").bind("change", function() {
+					if($(this).val() == '') {
+						return;
+					} else {
+						// 字段值
+						$.ajax({
+							type: "post",
+							url: urlpath + "/rulesconfig/getFieldValue",
+							data: {
+								"P_FIELD": $(this).val()
+							},
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true == !(document.all),
+							dataType: 'json',
+							success: function(res) {
+								var html = "";
+								for(var r in res) {
+									html += '<label class="checkbox-inline">' +
+										'<input name="ziduanzhi" type="checkbox" value="' + res[r]["ID"] + '">' + res[r]["TEXT"] +
+										'</label>';
+								}
+								$("#ziduanzhi").html(html);
+							},
+							error: function(res) {
+								new $.zui.Messager('字段值获取失败', {
+									type: 'danger',
+									placement: 'center'
+								}).show();
+							}
+						});
+
+					}
+				});
+
+			}
+			function getFileValueInfo(id){
+				$.ajax({
+					type: "post",
+					url: urlpath + "/rulesconfig/getFieldValue",
+					data: {
+						"P_FIELD":id
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all),
+					dataType: 'json',
+					success: function(res) {
+						var html = "";
+						for(var r in res) {
+							html += '<label class="checkbox-inline">' +
+									'<input name="ziduanzhi" type="checkbox" value="' + res[r]["ID"] + '">' + res[r]["TEXT"] +
+									'</label>';
+						}
+						$("#ziduanzhi").html(html);
+					},
+					error: function(res) {
+						new $.zui.Messager('字段值获取失败', {
+							type: 'danger',
+							placement: 'center'
+						}).show();
+					}
+				});
+			}
+		</script>
+	</body>
+</html>

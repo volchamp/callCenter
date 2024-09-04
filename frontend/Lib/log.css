@@ -1,0 +1,125 @@
+*{
+    margin: 0;
+    padding: 0;
+}
+html,body{
+    width: 100%;
+    height: 100%;
+    font-size: 14px;
+}
+.head,.foot{
+    width: 100%;
+    height: 20%;
+    min-height: 8.57rem;
+}
+/*头部css*/
+.head>img{
+    width: auto;
+    height: 40%;
+    position: relative;
+    top: 50%; /*偏移*/
+    transform: translateY(-50%);/*向上移动自身的一半*/
+    margin-left: 10%;
+}
+/*脚部CSS*/
+.foot>p{
+    text-align: center;
+    letter-spacing: 3px;
+    font-weight: 600;
+    color: #C0C0C0;
+    /* padding-top: 20px; */
+}
+/*主体内容*/
+.content{
+    position: relative;
+    width: 100%;
+    height: 65%;
+    background-image: url(../img/logbj.png);
+    background-size: 100% 100%;
+}
+.content img{
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+.log{
+    height: 88%;
+    position: absolute;
+    background-color: #ffffff;
+    right: 250px;
+    top: 6%;
+    border-radius: 7px;
+}
+.log-head {
+    height: 20%;
+    width: 100%;
+}
+.log-content {
+    height: 55%;
+    width: 100%;
+}
+.log-btn {
+    height: 25%;
+    width: 100%;
+}
+.title,.nav {
+    margin: 0 2.5rem;
+    border-bottom: 1px solid #20CFFF;
+    height: 100%;
+    text-align: center;
+}
+.log-title {
+    position: absolute;
+    bottom: 5px;
+    width: 100%;
+    letter-spacing: 5px;
+    font-weight: 549;
+    color: #09aaf7;
+}
+.btn {
+    margin-top: 5px;
+    width: 100%;
+    height: 40px;
+    font-size: 20px;
+    letter-spacing: 3px;
+    border-width: 0;
+    border-radius: 5px;
+    background-color: #09aaf7;
+    color: #ffffff;
+    font-weight: 500;
+    outline:none;
+}
+.btn:hover{
+	color:blue;
+}
+.name,.password,.validation {
+    height: 30%;
+    width: 100%;
+    border-bottom: 1px solid #CECECE;
+    position: relative;
+}
+.name div,.password div,.validation div {
+    position: absolute;
+    bottom: 5px;
+    width: 100%;
+}
+
+label {
+    display: inline-block;
+    width: 65px;
+    margin-left: 5px;
+    text-align: left;
+    height: 35px;
+    line-height: 35px;
+}
+input {
+    display: inline-block;
+    width: 66%;
+    height: 35px;
+    outline: none;
+    border-width: 0;
+}
+
+input::-webkit-input-placeholder {
+    color: #CECECE;
+}

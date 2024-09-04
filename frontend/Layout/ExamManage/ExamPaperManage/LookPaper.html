@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>试卷预览</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+    <link rel="stylesheet" href="../../../Lib/jsTree/style.min.css">
+    <link  rel="stylesheet" href="../../../Lib/bootstrap-3.3.7-dist/css/bootstrap.css"/>
+    <link  rel="stylesheet" href="../../../Static/Css/checkboxRadito.css"/>
+    <style>
+        .paper_body{
+            padding: 10px 15% 0;
+            background-color: #f9f8f8;
+        }
+        .paperInfo{
+            text-align: center;
+            padding-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="paper_body">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                <div class="paperInfo" id="paperName" style="font-size: 30px;"></div>
+                <div class="paperInfo">
+                    卷面满分：<span id="totalScore"></span>&nbsp;分，考试时间：<span id="testTime"></span>分钟
+                </div>
+                <div class="paperInfo" id="paperDsc"></div>
+                <div id="buttons" style="padding-bottom: 10px;text-align: right">
+                    <a class='btn btn-primary' onclick='reback()'  href='javascript:void(0)' ><span class="glyphicon glyphicon-arrow-left"></span><span style='text-align: left'>&nbsp;返回</span></a>
+                </div>
+            </div>
+        </div>
+
+        <div id="questions">
+            <div id="outDiv">
+                <input id="PAPER_ID" name="PAPER_ID" type="hidden"  />
+                <input id="TEST_TIME" name="TEST_TIME" type="hidden"  />
+                <div id="innerDiv" class="innerDiv">
+                </div>
+            </div>
+        </div>
+    </div>
+<script type="text/javascript" src="../../../Lib/jquery-3.4.1.min.js" ></script>
+    <script type="text/javascript" src="../../../Lib/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+    <script type="text/javascript" src="../../../Lib/bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+    <script type="text/javascript" src="../../../Lib/zui-1.9.1-dist/dist/js/zui.min.js" ></script>
+    <script type="text/javascript" src="../../../Lib/public.js" ></script>
+    <script type="text/javascript">
+        var newTrigger = new $.zui.ModalTrigger();
+        var P_ID = $.url("P_ID");
+        $(function () {
+            getQuestion();
+        });
+
+        function getQuestion() {
+            $.ajax({
+                type:'post',
+                url:urlpath+'/exam/lookExamPaper',
+                data:{
+                    "P_ID":P_ID
+                },
+                dataType:'json',
+                xhrFields: {
+                    withCredentials: true
+                },
+                crossDomain: true,
+                success:function (res) {
+                    if(res.code== 0){
+                        new $.zui.Messager('该试卷未配置问题，请先配置问题！', {
+                            type: 'danger'
+                        }).show();
+                        window.close();
+                    }else{
+                        setBaseInfo(res.examPaper);
+                        setInfo(res.examPaper.selectQuestions);
+                    }
+                }
+            });
+        }
+
+        function setBaseInfo(examPaper) {
+            $("#paperName").text(examPaper.paperName);
+            $("#testTime").text(examPaper.testTime);
+            $("#totalScore").text(examPaper.totalScore);
+            $("#PAPER_ID").val(examPaper.id);
+            $("#TEST_TIME").val(examPaper.testTime);
+            if(examPaper.dsc){
+                $("#paperDsc").html("<span style='color: red'>考生请注意：</span>"+examPaper.dsc);
+            }
+        }
+
+        function setInfo(selectQuestions) {
+            var queStr = "";
+            $.each(selectQuestions,function (i,item) {
+                var Qtype = "";
+                switch (item.questionType) {
+                    case 1:
+                        Qtype="[单选题]";
+                        break;
+                    case 3:
+                        Qtype="[判断题]";
+                        break;
+                    case 2:
+                        Qtype="[多选题]";
+                        break;
+                    case 4:
+                        Qtype="[填空题]";
+                        break;
+                    case 5:
+                        Qtype="[简答题]";
+                        break;
+                    default:
+                        break;
+                }
+
+                queStr+="<div class='panel panel-default'>" +
+                    "<div id='title"+item.paperQuestionId+"' class='title panel-body' attr='"+item.questionType+"'>" +
+                    "<input id='PAPER_SORT' name='PAPER_SORT' type='hidden' value='"+item.paperQuestionId+"' />" +
+                    "<div id='question"+item.paperQuestionId+"' attr='"+item.questionType+"'>" ;
+                var num = i+1;
+                queStr+=num + ".&nbsp;"+item.questionContent+"("+item.score+"分)" +Qtype+
+                    "<label class='layui-form-label'>分值：</label>" +
+                    "<input type='text' name='tscore' readonly style='width: 60px;' value='"+item.score+"' />" +
+                    "<input type='hidden' value='"+item.id+"'/>" +
+                    "</div>";
+                queStr+="<ol class='ulName'>";
+                switch (item.questionType) {
+                    case 1://单选
+                        $.each(item.answers,function (j,jtem) {
+                            queStr+="<li style='margin-left: 12px;margin-top: 20px;'>" +
+                                "<input type='radio' name='"+item.id+"' id='"+jtem.id+"' value='"+jtem.id+"'/>" +
+                                "<label for='"+jtem.id+"'>"+jtem.answerName+"</label>";
+                        });
+                        break;
+                    case 2://多选
+                        $.each(item.answers,function (j,jtem) {
+                            queStr+="<li style='margin-left: 12px;margin-top: 20px;'>" +
+                                "<div class='checkbox-item'><input type='checkbox' name='"+item.id+"' id='"+jtem.id+"' value='"+jtem.id+"' />" +
+                                "<label for='"+jtem.id+"'>"+jtem.answerName+"</label></div>";
+                        });
+                        break;
+                    case 3:
+                        queStr+="<li style='margin-left: 12px;margin-top: 20px;'>" +
+                            "<input type='radio' name='"+item.id+"' id='"+item.id+1+"' value='1'>" +
+                            "<label for='"+item.id+1+"'>正确</label>" +
+                            "<input type='radio' name='"+item.id+"' id='"+item.id+2+"' value='2'>" +
+                            "<label for='"+item.id+2+"'>错误</label>";
+                        break;
+                    case 4:
+                        queStr+="<textarea rows='1' cols='25' style='margin-top:12px;margin-left:16px;border-bottom:#4A708B 1px solid; border-left: 0px solid; border-right: 0px solid; border-top: 0px solid'></textarea>";
+                        break;
+                    case 5:
+                        queStr+="<textarea rows='3' cols='40' style='margin-top:18px;margin-left:12px;border:#C1CDCD 1px solid;'></textarea>";
+                        break;
+                    default:
+                        break;
+                }
+                queStr+="</ol></div></div>"
+            });
+            $("#innerDiv").html(queStr);
+        }
+
+        function reback(){
+            window.close();
+        }
+    </script>
+</body>
+</html>

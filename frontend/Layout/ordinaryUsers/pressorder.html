@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>催办页面</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<!--<link href="../../Lib/zui-1.9.1-dist/lib/datetimepicker/datetimepicker.min.css" rel="stylesheet">-->
+		<style>
+			html,
+			body {
+				font-family: "微软雅黑";
+				font-size: 14px;
+				background: #F9F9F9;
+			}
+			
+			.container-fluid {
+				padding: 20px;
+			}
+			
+			.spanClassOne1 {
+				padding-top: 4px;
+				padding-left: 5px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-2">
+					<div class="panel" style="width: 550px;">
+						<div class="panel-body">
+							<div class="input-control search-box has-icon-right" id="searchbox">
+							</div>
+							<form class="form-horizontal" id="form">
+								<div class="panel-body">
+									<div class="form-group">
+										<div style="font-size: 18px;" for="jobsState">催办留言:</div>
+										<div style="height: 10px;"></div>
+										<textarea style="height: 100px;" id="P_URGENT_DSC" name="P_URGENT_DSC" class="form-control" placeholder="请输入"></textarea>
+									</div>
+									<div id="dxts" class="form-group" style="display: inline-flex;">
+										<div style="font-size: 18px;" for="exampleInputMoney1">短信提示: &#12288;</div>
+										<input type="radio" name="P_REMIND_TYPE" value="1"> <span class="spanClassOne1">是</span>&#12288;
+										<input type="radio" name="P_REMIND_TYPE" value="2"> <span class="spanClassOne1">否</span>&#12288;
+									</div>
+								</div>
+								<button type="button" style="margin-left: 39%; font-size:18px ;" id="submitpress" class="btn btn-primary" type="button">&#12288;催办&#12288;</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js"></script>
+		<script src="../../Lib/public.js"></script>
+		<script>
+			var apply_id = $.url("P_APPLY_ID");
+			$("#dxts").hide();
+			$('#submitpress').on('click', function() {
+				//var $btn = $(this);
+				//$btn.button('loading');
+				var data1 = $("#form").serializeArray();
+				data1.push({
+					name: "P_ID",
+					value: apply_id,
+				});
+				$.ajax({
+					type: "post",
+					url: urlpath + "/approval/OrderUrgent",
+					data: data1,
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'json',
+					success: function(res) {
+						if(res[0]["state"] == 1) {
+							new $.zui.Messager('提示消息：提交成功', {
+								type: 'success',
+								placement: 'center'
+							}).show();
+							//$btn.button(true);
+							//调用父页面上的关闭窗口
+							window.parent.closeDialog();
+						} else if(res[0]["state"] == -1) {
+							var time = 0;
+							webapi("/approval/getUrgentInterval", "", function(res) {
+								new $.zui.Messager('提示消息:不能频繁催单,' + res + '分钟催一次', {
+									type: 'danger',
+									placement: 'center'
+								}).show();
+							})
+							window.parent.reload();
+							window.parent.$.zui.modalTrigger.close();
+							return false;
+						} else {
+							new $.zui.Messager('提示消息：提交失败', {
+								type: 'danger',
+								placement: 'center'
+							}).show();
+						}
+					},
+					error: function(res) {
+						// console.log("err");
+					}
+				});
+			});
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>知识库信息</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Lib/easyUpload/main.css">
+		<!--<link href="../../Lib/zui-1.9.1-dist/lib/datetimepicker/datetimepicker.min.css" rel="stylesheet">-->
+		<style>
+			html,
+			body {
+				font-family: "微软雅黑";
+				font-size: 14px;
+				background: #F9F9F9;
+				height: 98%;
+				overflow: hidden;
+			}
+			.row{
+				height: 93%;
+			}
+			.col-md-2 {
+				 height: 100%;
+			}
+			.container-fluid {
+				padding: 10px;
+			}
+			
+			.form-group {
+				display: inline-flex;
+				width: 100%;
+			}
+			
+			.col-sm-9 {
+				width: 85%;
+			}
+			
+			.panel-heading {
+				margin: 0px 10px 0px 10px;
+			}
+			
+			#TAG_ID {
+				border: 1px solid #ccc;
+				border-radius: 5px;
+				height: 90px;
+				overflow: auto;
+			}
+			
+			#TAG_ID option {
+				width: 60px;
+				height: 20px;
+				background: #ccc;
+				float: left;
+				margin: 3px 8px 3px 8px;
+				text-align: center;
+				cursor: pointer;
+				border-radius: 8px;
+			}
+			
+			#contentDiv textarea {
+				height: 100px;
+				margin-bottom: 20px;
+			}
+			
+			#bottom_right_bottom {
+				width: 100%;
+				height: 40%;
+				padding: 1%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<div class="row" style="overflow: auto;">
+				<div class="col-md-2">
+					<div class="panel" style="width: 550px;">
+						<div class="panel-body">
+							<form class="form-horizontal" id="form1">
+								<div class="form-group">
+									<label for="inputEmail3" class="col-sm-3 control-label required">问题标题</label>
+									<div class="col-sm-9">
+										<input class="form-control" type="text" id="P_TITLE" name="P_TITLE">
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="inputEmail3" class="col-sm-3 control-label">问题描述</label>
+									<div class="col-sm-9">
+										<textarea class="form-control" rows="3" style="" placeholder="" id="P_TITLE_INFO" name="P_TITLE_INFO"></textarea>
+									</div>
+								</div>
+								<div class="form-group" id="bqName">
+									<label for="inputEmail3" class="col-sm-3 control-label">标签名称</label>
+									<div class="col-sm-9" id="bqDiv">
+										<div id="TAG_ID" name="TAG_ID">
+
+										</div>
+									</div>
+								</div>
+								<div class="form-group" id="DealName">
+									<label for="inputEmail3" class="col-sm-3 control-label required">解决办法</label>
+									<div class="col-sm-9" id="contentDiv">
+										<textarea class="form-control" rows="3" style="" placeholder="" id="P_CONTENT" name="P_CONTENT"></textarea>
+									</div>
+								</div>
+								<div id="bottom_right_bottom">
+									<label class="col-sm-3 control-label" style="float: left">办法附件</label>
+									<div class="col-sm-9">
+										<div id="uploader"></div>
+									</div>
+									<div id="fj" style="margin-left: 72px"></div>
+								</div>
+								
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<button class="btn btn-primary" style="float:left;margin-left: 33%;" id="loadingBtn" type="button" data-loading-text="正在提交...">提交
+                        </button>
+								<button class="btn btn-primary" style="float:left;margin-left: 3%;" id="closeBtn" type="button">取消
+                        </button>
+		</div>
+
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script src="../../Lib/easyUpload/easyUploader.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js"></script>
+		<script src="../../Lib/public.js"></script>
+		<script src="../../Lib/vue.js"></script>
+		<script>
+			P_ID = $.url("PID");
+			P_CONTENT = $.url("P_CONTENT");
+			var addUrl = "";
+			var butnum = [];
+			var fileid = "";
+			$(function() {
+				$('#closeBtn').on('click', function() {
+					window.parent.closeTrigger();
+				});
+
+				$('#loadingBtn').on('click', function() {
+					var $btn = $(this);
+					var data1 = $("#form1").serializeArray();
+					var str = "";
+					str = butnum.join(",");
+					data1.push({
+						name: "P_TAG_ID",
+						value: str
+					});
+					data1.push({
+						name: "P_TYPE_ID",
+						value: 1
+					});
+					if(P_ID) {
+						data1.push({
+							name: "P_KNOWLEDGE_ID",
+							value: P_ID
+						});
+					}
+					if(fileid) {
+						data1.push({
+							name: "P_CONTENT_FJ",
+							value: fileid
+						});
+					}
+					if(trim($('#P_TITLE').val()) != "") {
+						if(P_ID && (P_CONTENT == null || P_CONTENT == '')) {
+							$.ajax({
+								url: urlpath + addUrl,
+								type: "post",
+								data: data1,
+								xhrFields: {
+									withCredentials: true
+								},
+								crossDomain:true==!(document.all),//兼容ie
+								dataType: 'json',
+								success: function(res) {
+									if(res == "success") {
+										new $.zui.Messager('提示消息：提交成功', {
+											type: 'success',
+											placement: 'center'
+										}).show();
+										// 此处使用 setTimeout 来模拟你的复杂功能逻辑
+										window.parent.closeTrigger();
+										window.parent.updateGrid(); //刷新列表数据
+									} else {
+										new $.zui.Messager('提示消息：提交失败', {
+											type: 'danger',
+											placement: 'center'
+										}).show();
+									}
+								},
+								error: function(res) {}
+							});
+						} else {
+							if(trim($('#P_CONTENT').val()) != "") {
+								if(trim($("#P_TITLE_INFO").val()) != "") {
+									$.ajax({
+										url: urlpath + addUrl,
+										type: "post",
+										data: data1,
+										xhrFields: {
+											withCredentials: true
+										},
+										crossDomain:true==!(document.all),//兼容ie
+										dataType: 'json',
+										success: function(res) {
+											if(res == "success") {
+												new $.zui.Messager('提示消息：提交成功', {
+													type: 'success',
+													placement: 'center'
+												}).show();
+												// 此处使用 setTimeout 来模拟你的复杂功能逻辑
+												setTimeout(function(){
+													window.parent.closeTrigger();
+												},1000)												
+												window.parent.updateGrid(); //刷新列表数据
+											} else {
+												new $.zui.Messager('提示消息：提交失败', {
+													type: 'danger',
+													placement: 'center'
+												}).show();
+											}
+										},
+										error: function(res) {
+											//console.log("err");
+										}
+									});
+
+								} else {
+									new $.zui.Messager('问题描述不能为空或者空格！', {
+										type: 'danger',
+										placement: 'center'
+									}).show();
+								}
+							} else {
+								new $.zui.Messager('内容不能为空或者空格！', {
+									type: 'danger',
+									placement: 'center'
+								}).show();
+							}
+						}
+					} else {
+						new $.zui.Messager('标题不能为空或者空格！', {
+							type: 'danger',
+							placement: 'center'
+						}).show();
+					}
+				});
+
+				$.ajax({
+					type: "post",
+					url: urlpath + "/ProcessHandler/GetProcessType",
+					async: false,
+					data: {
+						'P_TABLE': 'TR_KNOWLEDGE_TAG',
+						'P_COLUMN': 'TAG_ID'
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain:true==!(document.all),//兼容ie
+					dataType: 'json',
+					success: function(res) {
+						for(var i = 0; i < res.length; i++) {
+							var option = document.createElement("option");
+							$(option).val(res[i].ID);
+							$(option).text(res[i].TEXT);
+							$("#TAG_ID").append(option);
+						}
+						$('#TAG_ID option').on('click', function() {
+							var aa = 0;
+							if(butnum.length > 0) {
+								for(var i = 0; i < butnum.length; i++) {
+									if($(this).val() == butnum[i]) {
+										butnum.splice(i, 1);
+										$(this).css("background", "#CCC");
+										$(this).css("color", "black");
+										aa = -1;
+										break;
+									}
+								}
+								if(aa == 0) {
+									butnum.push($(this).val());
+									$(this).css("background", "#469AFD");
+									$(this).css("color", "white");
+								}
+							} else {
+								butnum.push($(this).val());
+								$(this).css("background", "#469AFD");
+								$(this).css("color", "white");
+							}
+							//							console.log(butnum);
+						});
+					},
+					error: function(res) {
+						//console.log("err");
+					}
+				});
+				//判断是添加，修改还是添加内容
+				if(P_ID) {
+					if(P_CONTENT) {
+						//						$("#BIAOTI").text("内容添加");
+						loadInfo(P_ID, 0);
+						$("#P_TITLE").attr("readonly", "readonly");
+						$("#bqName").css("display", "none");
+						$("#P_CONTENT").css("height", "100px");
+						addUrl = "/approval/knowledgeContentAdd";
+					} else {
+						//						$("#BIAOTI").text("修改");
+						$("#bottom_right_bottom").css("display","none");
+						$("#DealName").css("display", "none");
+						loadInfo(P_ID, 1);
+						addUrl = "/approval/updateKnowledgeInfo";
+					}
+				} else {
+					addUrl = "/approval/knowledgeAdd";
+					$("#P_CONTENT").css("height", "100px");
+				}
+			});
+
+			//获取修改时的知识库信息
+			function loadInfo(P_ID, pd) {
+				$.ajax({
+					type: "post",
+					url: urlpath + "/approval/getKnowledgeInfoById",
+					data: {
+						'P_KNOWLEDGE_ID': P_ID
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain:true==!(document.all),//兼容ie
+					dataType: 'json',
+					success: function(res) {
+						//	            	console.log(res);
+						if(res.length = 1) {
+							$("#P_TITLE").val(res[0].TITLE);
+							$("#P_TITLE_INFO").val(res[0].TITLE_INFO);
+							var IDS = res[0].TAG_IDS.split(',');
+							for(var i = 0; i < IDS.length; i++) {
+								//	            			$("#TAG_ID").find("option[value='"+IDS[i]+"']").attr("selected",true);
+								$("#TAG_ID").find("option[value='" + IDS[i] + "']").css("background", "#469AFD");
+								$("#TAG_ID").find("option[value='" + IDS[i] + "']").css("color", "white");
+								butnum.push($("#TAG_ID").find("option[value='" + IDS[i] + "']").val());
+							}
+							// getfjinfo();
+							//	            		console.log(butnum);
+						}
+					},
+					error: function(res) {
+						// console.log("err");
+					}
+				});
+				if(pd == 1) {
+					$.ajax({
+						type: "post",
+						url: urlpath + "/approval/getContentInfoById",
+						data: {
+							'P_KNOWLEDGE_ID': P_ID
+						},
+						xhrFields: {
+							withCredentials: true
+						},
+						crossDomain:true==!(document.all),//兼容ie
+						dataType: 'json',
+						success: function(res) {
+							// var contentStr = "";
+							// if(res.length > 0) {
+							// 	for(var i = 0; i < res.length; i++) {
+							// 		contentStr += "<textarea class='form-control' rows='3' id='P_CONTENT_" + res[i].ID + "'>" + res[i].CONTENT + "</textarea>";
+							// 	}
+							// 	$("#contentDiv").html(contentStr);
+							// 	$('#contentDiv textarea').on('change', function() {
+							// 		var strID = $(this).attr("id");
+							// 		var P_ID = strID.substring(strID.lastIndexOf("_") + 1, strID.length);
+							// 		var P_CONTENT = $(this).val();
+							// 		$.ajax({
+							// 			type: "post",
+							// 			url: urlpath + "/approval/knowledgeContentEdit",
+							// 			async: true,
+							// 			data: {
+							// 				'P_ID': P_ID,
+							// 				'P_CONTENT': P_CONTENT
+							// 			},
+							// 			xhrFields: {
+							// 				withCredentials: true
+							// 			},
+							// 			crossDomain: true,
+							// 			dataType: 'json',
+							// 			success: function(res) {
+							// 				if(res == "success") {
+							// 					new $.zui.Messager('修改成功！', {
+							// 						type: 'success',
+							// 						placement: 'center'
+							// 					}).show();
+							// 				} else {
+							// 					new $.zui.Messager('修改失败！', {
+							// 						type: 'danger',
+							// 						placement: 'center'
+							// 					}).show();
+							// 				}
+							// 			}
+							// 		});
+							// 	});
+							// }
+
+						},
+						error: function(res) {
+							// console.log("err");
+						}
+					});
+				}
+			}
+
+			// 获取附件信息
+			function getfjinfo() {
+				$.ajax({
+					type: "post",
+					url: urlpath + "/approval/getFjInfoById",
+					data: {
+						'P_KNOWLEDGE_ID': P_ID
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain:true==!(document.all),//兼容ie
+					dataType: 'json',
+					success: function(res) {
+						var str = "";
+						if(res[0] != null) {
+							var FJ = res[0].FJ_INFO;
+							// console.log(FJ);
+							var FJ_PATH = FJ.replace(/PP_PATH/g, urlpath);
+							str += "<div class='item-heading'>" +
+								"<div class='item-content'>" +
+								"<div class='text'>" + FJ_PATH + "</div></div></div>";
+							$("#fj").html(str);
+						}
+					},
+					error: function(res) {
+						// console.log("err");
+					}
+				});
+			}
+
+			var uploader = easyUploader({
+				id: "uploader",
+				/* 渲染容器id */
+				accept: '*',
+				/* 上传类型 */
+				action: urlpath + "/approval/fuJianAdd",
+				/* 上传地址 */
+				autoUpload: true,
+				/* 是否开启自动上传 */
+				crossDomain: true,
+				/* 是否允许跨域 */
+				data: null,
+				/* 上传配置参数，依据dataFormat而不同， */
+				dataFormat: 'formData',
+				/* 上传表单类型，有formData和base64两种 */
+				dataType: 'json',
+				/* 同$.ajax，�默认返回数据格式为json */
+				headers: {
+					// testKey: 'testValue'
+				},
+				/* 上传的请求头部，视需要配置 */
+				maxCount: 5,
+				/* 最大上传文件数 */
+				maxSize: 3,
+				/* 最大上传文件体积，单位M */
+				multiple: true,
+				/* 是否开启多选上传 */
+				name: 'FILEID',
+				/* 上传的文件字段名 */
+				previewWidth: 70,
+				/* 压缩预览图的宽度，样式中高度等于宽度 */
+				processData: false,
+				/* 同$.ajax参数，这里默认为false */
+				successKey: 'code',
+				/* 标识上传成功的key */
+				successValue: 200,
+				/* 标识上传成功对应的value */
+				showAlert: true,
+				/* 是否开启alert提示 */
+				timeout: 0,
+				/* ajax请求超时时间，默认值为0，表示永不超时*/
+				withCredentials: true,
+				/* 是否支持发送 cookie 凭证信息 */
+				beforeUpload: null,
+				/* ajax上传前的回调函数 */
+				onAlert: null, //alert时的钩子
+				onChange: null, // input选中时触发
+				onError: function(err) { //上传失败时的钩子
+					new $.zui.Messager('文件上传失败', {
+						icon: 'info-sign',
+						placement: 'center', // 定义显示位置
+						time: 1500,
+						type: 'danger'
+					}).show();
+				},
+				onRemove: function(removedFiles, files) {
+					/*
+					 *批量删除时只返回removedFiles:剩下的文件信息,files为空
+					 *单个删除时返回removedFiles，files,removedFiles:剩下的文件信息,files:删除的文件信息
+					 */
+					//console.log(removedFiles);
+					fileid = "";
+					for(var i = 0; i < removedFiles.length; i++) {
+						fileid += removedFiles[i].ajaxResponse.data[0].FUJIAN_ID + ',';
+						if(i == removedFiles.length - 1) {
+							fileid += removedFiles[i].ajaxResponse.data[0].FUJIAN_ID;
+						}
+					};
+				}, //移除文件时的钩子
+				onSuccess: function(res) { //上传成功时的钩子
+					// if(fileid.indexOf(res.data[0].FUJIAN_ID) == -1) {
+					// 	fileid += res.data[0].FUJIAN_ID + ',';
+					// }
+					if(res.code=="200"){
+						if(fileid.indexOf(res.data[0].FUJIAN_ID) == -1) {
+							fileid += res.data[0].FUJIAN_ID + ',';
+						}
+					}else{
+						new $.zui.Messager('系统暂只支持上传.jpg,.png,.gif,.txt,.pdf,.docx,.doc,.xlsx,.xls,.zip,.ppt,.pptx格式的文件!', {
+							icon: 'info-sign',
+							placement: 'center', // 定义显示位置
+							time: 1500,
+							type: 'danger'
+						}).show();
+					}
+				}
+			});
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,548 @@
+			.row {
+				margin-top: 1.5%;
+				height: calc(100% - 1%);
+			}
+			
+			.userInfo {
+				padding: 0;
+			}
+			
+			.userInfo table {
+				width: 100%;
+			}
+			
+			.userInfo table tr:first-child {
+				border-bottom: 1px solid #DDD;
+			}
+			
+			.userInfo table tr td {
+				height: 65px;
+				width: 50%;
+				padding: 0 0 0 15px;
+			}
+			
+			.userInfo table tr:first-child td {
+				padding-bottom: 15px;
+			}
+			
+			.userInfo .user {
+				display: inline-block;
+				position: relative;
+				top: 15px;
+				left: 20px;
+			}
+			
+			.userInfo .user span:first-child {
+				font-size: 18px;
+			}
+			
+			.userInfo .user span:last-child {
+				font-size: 12px;
+				color: #C9C9C9;
+			}
+			
+			.task td:nth-child[1] {
+				padding-right: 15px;
+			}
+			
+			.userInfo .task td {
+				padding-top: 3%;
+			}
+			
+			.userInfo .task p {
+				color: #fff;
+			}
+			
+			.userInfo .task span {
+				font-size: 28px;
+			}
+			
+			.userInfo .task .progress {
+				height: 5px;
+				width: 70%;
+				margin-bottom: 0;
+				margin: auto;
+			}
+			
+			.score {
+				padding: 2% 1% 1% 1% !important;
+			}
+			
+			.score p {
+				text-align: center;
+				margin: 0;
+				font-size: 18px;
+				color: #f1b684;
+			}
+			
+			.score .icon {
+				/*font-size: 22px;*/
+				color: #D6D4D4;
+			}
+			
+			.score .icon-star {
+				color: #FFE45B;
+			}
+			
+			.myPanel div {
+				width: 40px;
+				height: 40px;
+				line-height: 50px;
+				text-align: center;
+				border-radius: 20px;
+				background: #39A5FE;
+				color: #fff;
+				display: inline-block;
+				position: relative;
+				top: 3px;
+			}
+			
+			.myPanel .label-badge {
+				padding: 3px;
+				font-size: 10px;
+				position: relative;
+				bottom: 10px;
+			}
+			
+			.tipMessage {
+				font-size: 18px;
+				padding: 10px 15px;
+				height: 45px;
+				overflow: hidden;
+			}
+			
+			.tipMessage .icon {
+				font-size: 25px;
+				color: #3BA4FF;
+				position: absolute;
+				top: 1%;
+			}
+			
+			.card {
+				padding: 1%;
+				background: #fff;
+			}
+			
+			.clearfix {
+				height: 38px;
+				line-height: 38px;
+			}
+			
+			.clearfix span {
+				font-size: 16px;
+			}
+			
+			.clearfix a {
+				float: right;
+			}
+			
+			.datagrid-row {
+				line-height: 34px;
+			}
+			
+			.task td .task-td {
+				cursor: pointer;
+				text-align: center;
+			}
+			
+			#scollNotice {
+				margin-bottom: 0;
+				list-style: none;
+				margin-left: 40px;
+			}
+			
+			#scollNotice li {
+				height: 45px;
+				cursor: pointer;
+			}
+			
+			#scollNotice .createTime {
+				float: right;
+				color: #D6D4D4;
+				font-size: 15px;
+			}
+			
+			.modal-dialog {
+				overflow: hidden;
+			}
+			
+			#collectNum {
+				display: inline-block;
+			}
+			
+			.btn-primary-new {
+				background-color: #fff;
+				border-color: #1970fc;
+				color: #3280fc;
+			}
+			
+			.btn-primary-new.active,
+			.btn-primary-new:active,
+			.btn-primary-new:focus,
+			.btn-primary-new:hover {
+				color: #fff;
+				background-color: #0a67fb;
+				border-color: #0354d4;
+				-webkit-box-shadow: 0 2px 1px rgba(0, 0, 0, .1);
+				box-shadow: 0 2px 1px rgba(0, 0, 0, .1)
+			}
+			
+			.datagrid-cell-head {
+				padding: 0 8px;
+			}
+			
+			.datagrid-sorter {
+				right: 8px;
+			}
+			
+			.modal-dialog {
+				border: 1px solid rgb(59, 164, 255);
+			}
+			
+			#wtdapply {
+				position: absolute;
+				right: 35px;
+				top: 5px;
+				font-size: 15px;
+			}
+			
+			#ladeCount {
+				color: red;
+			}
+			
+			#form1 {
+				display: inline-flex;
+				width: 85%;
+				margin-left: 30px;
+			}
+			
+			#form1 select {
+				width: 20%;
+				margin: 5px 20px 0px 5px;
+			}
+			
+			a:hover {
+				text-decoration: none;
+			}
+			
+			.task-td {
+				width: 40%;
+				height: 47%;
+				border-radius: 5px;
+				padding: 2%;
+				float: left;
+				margin-left: 5%;
+				margin-bottom: 2%;
+				text-align: left;
+				cursor: pointer;
+				font-weight: bold;
+				font-size: 14px;
+			}
+			
+			.task-td:hover {
+				border: 1px solid #3BA4FF;
+				background: #3BA4FF;
+				box-shadow: 3px 3px 3px 3px #3BA4FF;
+				color: #ffffff;
+				font-weight: bold;
+			}
+			
+			#scollNotice li {
+				cursor: pointer;
+			}
+			
+			#scollNotice li:hover {
+				color: #3BA4FF;
+			}
+			
+			.task-td < p {
+				color: #fff;
+			}
+			
+			.panel {
+				margin-bottom: 3%;
+				height: 8%;
+				min-height: 66px;
+			}
+			
+			.panel-body {
+				padding: 2% 4% 4% 4%;
+			}
+			
+			.userInfo {
+				padding: 0px;
+			}
+			
+			.myPanel {
+				height: 100%;
+				line-height: 100%;
+				/*				padding: 0% 8%;*/
+				font-size: 20px;
+			}
+			
+			.panell {
+				background-color: #fff;
+				border: 1px solid transparent;
+				border-color: #ddd;
+				border-radius: 4px;
+				-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+				box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+				height: 36%;
+				margin-bottom: 4%;
+				min-height: 260px;
+			}
+			
+			.panel2 {
+				background-color: #fff;
+				border: 1px solid transparent;
+				border-color: #ddd;
+				border-radius: 4px;
+				-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+				box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+				height: 55%;
+				margin-bottom: 4%;
+				min-height: 260px;
+			}
+			
+			.panel3 {
+				background-color: #fff;
+				border: 1px solid transparent;
+				border-color: #ddd;
+				border-radius: 4px;
+				-webkit-box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+				box-shadow: 0 1px 1px rgba(0, 0, 0, .05);
+				height: 79%;
+				margin-bottom: 4%;
+				min-height: 260px;
+			}
+			
+			.col-md-3 {
+				height: 98%;
+			}
+			
+			.progress {
+				height: 8px!important;
+				margin-bottom: 0px !important;
+			}
+			
+			.boday-top {
+				border-bottom: 1px solid #ddd;
+				padding: 2% 2% 2% 1px;
+				height: 28%;
+			}
+			
+			.gg-top {
+				border-bottom: 1px solid #ddd;
+				padding: 2% 2% 2% 1px;
+				height: 10%;
+				color: #007CFF;
+				font-size: 18px;
+			}
+			
+			.container-fluid {
+				padding: 0% 5%;
+			}
+			
+			.formselect {
+				float: left;
+				width: 23%;
+			}
+			
+			.select-mania {
+				width: 24%!important;
+				margin: 0px 3px;
+			}
+			
+			.select-mania-values,
+			.select-mania-inner,
+			.select-mania-value,
+			.select-mania-text,
+			.select-mania-value-text {
+				height: 38px!important;
+			}
+			
+			.select-mania-value {
+				margin-top: -10px;
+			}
+			
+			.icon-img {
+				width: 60px;
+				height: 60px;
+				margin-top: -12px;
+				margin-left: 4px;
+			}
+			
+			.panel {
+				margin-bottom: 3%;
+				height: 40%;
+				min-height: 90px;
+				width: 200px;
+			}
+			
+			.focus {
+				border-bottom: 0.1em solid #ff4902 !important;
+				color: #ff4902 !important;
+			}
+			
+			.load-indicator:after {
+				content: '\e97b';
+				color: #ff4902
+			}
+			
+			.new_event {
+				margin-top: 10px;
+				padding: 0 10px;
+				border: 1px solid #fff;
+				border-radius: 3px;
+				display: inline-block;
+				*zoom: 1;
+				*display: inline;
+				line-height: 20px;
+			}
+			
+			.fs_nav {
+				position: relative;
+				border-bottom: 1px solid #dddddd;
+				height: 56px;
+				color: #333333;
+				font-size: 12px "微软雅黑";
+				z-index: 0;
+				display: block;
+			}
+			
+			.fs_nav .fsnav_con {
+				padding: 0 15px;
+				position: absolute;
+				left: 0;
+				top: 0;
+				height: 57px;
+			}
+			
+			.container-fluid {
+				padding: 10px;
+				width: 100%;
+			}
+			
+			.fs_nav .fsnav_con h3 {
+				float: left;
+				margin-right: 50px;
+				color: #999999;
+				font-size: 19px !important;
+				font-weight: normal;
+				line-height: 55px;
+			}
+			
+			#bottom {
+				margin: 10px 15px;
+				width: 98.3%;
+				height: auto;
+				float: left;
+			}
+			
+			#bottom .order_list {
+				margin-bottom: 15px;
+				border: 1px solid #dbdcdb;
+				color: #3c3c3c;
+				font-size: 12px;
+			}
+			
+			#bottom .ol_title {
+				padding: 0 15px;
+				background: #eaf8ff;
+				height: 35px;
+				color: #3c3c3c;
+				line-height: 35px;
+			}
+			
+			#bottom h3 {
+				font-size: 16px;
+				margin-top: 10px;
+				margin-bottom: 10px;
+				font-family: "Helvetica Neue", Helvetica, Tahoma, Arial, 'PingFang SC', 'Source Han Sans CN', 'Source Han Sans', 'Source Han Serif', 'Hiragino Sans GB', 'WenQuanYi Micro Hei', 'Microsoft YaHei', sans-serif;
+				font-weight: 700;
+				line-height: 1.1;
+				color: inherit;
+				width: 50%;
+				display: inline-block;
+			}
+			
+			#bottom .order_list .ol_title a {
+				float: right;
+				display: block;
+				height: 16px;
+				width: 60px;
+				color: inherit;
+				text-decoration: none;
+				cursor: pointer;
+				background-color: transparent;
+				color: #7FC2FF;
+			}
+			
+			#bottom.order_list .ol_con table {
+				width: auto;
+				border-collapse: collapse;
+				border-spacing: 0;
+			}
+			
+			#bottom th {
+				font-weight: bold;
+				text-align: -internal-center;
+				display: table-cell;
+				vertical-align: inherit;
+			}
+			
+			#bottom .order_list .ol_con th a {
+				float: left;
+				margin: 0 20px 0 5px;
+				border: 1px solid #ffffff;
+				/*padding: 5px 10px;*/
+				display: block;
+				text-align: center;
+				width: 60px;
+				height: 60px;
+				color: inherit;
+				text-decoration: none;
+				cursor: pointer;
+			}
+			
+			#bottom .order_list .ol_con th a span {
+				margin-top: 2px;
+				display: block;
+				color: #999999;
+				font-weight: normal;
+				width: 58px;
+			}
+			
+			#bottom .order_list .ol_con td {
+				line-height: 24px;
+			}
+			
+			#bottom .order_list .ol_con td em {
+				color: #008bc9;
+			}
+			
+			em,
+			i {
+				font-style: normal;
+			}
+			
+			#bottom .order_list .ol_con td span.olc_txt {
+				margin-right: 10px;
+				padding-right: 10px;
+				background: url(../../Static/Img/cut-off-line.gif) no-repeat right;
+				display: inline-block;
+			}
+			
+			#bottom .yellow_txt {
+				color: #eb6100;
+			}
+			
+			#bottom .order_list .ol_con td span.olc_txt.last {
+				background: none;
+				padding-right: 0px;
+			}
+			
+			#bottom .order_list .ol_con {
+				padding: 10px;
+				position: relative;
+			}

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<title>试卷管理</title>
+	<link rel="stylesheet" href="../../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+	<link rel="stylesheet" href="../../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.css">
+	<link rel="stylesheet" href="../../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.css">
+	<link rel="stylesheet" href="../../../Lib/jsTree/style.min.css">
+	<link rel="stylesheet" href="../../../Lib/bootstrap-3.3.7-dist/css/bootstrap.css" />
+	<link rel="stylesheet" href="../../../Lib/bootstrap-table/dist/bootstrap-table.css" />
+	<style>
+		.myskin .layui-layer-content {
+			display: none;
+		}
+
+		.myskin .layui-layer-btn {
+			margin-top: 40px !important;
+			text-align: center;
+
+		}
+
+		.myskin .layui-layer-btn1 {
+			background-color: #1cca71 !important;
+			color: white !important;
+			border-radius: 6px !important;
+		}
+
+		.myskin .layui-layer-btn0 {
+			background-color: #2196F3 !important;
+			color: white !important;
+			border-radius: 6px !important;
+		}
+
+		.myskin .layui-layer-btn a {
+			height: 45px;
+			line-height: 45px;
+			margin: 5px 5px 0;
+			padding: 0 15px;
+			border: 1px solid #dedede;
+			background-color: #fff;
+			color: #333;
+			border-radius: 2px;
+			font-weight: 400;
+			cursor: pointer;
+			text-decoration: none;
+			font-size: 16px;
+		}
+
+		html,
+		body {
+			height: 100%;
+			width: 100%;
+			overflow: hidden;
+		}
+
+		.container-fluid {
+			padding: 5px;
+		}
+
+		.row {
+			margin-top: 10px;
+			margin-bottom: 5px;
+		}
+
+		.progressBox p span {
+			float: right;
+			color: #8798AD;
+		}
+
+		form {
+			padding: 20px 0;
+		}
+
+		.form-group {
+			margin-bottom: 25px;
+		}
+
+		form>button {
+			float: right;
+			margin-top: 15px;
+		}
+
+		.clearfix {
+			height: 70px;
+			/*line-height: 70px;*/
+		}
+
+		.clearfix h2 {
+			display: inline-block;
+			margin: 0;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="container-fluid">
+		<!-- 顶部搜索框等操作部分 -->
+		<div class="row">
+			<div class="col-md-4">
+				<div class="form-inline">
+					<div class="input-group">
+						<span class="input-group-btn">
+							<button class="btn btn-default" type="button"><span
+									class="glyphicon glyphicon-search"></span></button>
+						</span>
+						<input type="text" class="form-control" id="searchString" placeholder="请输入试卷名称">
+					</div>
+					<div class="input-group">
+						<select type="text" class="form-control" id="P_STATE">
+							<option value="">全部</option>
+							<option value="3">已下发</option>
+							<option value="1">未下发</option>
+						</select>
+					</div>
+					<button type="button" class="btn btn-primary" id="queryBtn">查 询</button>
+				</div>
+			</div>
+			<div class="col-md-8" id="btAdd" style="text-align: right;">
+				<button type="button" onclick="add()" class="btn btn-primary">新增</button>
+				<button class="btn btn-primary" type="button" onclick="edit()">修改</button>
+				<button class="btn btn-primary" type="button" onclick="del()">删除</button>
+				<button class="btn btn-primary" type="button" onclick="examStoreAdd()">试题管理</button>
+				<button class="btn btn-primary" type="button" onclick="examPaperCoby()">试题拷贝</button>
+				<button class="btn btn-primary" type="button" onclick="sendPaper()">试卷下发</button>
+			</div>
+		</div>
+		<!-- 主体数据表格等内容部分 -->
+		<div class="mainBody row">
+			<div class="col-md-12">
+				<table id="table"></table>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript" src="../../../Lib/jquery-3.4.1.min.js"></script>
+	<script type="text/javascript" src="../../../Lib/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+	<script type="text/javascript" src="../../../Lib/bootstrap-table/dist/bootstrap-table.js"></script>
+	<script type="text/javascript" src="../../../Lib/bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+	<!--弹框-->
+	<script type="text/javascript" src="../../../Lib/layer/layer.js"></script>
+	<script type="text/javascript" src="../../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+	<script type="text/javascript" src="../../../Lib/colResizable-1.6.js"></script>
+	<script type="text/javascript" src="../../../Lib/public.js"></script>
+	<script type="text/javascript">
+		var newTrigger = new $.zui.ModalTrigger();
+		$(function () {
+			getTable();
+			$("#queryBtn").click(function () {
+				getTable();
+			});
+			$("#table").colResizable({
+				liveDrag: true, //实时显示滑动位置
+				resizeMode: 'overflow', //mode can be 'fit', 'flex' or 'overflow'
+				minWidth: 15, //minimum width value in pixels allowed for a column
+				gripInnerHtml: "<div class='grip'></div>",
+				disabledColumns: [0]
+			});
+		});
+
+		function getTable() {
+			$('#table').bootstrapTable('destroy');
+			g = $('#table').bootstrapTable({
+				url: urlpath + '/exam/examPaperQuery?P_APPLY=exam',
+				method: 'get',
+				contentType: "text/json; charset=UTF-8",
+				queryParamsType: "",
+				sidePagination: 'server', //指定服务器端分页
+				dataType: "json",
+				sortable: true, //是否启用排序
+				sortOrder: "asc", //排序方式
+				sortName: "",
+				pagination: true,
+				pageNumber: 1,
+				pageSize: 10, //单页记录数
+				pageList: [10, 15, 20, 30], //分页步进值
+				clickToSelect: true, //点击选中
+				//得到查询的参数
+				queryParams: function (params) {
+					//这里的键的名字和控制器的变量名必须一致，这边改动，控制器也需要改成一样的
+					var temp = {
+						page: params.pageNumber, //初始化加载第一页，默认第一页
+						rows: params.pageSize, //每页的记录行数
+						KEYWORD: $("#searchString").val(),
+						P_STATE: $("#P_STATE").val(),
+						sort: params.sortName,
+						order: params.sortOrder
+					};
+					return temp;
+				},
+				columns: [{
+						checkbox: true
+					},
+					{
+						field: "PAPER_NAME",
+						title: "试卷名称",
+						align: 'left',
+						sortable: true,
+						width: 300
+					},
+					{
+						field: "TEST_TIME",
+						title: "考试时间",
+						align: 'left',
+						width: 200
+					},
+					{
+						field: "USER_NAME",
+						title: "创建人",
+						align: 'left',
+						width: 110
+					},
+					{
+						field: "CREATE_TIME",
+						title: "创建时间",
+						align: 'left',
+						width: 120
+					},
+					{
+						field: "STATE",
+						title: "状态",
+						align: 'left',
+						width: 120,
+						formatter: function (value, row, index) {
+							if (value == 1) {
+								return '<span style="color:red">未下发</span>';
+							} else if (value == 3) {
+								return '<span style="color:green">已下发</span>';
+							} else {
+								return dataValue;
+							}
+						}
+					},
+					{
+						field: "OP",
+						title: "操作",
+						align: 'left',
+						formatter: function (value, row, index) {
+							row.rowId = index;
+							var PAPER_ID = row.ID;
+							var STATE = row.STATE;
+							var html = "";
+							if (STATE == 3) {
+								html += '<button class="btn btn-primary" type="button" onclick="lookExam(' +
+									PAPER_ID + ')">考试情况</button>&nbsp;';
+							}
+							html +=
+								'<button class="btn btn-primary" type="button" onclick="openUploadFileDialog(' +
+								PAPER_ID + ',' + STATE + ')">导入题库</button>';
+							return html;
+						},
+						width: 200
+					}
+				]
+			});
+		};
+
+		function tableRefresh() {
+			$("#table").bootstrapTable('refresh');
+		}
+
+		function add() {
+			newTrigger.show({
+				iframe: "ExamPaperEdit.html",
+				height: $('body').height() * 0.50,
+				width: 780,
+				title: '试卷添加'
+			});
+		}
+
+		function edit() {
+			var data = $('#table').bootstrapTable('getSelections');
+			if (data.length < 1) {
+				new $.zui.Messager('请选择需要修改的数据！', {
+					type: 'warning' // 定义颜色主题
+				}).show();
+			} else if (data.length > 1) {
+				new $.zui.Messager('您一次只能处理一条数据！', {
+					type: 'warning' // 定义颜色主题
+				}).show();
+			} else {
+				var PID = data[0].ID;
+				newTrigger.show({
+					iframe: "ExamPaperEdit.html?P_PAPER_ID=" + PID,
+					height: $('body').height() * 0.50,
+					width: 780,
+					title: '试卷修改'
+				});
+			}
+		}
+
+		function del() {
+			var data = $('#table').bootstrapTable('getSelections');
+			if (data.length < 1) {
+				new $.zui.Messager('请选择需要删除的数据！', {
+					type: 'warning'
+				}).show();
+			} else {
+				//把要删除的id拼接起来
+				var IDS = '';
+				for (var i = 0; i < data.length; i++) {
+					if (data[i] == null) {
+						IDS = IDS;
+					} else {
+						IDS += data[i].ID + ',';
+					}
+				}
+				new $.zui.Messager('是否要删除这' + data.length + '条数据？', {
+					type: 'warning',
+					time: 0,
+					actions: [{
+						name: 'del',
+						icon: 'remove-sign',
+						text: '删除',
+						action: function () {
+							$.ajax({
+								type: "post",
+								url: urlpath + '/exam/examPaperDel',
+								data: {
+									'IDS': IDS
+								},
+								xhrFields: {
+									withCredentials: true
+								},
+								crossDomain: true,
+								dataType: 'text',
+								success: function (res) {
+									if (res == "SUCCESS") {
+										new $.zui.Messager('删除成功！', {
+											type: 'success'
+										}).show();
+										tableRefresh();
+									} else {
+										new $.zui.Messager('删除失败！', {
+											type: 'danger'
+										}).show();
+									}
+								}
+							});
+						}
+					}, {
+						name: 'undo',
+						icon: 'undo',
+						text: '取消',
+						action: function () { // 点击该操作按钮的回调函数
+							return;
+						}
+					}]
+				}).show();
+			}
+		}
+
+		/**
+		 * 试题管理
+		 */
+		function examStoreAdd() {
+			var data = $('#table').bootstrapTable('getSelections');
+			// var data = myDataGrid.getCheckItems();
+			if (data.length == 1) {
+				if (data[0].STATE == 3) {
+					new $.zui.Messager('此试卷已下发，不能被修改,是否要拷贝!', {
+						type: 'warning',
+						time: 0,
+						actions: [{
+							name: 'ok',
+							icon: 'ok',
+							text: '拷贝',
+							action: function () {
+								newTrigger.show({
+									iframe: "examPaperCobyNmae.html?P_PAPER_ID=" + data[0].ID,
+									height: 210,
+									width: 680,
+									title: '拷贝试卷名称'
+								});
+							}
+						}, {
+							name: 'undo',
+							icon: 'undo',
+							text: '取消',
+							action: function () { // 点击该操作按钮的回调函数
+								return;
+							}
+						}]
+					}).show();
+					return;
+				}
+				window.open("PaperQuestionManage.html?P_ID=" + data[0].ID + "&P_STATE=" + data[0].STATE);
+			} else
+				new $.zui.Messager('仅能选择一项！', {
+					type: 'danger'
+				}).show();
+		}
+
+		function examPaperCoby() {
+			var rows = $('#table').bootstrapTable('getSelections');
+			if (rows.length == 1) {
+				newTrigger.show({
+					iframe: "examPaperCobyNmae.html?P_PAPER_ID=" + rows[0].ID,
+					height: 210,
+					width: 680,
+					title: '拷贝试卷名称'
+				});
+			} else if (rows.length > 1) {
+				new $.zui.Messager('只能选择一项数据进行拷贝！', {
+					type: 'danger'
+				}).show();
+			} else {
+				new $.zui.Messager('请选择一项数据进行拷贝！', {
+					type: 'danger'
+				}).show();
+			}
+
+		}
+
+		function closeTrigger() {
+			newTrigger.close();
+		}
+
+		function sendExamDPaper() {
+			var data = $('#table').bootstrapTable('getSelections');
+			if (data[0].STATE == 3) {
+				new $.zui.Messager('试卷已经下发！', {
+					type: 'danger'
+				}).show();
+				return;
+			}
+			newTrigger.show({
+				iframe: "SendExamDPaper.html?P_ID=" + data[0].ID,
+				height: 480,
+				width: 780,
+				title: '按部门下发'
+			});
+			return;
+		}
+
+		function sendExamRPaper() {
+			var rows = $('#table').bootstrapTable('getSelections');
+			if (rows[0].STATE == 3) {
+				new $.zui.Messager('试卷已经下发！', {
+					type: 'danger'
+				}).show();
+				return;
+			}
+			newTrigger.show({
+				iframe: "SendExamRPaper.html?P_PAPER_ID=" + rows[0].ID,
+				height: 480,
+				width: 780,
+				title: '按角色下发'
+			});
+			return;
+		}
+
+		function openUploadFileDialog(idIn, state) {
+			var P_NUM = idIn;
+			var boolP = boolPaperQuestion(P_NUM);
+			console.log(boolP);
+			if (boolP == 2) {
+				if (state == 1) {
+					id = idIn;
+					uploadFile(id);
+				} else {
+					alert("试卷已经下发，请勿重复导入试题！");
+				}
+			} else {
+				if (state == 1) {
+					new $.zui.Messager('重新导入数据将覆盖原来的问题，是否继续？', {
+						type: 'warning',
+						time: 0,
+						actions: [{
+							name: 'ok',
+							icon: 'ok',
+							text: '覆盖',
+							action: function () {
+								delPaperQuestion(P_NUM);
+								id = idIn;
+								uploadFile(id);
+							}
+						}, {
+							name: 'undo',
+							icon: 'undo',
+							text: '取消',
+							action: function () { // 点击该操作按钮的回调函数
+								return;
+							}
+						}]
+					}).show();
+				} else {
+					alert("试卷已经下发，请勿重复导入试题！");
+				}
+			}
+		}
+
+		function uploadFile(pid) {
+			newTrigger.show({
+				iframe: "uploadExam.html?P_ID=" + pid,
+				height: $('body').height() * 0.82,
+				width: 780,
+				title: '导入试卷题目'
+			});
+		}
+
+		function lookExam(pid) {
+			newTrigger.show({
+				iframe: "PaperSendInfo.html?P_PAPER_ID=" + pid,
+				height: $('body').height() * 0.82,
+				width: $('body').width() * 0.82,
+				title: '试卷考试情况'
+			});
+		}
+
+		function boolPaperQuestion(pid) {
+			var PAPER_ID = pid;
+			var results;
+			$.ajax({
+				type: "post",
+				url: urlpath + "/exam/boolPaperQuestion?r=" + Math.random(),
+				data: {
+					'P_PAPER_ID': PAPER_ID
+				},
+				dataType: "text",
+				success: function (data) {
+					if (data == "YES") { //已经存在题目
+						results = 1;
+					} else {
+						results = 2;
+					}
+				},
+				error: function (err) {
+					alert(err);
+				}
+			});
+			return results;
+		}
+
+		function delPaperQuestion(pid) {
+			var PAPER_ID = pid;
+			$.ajax({
+				type: "post",
+				url: urlpath + "/exam/delPaperQuestion?r=" + Math.random(),
+				data: {
+					'P_PAPER_ID': PAPER_ID
+				},
+				dataType: "json",
+				success: function (data) {
+
+				},
+				error: function (err) {
+					layer.alert(err);
+				}
+
+			});
+		}
+
+		function sendPaper() {
+			var data = $('#table').bootstrapTable('getSelections');
+			if (data.length == 1) {
+				var pid = data[0].ID;
+				$.ajax({
+					type: "post",
+					url: urlpath + "/exam/validatePaperScore",
+					data: {
+						'P_ID': pid
+					},
+					dataType: "text",
+					success: function (data) {
+						if (data == "SUCCESS") { //已填写完
+							layer.confirm('', {
+								title: '试卷下发',
+								btn: ['按部门下发', '按角色下发'], //可以无限个按钮,
+								skin: 'myskin',
+								shadeClose: true,
+								area: ['300px', '200px']
+							}, function (index, layero) {
+								sendExamDPaper();
+								layer.closeAll('dialog');
+								//按钮【按钮一】的回调
+							}, function (index) {
+								sendExamRPaper();
+								layer.closeAll('dialog');
+								//按钮【按钮二】的回调
+							});
+						} else {
+							new $.zui.Messager('请填写该试卷下所有题目分数！', {
+								type: 'danger'
+							}).show();
+						}
+					},
+					error: function (err) {
+						alert(err);
+					}
+				});
+
+			} else {
+				layer.open({
+					title: '提示',
+					content: '只能选择一项下发',
+					shadeClose: true
+				});
+			}
+		}
+	</script>
+</body>
+
+</html>

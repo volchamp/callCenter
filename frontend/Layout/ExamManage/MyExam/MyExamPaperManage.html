@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>我的试卷</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+    <link  rel="stylesheet" href="../../../Lib/bootstrap-3.3.7-dist/css/bootstrap.css"/>
+    <link rel="stylesheet" href="../../../Lib/bootstrap-table/dist/bootstrap-table.css" />
+    <style>
+        html,body{
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+        .container-fluid{
+            padding: 5px;
+        }
+        .row{
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <!-- 顶部搜索框等操作部分 -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="form-inline">
+                <div class="input-group">
+							<span class="input-group-btn">
+                            <button class="btn btn-default" type="button"><span class="glyphicon glyphicon-search"></span></button>
+							</span>
+                    <input type="text" class="form-control" id="searchString" placeholder="请输入试卷名称">
+                </div>
+                <button type="button" class="btn btn-primary" id="queryBtn">查 询</button>
+            </div>
+        </div>
+    </div>
+    <!-- 主体数据表格等内容部分 -->
+    <div class="mainBody row">
+        <div class="col-md-12">
+            <table id="table"></table>
+        </div>
+    </div>
+</div>
+<script type="text/javascript" src="../../../Lib/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="../../../Lib/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+<script type="text/javascript" src="../../../Lib/bootstrap-table/dist/bootstrap-table.js"></script>
+<script type="text/javascript" src="../../../Lib/bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+<script type="text/javascript" src="../../../Lib/bootstrap-table/src/virtual-scroll/index.js"></script>
+<script type="text/javascript" src="../../../Lib/public.js"></script>
+<script type="text/javascript" src="../../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+
+<script type="text/javascript">
+    var Trigger = new $.zui.ModalTrigger();
+    $(function(){
+        getTable();
+    })
+    function getTable() {
+        $('#table').bootstrapTable('destroy');
+        g = $('#table').bootstrapTable({
+            url: urlpath+'/exam/myExamPaperQuery',
+            method: 'get',
+            contentType: "text/json; charset=UTF-8",
+            queryParamsType: "",
+            sidePagination: 'server', //指定服务器端分页
+            dataType: "json",
+            sortable: true, //是否启用排序
+            sortOrder: "asc", //排序方式
+            sortName:"",
+            pagination: true,
+            pageNumber: 1,
+            pageSize: 10, //单页记录数
+            pageList: [10, 15, 20, 30], //分页步进值
+            clickToSelect: true, //点击选中
+            //得到查询的参数
+            queryParams: function(params) {
+                //这里的键的名字和控制器的变量名必须一致，这边改动，控制器也需要改成一样的
+                var temp = {
+                    page: params.pageNumber, //初始化加载第一页，默认第一页
+                    rows: params.pageSize, //每页的记录行数
+                    keyword: $("#searchString").val(),
+                    sort:params.sortName,
+                    order:params.sortOrder
+                };
+                return temp;
+            },
+            columns: [{
+                checkbox: true
+            },
+                {
+                    field: "PAPER_NAME",
+                    title: "试卷名称",
+                    align: 'left',
+                    sortable: true,
+                    width:300
+                },
+                {
+                    field: "TEST_TIME",
+                    title: "测试时间",
+                    align: 'left',
+                    width:100
+                },
+                {
+                    field: "START_TIME",
+                    title: "考试开始时间",
+                    align: 'left',
+                    width:200
+                },
+                {
+                    field: "END_TIME",
+                    title: "考试结束时间",
+                    align: 'left',
+                    width:200
+                },
+                {
+                    field: "CREATE_USER",
+                    title: "创建人",
+                    align: 'left',
+                    width:350
+                },
+                {
+                    field: "TJSTATE",
+                    title: "状态",
+                    align: 'left',
+                    width: 110,
+                    formatter : function(value, row, index) {
+                        if(value == 1)
+                            return '<span style="color:red">未提交</span>';
+                        else if(value == 2)
+                            return '<span style="color:green">已提交</span>';
+                        else
+                            return null;
+                    }
+                },
+                {
+                    field: "",
+                    title: "操作",
+                    align: 'left',
+                    width: 110,
+                    formatter: function (value, rowData, rowIndex) {
+                        var str = "";
+                        if (rowData.TJSTATE == 1) {
+                            str += '<span class="icon_Modify"><a href="javascript:examPaper(\'' + rowData.ID + '\');">开始考试</a></span>';
+                        } else if (rowData.TJSTATE == 2) {
+                            str += '<span class="icon_chakan"><a href="javascript:checkEndTime(\'' + rowData.ID + '\',\'' + rowData.END_TIME1 + '\',\'' + rowData.TEST_TIME + '\',\'' + rowData.TJSTATE + '\');">我的得分</a></span>';
+                        }
+                        return str;
+                    }
+                }
+
+                ]
+        });
+
+
+
+
+    };
+
+    function examPaper(pid) {
+        var id=pid;
+        if (id) {
+            new $.zui.Messager('开始考试后将开始计时，是否开始考试?', {
+                type: 'warning',
+                time: 0,
+                actions: [{
+                    name: 'ok',
+                    icon: 'ok',
+                    text: '确定',
+                    action: function() {
+                        paperStratTime(id);
+                    }
+                }, {
+                    name: 'undo',
+                    icon: 'undo',
+                    text: '取消',
+                    action: function() { // 点击该操作按钮的回调函数
+                        return;
+                    }
+                }]
+            }).show();
+        }
+    }
+
+    function paperStratTime(id){
+        var PAPER_ID=id;
+        $.ajax({
+            type: "post",
+            url: urlpath+'/exam/paperStratTime?r='+Math.random(),
+            data: {
+                'P_PAPER_ID': id
+            },
+            dataType: "json",
+            success: function(data){
+                if(data=="SUCCESS"){
+                    window.open('ExamPaper.html?P_ID=' + PAPER_ID);
+                }else{
+                    alert(data);
+                }
+            },
+            error: function(err) {
+                alert(err);
+            }
+        });
+    }
+
+    function paperAnswer(id,state){
+        $.messager.alert("警告","你还未参加过本次考试，请先参加考试！");
+        window.open("../../Layout/ExamHander/paperAnswer.action?PAPER_ID="+ id);
+    }
+
+    function p(s) {
+        return s < 10 ? '0' + s: s;
+    }
+
+    function checkEndTime(ID,END_TIME1,TEST_TIME,TJSTATE){
+        var id=ID;
+        var endtime=END_TIME1;
+        var testtime=TEST_TIME;
+
+        var state=TJSTATE;
+        //将测试时间转化为妙
+
+        var myDate = new Date();
+        //获取当前年
+        var year=myDate.getFullYear();
+        //获取当前月
+        var month=myDate.getMonth()+1;
+        //获取当前日
+        var date=myDate.getDate();
+        var h=myDate.getHours();       //获取当前小时数(0-23)
+        var m=myDate.getMinutes();     //获取当前分钟数(0-59)
+        var s=myDate.getSeconds();
+        var now=year+''+p(month)+""+p(date)+""+p(h)+''+p(m)+""+p(s);
+
+        var newnow=parseInt(now);
+        var newendtime=parseInt(endtime);
+        //alert(newendtime)
+        if(newnow-newendtime>0&&state==2){
+            window.open("SeeMyPaper.html?PAPER_ID="+ id);
+        }else{
+            alert("考试还没有结束或未提交，您不能查看试卷");
+        }
+
+    }
+
+</script>
+</body>
+</html>

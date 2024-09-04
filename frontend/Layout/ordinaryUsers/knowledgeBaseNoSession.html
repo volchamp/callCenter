@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>知识库</title>
+    <link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+    <style>
+        html {
+            background: #EEEEEE;
+            height: 98%;
+            overflow: hidden;
+        }
+        .card{
+            margin-bottom: 1%;
+        }
+        #app {
+            height: 100%;
+        }
+
+        .container-fluid {
+            background: #EEEEEE;
+            padding: 2% 3% 0 3%;
+        }
+
+        .row,
+        .col-md-2,
+        .col-md-10 {
+            height: 100%;
+        }
+
+        .card {
+            background: #fff;
+            width: 100%;
+            border-radius: 0;
+        }
+
+        .col-md-2 .card {
+            min-height: 98%;
+        }
+
+        .col-md-10 .card:first-child {
+            overflow: inherit;
+            padding: 1% 2%;
+        }
+
+        .jobsType p,
+        .jobsLabel p {
+            background: #4690FC;
+            color: #fff;
+            height: 40px;
+            line-height: 40px;
+            padding: 0 20px;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .jobsType div,
+        .jobsLabel div {
+            padding: 10px 5px;
+        }
+
+        .jobsType div a,
+        .jobsLabel div a {
+            padding: 10px 20px;
+            display: inline-table;
+            width: 49%;
+            text-align: left;
+            color: #000;
+            font-size: 15px;
+        }
+
+
+        #type_id .leftSelected,
+        #tag_id .leftSelected {
+            color: #145CCD;
+        }
+
+        .imgBox img {
+            display: inline-block;
+        }
+
+        .list {
+            padding: 1% 6%;
+        }
+
+        .list .item h3 {
+            height: 30px;
+            line-height: 30px;
+            margin: 0;
+        }
+
+        .list .items .item {
+            padding: 10px 15px;
+        }
+
+        .item-content .text {
+            position: relative;
+            padding:0 3.5rem;
+            line-height: 25px;
+            font-size: 15px;
+            letter-spacing:1px;
+        }
+
+        .item-content .text span:first-child {
+            position: absolute;
+            line-height: 25px;
+            left: 0;
+        }
+
+        .item-content .text p {
+            display: inline;
+        }
+
+        .item-heading {
+            position: relative;
+        }
+
+        .icon-question-box {
+            position: absolute;
+            left: -40px;
+            /*top: 1px;*/
+            display: inline-block;
+            width: 28px;
+            height: 25px;
+            font-style: normal;
+            line-height: 28px;
+            color: #fff;
+            text-align: center;
+            /*background-color: #FDBA64;*/
+            border-radius: 50%;
+        }
+
+        .icon-question {
+            font-size: 15px;
+        }
+
+        .item-footer .comment:last-child {
+            border-bottom: 0;
+        }
+
+        .icon-comments {
+            color: #808080;
+        }
+
+        .exComment{
+            color:#145CCD;
+        }
+
+        a.avatar {
+            display: block;
+            width: 40px;
+            height: 40px;
+            margin-top: 5px !important;
+            font-size: 30px;
+            line-height: 40px;
+            color: #aaa !important;
+            text-align: center;
+            background-color: #e5e5e5;
+            border-radius: 4px;
+        }
+
+        .replyBtn {
+            float: right;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+        h3>a:hover{
+            text-decoration: none;
+        }
+        h3>a:focus{
+            text-decoration: none;
+        }
+        .apply{
+            padding: 0 3.5rem;
+        }
+        .apply span{
+            cursor: pointer;
+            margin-right: 10px;
+            color: #145ccd;
+        }
+        .apply span:hover{
+            color: #0d3d88;
+            text-decoration: underline;
+        }
+
+        .apply span i{
+            margin-right: 5px;
+        }
+    </style>
+</head>
+
+<body>
+<div id="app">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2">
+                <div class="card">
+                    <div class="jobsType">
+                        <p>知识库类型</p>
+                        <div id="type_id">
+                            <a class="leftSelected" @click="getInfobyTagid(0,1,4,0,$event)">全部</a>
+                            <a @click="getInfobyTagid(0,1,4,item.TYPE_ID,$event)"
+                               v-for="item in orderTypetype">{{item.TYPE_NAME}}</a>
+                        </div>
+                    </div>
+                    <div class="jobsLabel">
+                        <p>事件标签</p>
+                        <div id="tag_id">
+                            <a class="leftSelected" @click="getInfobyTagid(0,1,4,0,$event)">全部</a>
+                            <a @click="getInfobyTagid(item.ID,1,4,0,$event)"
+                               v-for="item in taginfo">{{item.TEXT}}</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="input-group" style="width: 30%;">
+                        <input type="text" class="form-control" style="border: 1px solid #bfbfbf;" placeholder="请输入标题/内容" v-model="searchKey">
+                        <span class="input-group-btn">
+								<button class="btn btn-default" type="button" @click="search()"><i
+                                        class="icon icon-search"></i></button>
+							</span>
+                    </div>
+                </div>
+
+                <div class="card" style="height: 88.5%;overflow: auto;">
+                    <div class="list">
+                        <div class="items items-hover">
+                            <div class="item" id="content_id" v-for="item in dataInfo">
+                                <div class="item-heading">
+                                    <div class="pull-right"><span style="padding-right: 20px;"
+                                                                  class="text-muted">{{item.CREATE_TIME}}</span></div>
+                                    <h3 style="color: #666666;">
+                                        <div class="icon-question-box"><img src="../../Static/Img/gongdan/wenti (1).png" style="height: 28px;width: 28px;"></div>
+                                        {{item.TITLE}}
+                                    </h3>
+                                </div>
+                                <div class="item-content">
+                                    <div class="imgBox">
+                                        <img v-if="item.SRC" :src="item.SRC" width="200px" height="200px"
+                                             class="img-responsive">
+                                    </div>
+                                    <h3 v-if="item.REMIND_CONTENT"><a style="font-size: 15px;" href="#">问题详情：</a></h3>
+                                    <div class="text">
+                                        <p v-html="item.REMIND_CONTENT"></p>
+
+                                    </div>
+                                    <h3><a href="#" style="font-size: 15px;">解决方案：</a></h3>
+                                    <div class="text">
+                                        <p v-html="item.CONTENT"></p>
+
+                                    </div>
+                                </div>
+                                <div class="item-footer">
+                                    <i class="icon-bookmark"></i>
+                                    <span class="text-muted" style="cursor: pointer;" @click="seeApply(item,$event)">
+											关联申请单({{item.APPLY_COUNT}})
+										</span>
+                                </div>
+<!--                                <div class="item-footer">-->
+<!--                                    <i class="icon-comments"></i>-->
+<!--                                    <span class="text-muted" style="cursor: pointer;" @click="comment(item,$event)">-->
+<!--											评论({{item.EVE_NUMBER}})-->
+<!--										</span>-->
+<!--                                </div>-->
+                            </div>
+                        </div>
+                        <footer>
+                            <ul class="pager" data-ride="pager" id="page">
+                            </ul>
+                        </footer>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../../Lib/jquery-3.4.1.min.js" type="text/javascript"></script>
+<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js" type="text/javascript"></script>
+<script src="../../Lib/public.js"></script>
+<script src="../../demo/node_modules/babel-polyfill/dist/polyfill.min.js"></script>
+<script src="../../Lib/vue.js"></script>
+<script>
+    var P_APPLY_ID = $.url("P_APPLY_ID");
+    var vim = new Vue({
+        el: '#app',
+        data: {
+            taginfo: {
+                type: Object
+            },
+            dataInfo: {
+                type: Object,
+                default:function() {
+                    return {}
+                }
+            },
+            orderTypetype: {
+                type: Object
+            },
+            TAG_ID: 0,
+            TYPE_ID: 0,
+            searchKey:"",
+            pageClick: 0
+        },
+        created:function() {
+            var that = this;
+            //进入页面初始化的显示内容
+            var par = {
+                "P_APPLY_ID":P_APPLY_ID,
+                'P_TYPE_ID': this.TYPE_ID,
+                'PAGE': 1,
+                'recPerPage': 4,
+                'P_TAG_ID': this.TAG_ID,
+                'KEYWORD': this.searchKey
+            };
+            webapi("/approval/getKnowledgeInfoByTagIdNoSession", par, function (res) {
+                if (res !== null) {
+                    that.dataInfo = res.data;
+                }
+                var userListPage = $('#page').data('zui.pager');
+                userListPage.set(res.pager.page, res.pager.recTotal, res.pager.recPerPage);
+                $('#page').on('onPageChange', function (e, state, oldState) {
+                    if (state.page !== oldState.page) {
+                        var par = {
+                            'P_TAG_ID': that.TAG_ID,
+                            'PAGE': state.page,
+                            'recPerPage': 4,
+                            'P_TYPE_ID': that.TYPE_ID,
+                            'KEYWORD': that.searchKey
+                        };
+                        webapi("/approval/getKnowledgeInfoByTagIdNoSession", par, function (res) {
+                            if (res != null) {
+                                that.dataInfo = res.data;
+                                $(".item-footer").children(".comment,footer").remove();
+                                $(".exComment").removeClass("exComment");
+                                $(".item-footer").children(".apply,footer").remove();
+                                $(".exComment").removeClass("exComment");
+                            }
+                        });
+                    }
+                });
+            });
+
+            // 标签信息
+            webapi("/ProcessHandler/GetProcessType", {
+                'P_TABLE': 'TR_KNOWLEDGE_TAG',
+                'P_COLUMN': 'TAG_ID'
+            }, function (res) { that.taginfo = res; })
+
+            // 事件类型
+            webapi("/approval/getTypeSelectNoSession","", function (res) { that.orderTypetype = res; })
+        },
+        methods: {
+            // 自建的知识库内容
+            getInfobyTagid:function(TAG_ID, page, recPerPage, typeId, e) {
+                if (e != "") {
+                    $(".leftSelected").removeClass("leftSelected");
+                    $(e.target).addClass("leftSelected");
+                    $(".item-footer").children(".comment,footer").remove();
+                    $(".exComment").removeClass("exComment");
+                }
+
+                this.TAG_ID = TAG_ID;
+                this.TYPE_ID = typeId
+                var that = this;
+                var param = {
+                    "P_APPLY_ID":P_APPLY_ID,
+                    'P_TAG_ID': TAG_ID,
+                    'PAGE': page,
+                    'recPerPage': recPerPage,
+                    'P_TYPE_ID': typeId,
+                    'KEYWORD': this.searchKey
+                };
+                webapi("/approval/getKnowledgeInfoByTagIdNoSession", param, function (res) {
+                    if (res.data != null) {
+                        that.dataInfo = res.data;
+                    }
+
+                    var userListPage = $('#page').data('zui.pager');
+
+                    if (res.message == "暂无查询数据") {
+                        userListPage.set(1, res.pager.recTotal, 4);
+                        return false;
+                    }
+
+                    userListPage.set(
+                        res.pager.page,
+                        res.pager.recTotal,
+                        res.pager.recPerPage
+                    );
+
+                    $('#page').on('onPageChange', function (e, state, oldState) {
+                        if (state.page !== oldState.page && that.pageClick != 1) {
+                            var par = {
+                                'P_TAG_ID': TAG_ID,
+                                'PAGE': state.page,
+                                'recPerPage': recPerPage,
+                                'P_TYPE_ID': typeId,
+                                'KEYWORD': this.searchKey
+                            };
+                            webapi("/approval/getKnowledgeInfoByTagIdNoSession", par, function (result) {
+                                if (result != null) {
+                                    that.dataInfo = result.data;
+                                    $(".item-footer").children(".comment,footer").remove();
+                                    $(".exComment").removeClass("exComment");
+                                }
+                            });
+                            that.pageClick = 1;
+                        }
+                    });
+                })
+            },
+            search:function() {
+                this.getInfobyTagid(this.TAG_ID, 1, 4, this.TYPE_ID,"");
+            },
+            comment:function(item, obj) {
+                if($(obj.target).hasClass("exComment")){
+                    $(obj.target).prev(".icon-comments").removeClass("exComment");
+                    $(obj.target).removeClass("exComment");
+                }else{
+                    $(obj.target).prev(".icon-comments").addClass("exComment");
+                    $(obj.target).addClass("exComment");
+                }
+                acomment(item, obj);
+            },
+            seeApply:function(item,obj){
+                if($(obj.target).hasClass("exComment")){
+                    $(obj.target).prev(".icon-bookmark").removeClass("exComment");
+                    $(obj.target).removeClass("exComment");
+                }else{
+                    $(obj.target).prev(".icon-bookmark").addClass("exComment");
+                    $(obj.target).addClass("exComment");
+                }
+                aApply(item,obj);
+            }
+
+        }
+    });
+
+    function aApply(item,obj) {
+        var o = obj.target;
+        if($(o).next(".apply").length !=0){
+            $(o).parent(".item-footer").children(".apply,footer").toggle();
+            return;
+        }
+        var par = {
+            "P_KNOWLEDGE_ID":item.KNOWLEDGE_ID
+        };
+        webapi("/approval/listKnowledgeToApplyNoSession",par,function (res) {
+            if(res == ""){
+                $(o).after('<p class="apply notApply" style="text-align:center;">暂无关联</p>');
+            }else{
+                var html = "<p class='apply'>";
+                for(var r in res) {
+                    html+="<span class='applyspan' onclick='openwindow(108,"+res[r]["APPLY_ID"]+")'><i class='icon-file-o' ></i>"+res[r]["COLUMN_VALUE"]+"</span>"
+                }
+                html+="</p>";
+                $(o).parent(".item-footer").append(html);
+            }
+        });
+    }
+
+    function acomment(item, obj) {
+        var o = obj.target;
+        if ($(o).next(".comment").length != 0) {
+            $(o).parent(".item-footer").children(".comment,footer").toggle();
+            return;
+        }
+        var par = {
+            'P_APPLY_ID': item.KNOWLEDGE_ID,
+            'P_TYPE': item.TYPE_ID
+        };
+        webapi("/approval/getEvaluation", par, function (res) {
+            if (res == "") {
+                $(o).after('<p class="comment notComment" style="text-align:center;">暂无评论</p>');
+            } else {
+                for (var r in res) {
+                    var html = "";
+                    if (res[r]["BUTTON_INFO"] == "1") {
+                        var delHtml = "<p>确定删除该评论吗？</p><button class='btn btn-mini' type='button'"+
+                            "onclick='deleteComment("+ res[r]["EVALUATE_ID"] + ")'>确定</button>"+
+                            "<button class='btn btn-mini' type='button' onclick='hideTooltip()'>取消</button>";
+
+                        html = '<span style="cursor:pointer;color:#808080;" data-toggle="tooltip"'+
+                            'title="'+ delHtml + '"data-html="true" data-trigger="click">删除</span>';
+                    }
+                    if (res[r]["REPLY_ID"] != 0) {
+                        $(".replyList" + res[r]["REPLY_ID"]).append(
+                            '<div class="comments-list">'+
+                            '<div class="comment replyList' + res[r]["EVALUATE_ID"] + '">'+
+                            '<a href="###" class="avatar">'+
+                            '<i class="icon-user icon-2x"></i>'+
+                            '</a>'+
+                            '<div class="content">'+
+                            '<div class="pull-right text-muted">'+ res[r]["EVALUATE_TIME"] + '</div>'+
+                            '<div>'+
+                            '<a href="#"><strong>'+ res[r]["USER_NAME"] + '</strong></a>'+
+                            '<span class="text-muted">回复</span> <a href="###">'+ $(".replyList" + res[r]["REPLY_ID"] + " .userName").text() + '</a>'+
+                            '</div>'+
+                            '<div class="text">'+ res[r]["EVALUATE_DSC"] + '</div>'+
+                            '<div class="actions">'+
+                            '<span style="cursor:pointer;color:#808080;" data-toggle="popover" data-placement="top" title="回复">回复</span>'+
+                            html+
+                            '</div>'+
+                            '</div>'+
+                            '</div>'+
+                            '</div>');
+                    } else {
+                        $(o).parent(".item-footer").append('<div class="comment replyList' + res[r]["EVALUATE_ID"] + '">'+
+                            '<a href="#" class="avatar">'+
+                            '<i class="icon-user icon-2x"></i>'+
+                            '</a>'+
+                            ' <div class="content">'+
+                            '<div class="pull-right text-muted">'+ res[r]["EVALUATE_TIME"] + '</div>'+
+                            '<div><a href="#"><strong class="userName">'+ res[r]["USER_NAME"] + '</strong></a></div>'+
+                            ' <div class="text">'+ res[r]["EVALUATE_DSC"] + '</div>'+
+                            '<div class="actions">'+
+                            '<span style="cursor:pointer;color:#808080;" data-toggle="popover" data-placement="top" title="回复">回复</span>'+
+                            html +
+                            '</div>'+
+                            '</div>'+
+                            '</div>');
+                    }
+
+                    $('[data-toggle="popover"]').popover({
+                        html: true,
+                        container: 'body',
+                        content: '<textarea class="form-control" rows="3" placeholder="请输入回复信息"></textarea>'+
+                            '<button class="btn replyBtn" type="button" '+
+                            'onclick="reply(this,'+ res[r]["EVALUATE_ID"] + ',' + item.TYPE_ID + ',' + item.KNOWLEDGE_ID + ',\'回复\')">回复</button>'
+                    });
+                }
+            }
+
+            //评论框
+            $(o).parent(".item-footer").append(
+                '<footer style="padding-top: 10px;">'+
+                '<div class="reply-form" style="padding-left: 50px;">'+
+                '<form class="form">'+
+                '<div class="form-group" style="text-align: -webkit-right;">'+
+                '<textarea class="form-control new-comment-text" rows="2" placeholder="撰写评论..."></textarea>'+
+                '<button type="button" class="btn btn-block btn-primary" style="width:100px;margin-top: 10px;" '+
+                'onclick="reply(this,\'\',' + item.TYPE_ID + ',' + item.KNOWLEDGE_ID + ',\'评论\')">'+
+                '评论'+
+                '</button>'+
+                '</div>'+
+                '</form>'+
+                '</div>'+
+                '</footer>');
+
+            initToolPop();
+        });
+    }
+
+    function initToolPop() {
+        $('[data-toggle="tooltip"]').tooltip();
+        $('[data-toggle="tooltip"]').on('show.zui.tooltip', function () {
+            closeOtherPop();
+        });
+        $('[data-toggle="popover"]').on('show.zui.popover', function () {
+            closeOtherPop();
+        });
+    }
+
+    function closeOtherPop() {
+        $('[data-toggle="tooltip"]').tooltip('hide');
+        $('[data-toggle="popover"]').popover('hide');
+    }
+
+    //回复评论
+    function reply(obj, id, typeId, applyId, typeMes) {
+        var replyVal = $(obj).prev('textarea').val();
+        if (replyVal == "") {
+            new $.zui.Messager('请填写' + typeMes + '信息', {
+                type: 'error'
+            }).show();
+            return;
+        }
+        var par = {
+            P_APPLY_ID: applyId,
+            P_EVALUATE_DSC: replyVal,
+            P_TYPE: typeId,
+            P_REPLY_ID: id
+        };
+        webapi("/approval/evaluateAdd", par, function (res) {
+            if (res.result == "SUCCESS") {
+                new $.zui.Messager(typeMes + '成功！', {
+                    type: 'success'
+                }).show();
+
+                var delHtml = '<p>确定删除该评论吗？</p>'+
+                    "<button class='btn btn-mini' type='button'"+
+                    "onclick='deleteComment("+ res.data[0]["EVALUATE_ID"] + ")'>确定</button>"+
+                    " <button class='btn btn-mini' type='button' onclick='hideTooltip()'>取消</button>";
+
+                var commentHtml = '<div class="comment replyList' + res.data[0]["EVALUATE_ID"] + '">'+
+                    '<a href="###" class="avatar">'+
+                    '<i class="icon-user icon-2x"></i>'+
+                    '</a>'+
+                    '<div class="content">'+
+                    '<div class="pull-right text-muted">'+ res.data[0]["EVALUATE_TIME"] + '</div>'+
+                    '<div>'+
+                    '<a href="#"><strong>'+ res.data[0]["USER_NAME"] + '</strong></a>'+
+                    '<span class="text-muted">回复</span> <a href="#">'+ $(".replyList" + res.data[0]["REPLY_ID"] + " .userName").text() + '</a>'+
+                    '</div>'+
+                    '<div class="text">'+ res.data[0]["EVALUATE_DSC"] + '</div>'+
+                    '<div class="actions">'+
+                    '<span style="cursor:pointer;color:#808080;" data-toggle="popover" data-placement="top" title="回复">回复</span>'+
+                    '<span style="cursor:pointer;color:#808080;margin-left: 10px;" data-toggle="tooltip" title="'+ delHtml +
+                    '" data-html="true" data-trigger="click">删除</span>'+
+                    '</div>'+
+                    ' </div>'+
+                    ' </div>';
+
+                if (typeMes == "评论") {
+                    if ($(obj).parents(".item-footer").children(".notComment").length != 0) {
+                        $(obj).parents(".item-footer").children(".notComment").remove();
+                    }
+                    $(obj).parents("footer").before(commentHtml);
+                } else if (typeMes == "回复") {
+                    $(".replyList" + id).append('<div class="comments-list">' + commentHtml + '</div>');
+                }
+
+                $('[data-toggle="popover"]').popover({
+                    html: true,
+                    container: 'body',
+                    content: '<textarea class="form-control" rows="3" placeholder="请输入回复信息"></textarea>'+
+                        '<button class="btn replyBtn" type="button" '+
+                        'onclick="reply(this,'+ res.data[0]["EVALUATE_ID"] + ',' + typeId + ',' + applyId + ',\'回复\')">回复</button>'
+                });
+
+                $(obj).prev('textarea').val("");
+                initToolPop();
+            } else {
+                new $.zui.Messager(typeMes + '失败！', {
+                    type: 'error'
+                }).show();
+            }
+        });
+        closeOtherPop();
+    }
+
+    //删除评论
+    function deleteComment(id) {
+        closeOtherPop();
+        webapi("/approval/evaluateDelete", { P_ID: id }, function (res) {
+            if (res == "SUCCESS") {
+                new $.zui.Messager('删除成功！', {
+                    type: 'success'
+                }).show();
+                if ($(".replyList" + id).parent(".item-footer").children(".comment").length == 1) {
+                    $(".replyList" + id).parent(".item-footer").children("footer").before(
+                        '<p class="comment notComment" style="text-align:center;">暂无评论</p>');
+                }
+                $(".replyList" + id).remove();
+            } else {
+                new $.zui.Messager('删除失败！', {
+                    type: 'error'
+                }).show();
+            }
+        });
+    }
+
+    function hideTooltip() {
+        $('[data-toggle="tooltip"]').tooltip('hide');
+    }
+</script>
+</body>
+
+</html>

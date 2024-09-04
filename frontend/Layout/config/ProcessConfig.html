@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>流程设计</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+    <link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.css">
+    <link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.css">
+    <link rel="stylesheet" href="../../Lib/jsTree/style.min.css">
+
+    <style>
+        html,
+        body {
+            background: #F9F9F9;
+        }
+
+        .row,
+        .col-md-2,
+        .col-md-10,
+        .panel,
+        .panel-body {
+            height: 100%;
+        }
+
+        .panel-body {
+            overflow: hidden;
+            padding: 0 15px;
+        }
+
+        .container-fluid {
+            padding: 10px;
+        }
+
+        .progressBox {
+            padding-top: 20px;
+            height: 70px;
+            line-height: 30px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .progressBox p span {
+            float: right;
+            color: #8798AD;
+        }
+
+        .progress {
+            height: 5px;
+        }
+
+        form {
+            padding: 20px 0;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        form>button {
+            float: right;
+            margin-top: 15px;
+        }
+
+        .clearfix {
+            height: 70px;
+            /*line-height: 70px;*/
+        }
+
+        .clearfix h2 {
+            display: inline-block;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="panel">
+                <div class="panel-body">
+                    <header class="clearfix">
+                        <div style="margin-top: 15px">
+                            <div style="width: 300px;display: inline-block">
+                                <div class="input-group">
+                                    <div class="input-control search-box has-icon-left has-icon-right search-example" id="searchbox">
+                                        <input id="inputSearchExample4" type="search" class="form-control search-input empty" placeholder="请输入角色名称">
+                                        <label for="inputSearchExample4" class="input-control-icon-left search-icon"><i class="icon icon-search"></i></label>
+                                    </div>
+                                    <span class="input-group-btn">
+                                                <button onclick="search()" class="btn btn-primary" type="button">搜索</button>
+                                            </span>
+                                </div>
+                            </div>
+                            <div style="float: right;">
+                                <button type="button" onclick="add()" class="btn btn-primary">新增</button>
+                                <button class="btn btn-primary" type="button" onclick="update()">修改</button>
+                                <button class="btn btn-primary" type="button" onclick="del()">删除</button>
+                            </div>
+                        </div>
+                    </header>
+                    <div id="myJobsDG" class="datagrid datagrid-borderless" style="height: 90%;overflow: auto;">
+                        <div class="datagrid-container"></div>
+                        <div class="pager"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript" src="../../Lib/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+<script type="text/javascript" src="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js"></script>
+<script type="text/javascript" src="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.js"></script>
+<script type="text/javascript" src="../../Lib/zui-1.9.1-dist/dist/lib/selectable/zui.selectable.min.js"></script>
+<script type="text/javascript" src="../../Lib/jsTree/jstree.js"></script>
+<script type="text/javascript" src="../../Lib/public.js"></script>
+
+<script type="text/javascript">
+    var departId = "0";
+    var type_id=$.url("TYPE_ID");
+        Vsearch = "";
+    var newTrigger = new $.zui.ModalTrigger();
+    var datasource = {
+        cols: [{
+            name: 'ID',
+            label: '编号',
+            align: 'left',
+            halign: 'center',
+            checkbox: true
+
+        },
+            {
+                name: 'TYPE_NAME',
+                label: '类型',
+                align: 'left',
+                halign: 'center',
+                width: 100,
+                sort: true
+            },
+            {
+                name: 'ROLE_NAME',
+                label: '操作角色',
+                align: 'left',
+                halign: 'center',
+                width: 100,
+                sort: true
+            },
+            {
+                name: 'NOW_STATE',
+                label: '当前状态',
+                align: 'left',
+                halign: 'center',
+                width: 100,
+                sort: true
+            },
+            {
+                name: 'OP',
+                label: '操作',
+                align: 'left',
+                halign: 'center',
+                width: 100,
+                sort: true
+            }, {
+                name: 'NEXT_STATE',
+                label: '下一状态',
+                align: 'left',
+                halign: 'center',
+                width: 100,
+                sort: true
+            },
+            {
+                name: 'NEXT_LC_ID',
+                label: '下一流程',
+                align: 'left',
+                halign: 'center',
+                width: 100,
+                sort: true
+            },
+            {
+                name: 'START_CONDITION',
+                label: '开始限制条件',
+                align: 'left',
+                halign: 'center',
+                width: 150,
+                sort: true
+            }, {
+                name: 'END_CONDITION',
+                label: '结束限制条件',
+                align: 'left',
+                halign: 'center',
+                width: 150,
+                sort: true
+            }, {
+                name: 'CONDITION_COL',
+                label: '限制字段',
+                align: 'left',
+                halign: 'center',
+                width: 100,
+                sort: true
+            }, {
+                name: 'IS_SHARE',
+                label: '是否共享',
+                align: 'left',
+                halign: 'center',
+                width: 100,
+                sort: true
+            }, {
+                name: 'STATE',
+                label: '状态',
+                align: 'left',
+                halign: 'center',
+                width: 100,
+                sort: true
+            }, {
+                name: 'LC_COMPLETE_TIME',
+                label: '步骤处理时限',
+                align: 'left',
+                halign: 'center',
+                width: 150,
+                sort: true
+            }, {
+                name: 'CREATE_TIME',
+                label: '创建时间',
+                align: 'left',
+                halign: 'center',
+                width: 200,
+                sort: true
+            }, {
+                name: 'CREATE_USER',
+                label: '创建人',
+                align: 'left',
+                halign: 'center',
+                width: 100,
+                sort: true
+            }
+        ],
+
+        remote: function(params) {
+            return {
+                // 请求地址
+                url: urlpath + '/ProcessHandler/QueryProcessToNextInfo?P_TYPE_ID='+type_id,
+                // 请求类型
+                type: 'post',
+                // 数据类型
+                dataType: 'json',
+                xhrFields: {
+                    withCredentials: true
+                },
+                crossDomain: true == !(document.all),
+            };
+        }
+    };
+
+    $(function() {
+         getDataGrid();
+
+        $('#searchbox').searchBox({
+            escToClear: true, // 设置点击 ESC 键清空搜索框
+            onSearchChange: function(searchKey, isEmpty) {
+                Vsearch = searchKey;
+            },
+            onPressEnter: function(event) {
+                search();
+            }
+        });
+
+    });
+    function ProcessConfig(TYPE_ID,TYPE_NAME) {
+        newTrigger.show({
+            iframe: "ProcessConfig.html?TYPE_ID="+TYPE_ID,
+            height: $('body').height()-200,
+            width:  $('body').width()-100,
+            label:  TYPE_NAME+"的流程设计",
+        });
+    }
+
+    function getDataGrid() {
+        $('#myJobsDG').datagrid({
+            rowDefaultHeight: 50,
+            height: 'page',
+            checkable: true,
+            sortable: true,
+            showRowIndex: false, //不显示序号
+            checkByClickRow: false,
+            dataSource: datasource,
+            states: {
+                pager: {
+                    page: 1,
+                    recPerPage: 8
+                },
+                sortBy: {}
+            }
+        });
+        // 获取数据表格实例
+        myDataGrid = $('#myJobsDG').data('zui.datagrid');
+    }
+
+
+    function search() {
+        var searchData;
+        myDataGrid.setDataSource({
+            remote: function(params) {
+                return {
+                    // 请求地址
+                    url: urlpath + "/ProcessHandler/QueryProcessToNextInfo?KEYWORD=" + Vsearch+'&P_TYPE_ID='+type_id,
+                    // 请求类型
+                    type: 'post',
+                    // 数据类型
+                    dataType: 'json',
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    crossDomain: true
+                };
+            },
+            states: {
+                pager: {
+                    page: 1,
+                    recPerPage: 8
+                }
+            }
+        });
+        myDataGrid.render();
+    }
+
+    function add() {
+        newTrigger.show({
+            iframe: "ProcessConfigEdit.html",
+            height: $('body').height()-100,
+            width:  600,
+            label: '流程新增'
+        });
+    }
+    function update() {
+        var data = myDataGrid.getCheckItems();
+            if (data.length < 1) {
+                new $.zui.Messager('请选择需要修改的数据！', {
+                    type: 'warning' // 定义颜色主题
+                }).show();
+            } else if (data.length > 1) {
+                new $.zui.Messager('您一次只能处理一条数据！', {
+                    type: 'warning' // 定义颜色主题
+                }).show();
+            } else {
+                var PID = data[0].ID;
+                var name=encodeURI(data[0].ROLE_NAME);
+                name=encodeURI(name);
+                newTrigger.show({
+                    iframe: "ProcessConfigEdit.html?operation="+name+"&P_ID=" + PID,
+                    height: 340,
+                    width: 590,
+                    title: '流程修改'
+                })
+            }
+    }
+
+    function del() {
+        var data = myDataGrid.getCheckItems();
+        if(data.length < 1) {
+            new $.zui.Messager('请选择需要删除的数据！', {
+                type: 'warning'
+            }).show();
+        } else {
+            //把要删除的id拼接起来
+            var IDS = '';
+            for(var i = 0; i < data.length; i++) {
+                if(data[i] == null) {
+                    IDS = IDS;
+                } else {
+                    IDS += data[i].ID + ',';
+                }
+            }
+            //var P_KNOWLEDGE_ID=data[0].KNOWLEDGE_ID;
+            new $.zui.Messager('是否要删除这' + data.length + '条数据？', {
+                type: 'warning',
+                time: 0,
+                actions: [{
+                    name: 'del',
+                    icon: 'remove-sign',
+                    text: '删除',
+                    action: function() {
+                        $.ajax({
+                            type: "post",
+                            url: urlpath + '/ProcessHandler/DeleteProcessConfig.action',
+                            data: {
+                                'IDS': IDS
+                            },
+                            xhrFields: {
+                                withCredentials: true
+                            },
+                            crossDomain: true,
+                            dataType: 'text',
+                            success: function(res) {
+                                if(res == "SUCCESS") {
+                                    new $.zui.Messager('删除成功！', {
+                                        type: 'success'
+                                    }).show();
+                                    updateGrid();
+                                } else {
+                                    new $.zui.Messager('删除失败！', {
+                                        type: 'danger'
+                                    }).show();
+                                }
+                            }
+                        });
+                    }
+                }, {
+                    name: 'undo',
+                    icon: 'undo',
+                    text: '取消',
+                    action: function() { // 点击该操作按钮的回调函数
+                        return;
+                    }
+                }]
+            }).show();
+        }
+    }
+
+    //更新表格数据
+    function updateGrid() {
+        myDataGrid.setDataSource(datasource);
+        myDataGrid.render();
+    }
+
+    function closeTrigger() {
+        newTrigger.close();
+    }
+</script>
+</body>
+</html>

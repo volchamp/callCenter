@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>新增题库</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<link rel="stylesheet" href="../../../Lib/bootstrap-3.3.7-dist/css/bootstrap.css" />
+		<link rel="stylesheet" href="../../../Lib/bootstrap-table/dist/bootstrap-table.css" />
+		<link rel="stylesheet" href="../../../Lib/jsTree/style.min.css" />
+		<style>
+			html,
+			body {
+				height: 100%;
+				width: 100%;
+				overflow: hidden;
+			}
+			
+			.form {
+				padding: 10px 15%;
+			}
+			
+			.container-fluid {
+				height: 100%;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<article class="article  article-condensed">
+				<!-- 文章正文部分 -->
+				<section class="content">
+					<div class="noteContent">
+						<form role="form" class="form">
+							<div class="form-group">
+								<label style="width: 65px;" for="p_question_type">题目内容:</label>
+								<div style="display: inline-block;margin-left: 10px;width: 309px;">
+									<input id="question_text" readonly="readonly"  type="text"  class="form-control search-input">
+								</div>
+							</div>
+							<div class="form-group">
+								<label style="position: absolute;width: 65px;text-align: right;" for="dsc">答案:</label>
+								<textarea style="margin-left:78px;width: 309px;" class="form-control form-contro" id="P_ANSWER" name="P_ANSWER" placeholder="请填写答案"></textarea>
+							</div>
+						</form>
+						<font style="color: red;margin-left: 95px;">注意：每个答案用"|"分隔</font>
+					</div>
+				</section>
+				<!-- 文章底部 -->
+				<div style="position: absolute;bottom: 10px;width: 100%;text-align: center;">
+					<button type="button" id="btn" style="width: 100px;" class="btn btn-primary" onclick="sumit()">提交</button>
+				</div>
+			</article>
+		</div>
+
+		<script type="text/javascript" src="../../../Lib/jquery-3.4.1.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+		<script type="text/javascript" src="../../../Lib/jsTree/jstree.js"></script>
+		<!--弹框-->
+		<script type="text/javascript" src="../../../Lib/layer/layer.js"></script>
+		<script type="text/javascript" src="../../../Lib/public.js"></script>
+		<script type="text/javascript">
+			var Trigger = new $.zui.ModalTrigger();
+			var ID = $.url("ID");
+			var TITLE=unescape($.url("TITLE"));
+			var answerid=$.url('A_ID');
+			var option=$.url("option");
+			$(document).ready(function() {
+				$("#question_text").val(TITLE);
+				if(option=="update"){
+					getdate(ID);
+				}
+			});
+			function sumit() {
+				 if(trim($("#P_ANSWER").val()) == "") {
+					layer.alert("请填写答案！");
+					return false;
+				} else {
+					$("#btn").attr("disabled", true);
+					var Date={};
+					var urlstr="";
+					if(option=="update"){
+						urlstr="/exam/answerEdit";
+						Date={
+							'P_ID':ID,
+							'p_answer':$("#P_ANSWER").val(),
+							"A_ID":answerid
+						}
+					}else{
+						urlstr="/exam/setTrueJudgeAnswer"
+						Date={
+							'P_ID':ID,
+							'P_ANSWER':$("#P_ANSWER").val()
+						}
+					}
+					
+					$.ajax({
+						type: "post",
+						url: urlpath +urlstr,
+						async: true,
+						data:Date,
+						dataType: 'text',
+						success: function(res) {
+							if(res=="SUCCESS") {
+								layer.msg("提示消息：提交成功！", {
+									icon: 6,
+									time: 1000
+								});
+								//调用父页面上的关闭窗口
+								window.parent.Trigger.close();
+								window.parent.tableRefresh();
+							} else {
+								layer.msg('提示消息：提交失败', {
+									icon: 5,
+									time: 1000
+								});
+								$("#btn").attr("disabled", false);
+							}
+						},
+						error: function(err) {
+							layer.alert("服务器出错了");
+							$("#btn").attr("disabled", false);
+						}
+					});
+				}
+			}
+			function getdate(id) {
+				$.ajax({
+					type: "post",
+					url: urlpath + "/exam/answerGetDateName",
+					async: true,
+					data: {
+						'P_QUESTION_ID': id,
+						"P_ANSWER_ID":answerid
+					},
+					dataType:'json',
+					success: function(res) {
+						if(res.length > 0) {
+							$("#P_ANSWER").val(res[0].ANSWER_NAME)
+						} 
+					},
+					error: function(err) {
+						alert("获取数据服务器出错了");
+					}
+				});
+			}
+		</script>
+	</body>
+</html>

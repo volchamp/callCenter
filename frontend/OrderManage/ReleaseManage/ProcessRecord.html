@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>处理记录</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../../Lib/bootstrap-4.3.1-dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../../Lib/jsTree/style.min.css" />
+    <link rel="stylesheet" href="../../lib/bootstrap-datapicker/bootstrap-datetimepicker.min.css" />
+    <link rel="stylesheet" href="../../lib/font-awesome-4.7.0/css/font-awesome.min.css" />
+
+    <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .form {
+            padding: 10px 14%;
+        }
+
+        .container-fluid {
+            height: 100%;
+            overflow: auto;
+        }
+
+
+        .form-control {
+            display: inline-block;
+            width: 60%;
+        }
+        #time_info
+        {
+            float:right;
+            color:#6c757d;
+            font-size:14px;
+        }
+        #person_info
+        {
+            float:left;
+            color:#007bff;
+            font-size:16px;
+        }
+        .card
+        {
+            margin-bottom: 20px;
+        }
+       
+    </style>
+</head>
+
+<body>
+        <div class="container-fluid">
+            <div class="card">
+                <div class="card-header">
+                    <div id="person_info" class="fa fa-user">
+                        张三
+                      </div>
+                      <div id="time_info">
+                        2019-12-25 22:15:22
+                      </div>
+                </div>
+                <div class="card-body">
+                  <p class="card-text"></p>
+                  这个问题先要这样然后那样就可以解决了 这个问题先要这样然后那样就可以解决了 这个问题先要这样然后那样就可以解决了 这个问题先要这样然后那样就可以解决了 这个问题先要这样然后那样就可以解决了 这个问题先要这样然后那样就可以解决了
+                   这个问题先要这样然后那样就可以解决了 这个问题先要这样然后那样就可以解决了 这个问题先要这样然后那样就可以解决了
+                </div>
+                <div class="card-footer">
+                    <p class="fa fa-list-ul">&nbsp;附件列表：</p>
+                    <div class="row">
+                        <div class="col-md file_list">
+                            <a href="javascript:void(0)">问题解决方案.doc</a>
+                           </div>
+                           <div class="col-md file_list">
+                            <a href="javascript:void(0)">问题汇总说明.xls</a>
+                           </div>
+                           <div class="col-md file_list">
+                            <a href="javascript:void(0)">问题会议纪要.pdf</a>
+                           </div>
+                    </div>
+
+                </div>
+              </div>
+              <div class="card">
+                <div class="card-header">
+                    <div id="person_info" class="fa fa-user">
+                        李四
+                      </div>
+                      <div id="time_info">
+                        2019-12-23 22:15:22
+                      </div>
+                </div>
+                <div class="card-body">
+                  <p class="card-text"></p>
+                  这个问题先要这样然后那样就可以解决了 这个问题先要这样然后那样就可以解决了 这个问题先要这样然后那样就可以解决了 这个问题先要这样然后那样就可以解决了 这个问题先要这样然后那样就可以解决了 这个问题先要这样然后那样就可以解决了
+                   这个问题先要这样然后那样就可以解决了 这个问题先要这样然后那样就可以解决了 这个问题先要这样然后那样就可以解决了
+                </div>
+                <div class="card-footer">
+                    <p class="fa fa-list-ul">&nbsp;附件列表：</p>
+                    <div class="row">
+                        <div class="col-md file_list">
+                            <a href="javascript:void(0)">问题解决方案.doc</a>
+                           </div>
+                           <div class="col-md file_list">
+                            <a href="javascript:void(0)">问题汇总说明.xls</a>
+                           </div>
+                           <div class="col-md file_list">
+                            <a href="javascript:void(0)">问题会议纪要.pdf</a>
+                           </div>
+                    </div>
+
+                </div>
+              </div>
+        </div>
+
+</body>
+<script type="text/javascript" src="../../Lib/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="../../Lib/bootstrap-4.3.1-dist/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="../../Lib/jsTree/jstree.js"></script>
+<!--弹框-->
+<script type="text/javascript" src="../../Lib/layer/layer.js"></script>
+<script type="text/javascript" src="../../Lib/public.js"></script>
+<script>
+    $(document).ready(function () {
+        //getData();
+
+        function drawLine(arr) {
+            var html = '';
+            // if (arr.length > 0) {
+            //     for (var i = 0; i < arr.length; i++) {
+            //         if (i == 0) {
+            //             html += '<div class="time-label"><span class="bg-blue">' + arr[i].day +
+            //                 '</span></div>';;
+            //         } else {
+            //             html += '<div class="time-label"><span class="bg-gray">' + arr[i].day +
+            //                 '</span></div>';;
+            //         }
+            //         for (var j = 0; j < arr[i].content.length; j++) {
+            //             html +=
+            //                 '<div><i class="fa fa-calendar-check-o bg-blue"></i><div class="timeline-item"><span class="time"><i class="fas fa-clock"></i>' +
+            //                 arr[i].content[j].operTime + '</span><h3 class="timeline-header">' + arr[i]
+            //                 .content[j].operDsc +
+            //                 '</h3><div class="timeline-body"><div class="person-info"><i class="fa fa-user">&nbsp;</i><span>' +
+            //                 arr[i].content[j].operUser + '</span></div><div class="content-info">' + arr[i]
+            //                 .content[j].operMsg + '</div></div></div></div>';
+            //         }
+            //     }
+            //     $("#originLine").show();
+            //     $("#timeline").prepend(html);
+            // }
+        }
+
+        function getData() {
+            var dt = {
+                P_DB_ID: 1000
+            };
+            webapi("/order/getOperationLog", dt, function (res) {
+                if (res != null && res.length > 0) {
+                    drawLine(res);
+                } else {
+                    $("#originLine").hide();
+                    layer.msg("暂无数据", {
+                        icon: 9,
+                        time: 2000
+                    });
+                }
+
+            }, function (err) {
+                $("#originLine").hide();
+                layer.msg("获取数据失败", {
+                    icon: 5,
+                    time: 2000
+                });
+            })
+        }
+
+    })
+</script>
+
+</html>

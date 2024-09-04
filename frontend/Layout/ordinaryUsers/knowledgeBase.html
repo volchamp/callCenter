@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>知识库</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Lib/jsTree/style.min.css">
+		<link rel="stylesheet" href="../../Lib/layer/theme/default/layer.css">
+		<style>
+			html {
+				background: #EEEEEE;
+				height: 98%;
+				overflow: hidden;
+			}
+			
+			.tree ul {
+				display: block;
+			}
+			
+			.tree ul li {
+				padding: 0px;
+			}
+			
+			.tree-anchor>.tree-themeicon {
+				margin-top: -12px !important;
+			}
+			
+			.tree-anchor>span {
+				margin-top: -8px !important;
+				position: absolute;
+			}
+			
+			.tree ul li:before {
+				height: 0px;
+				width: 0px;
+				left: 32px;
+			}
+			
+			.card {
+				margin-bottom: 1%;
+			}
+			
+			#app {
+				height: 100%;
+			}
+			
+			.container-fluid {
+				background: #EEEEEE;
+				padding: 5px 3% 0 3%;
+			}
+			
+			.row,
+			.col-md-2,
+			.col-md-10 {
+				height: 100%;
+			}
+			
+			.card {
+				background: #fff;
+				width: 100%;
+				border-radius: 0;
+			}
+			
+			.col-md-2 .card {
+				min-height: 98%;
+			}
+			
+			.col-md-10 .card:first-child {
+				overflow: inherit;
+				padding: 1% 2%;
+			}
+			
+			.jobsType p,
+			.jobsLabel p {
+				background: #4690FC;
+				color: #fff;
+				height: 40px;
+				line-height: 40px;
+				padding: 0 20px;
+				font-size: 16px;
+				font-weight: 500;
+				width: 100%;
+			}
+			
+			.jobsType div,
+			.jobsLabel div {
+				padding: 10px 5px;
+			}
+			
+			.jobsType div {
+				padding-bottom: 0px;
+			}
+			
+			.jobsType #tag_id a,
+			.jobsLabel div a {
+				padding: 10px;
+				display: inline-table;
+				width: 49%;
+				text-align: left;
+				color: #000;
+				font-size: 15px;
+			}
+			
+			#type_id .leftSelected,
+			#tag_id .leftSelected {
+				color: #145CCD;
+			}
+			
+			.imgBox img {
+				display: inline-block;
+			}
+			
+			.list {
+				padding: 1% 3%;
+			}
+			
+			.list .items .item {
+				padding: 10px 15px;
+			}
+			
+			.item-content .text {
+				position: relative;
+				padding: 0 3.5rem;
+				line-height: 25px;
+				font-size: 15px;
+				letter-spacing: 1px;
+			}
+			
+			.item-content .text span:first-child {
+				position: absolute;
+				line-height: 25px;
+				left: 0;
+			}
+			
+			.item-content .text p {
+				display: inline;
+			}
+			
+			.item-heading {
+				position: relative;
+				cursor: pointer;
+			}
+			
+			.item-heading>h3:hover {
+				color: blueviolet !important;
+			}
+			
+			.item-heading>h3:-webkit-any-link {
+				color: -webkit-link;
+				cursor: pointer;
+				text-decoration: underline;
+			}
+			
+			.icon-question-box {
+				position: absolute;
+				left: -40px;
+				/*top: 1px;*/
+				display: inline-block;
+				width: 28px;
+				height: 25px;
+				font-style: normal;
+				line-height: 28px;
+				color: #fff;
+				text-align: center;
+				/*background-color: #FDBA64;*/
+				border-radius: 50%;
+			}
+			
+			.icon-question {
+				font-size: 15px;
+			}
+			
+			.item-footer .comment:last-child {
+				border-bottom: 0;
+			}
+			
+			.icon-comments {
+				color: #808080;
+			}
+			
+			.exComment {
+				color: #145CCD;
+			}
+			
+			a.avatar {
+				display: block;
+				width: 40px;
+				height: 40px;
+				margin-top: 5px !important;
+				font-size: 30px;
+				line-height: 40px;
+				color: #aaa !important;
+				text-align: center;
+				background-color: #e5e5e5;
+				border-radius: 4px;
+			}
+			
+			.replyBtn {
+				float: right;
+				margin-top: 10px;
+				margin-bottom: 10px;
+			}
+			
+			h3>a:hover {
+				text-decoration: none;
+			}
+			
+			h3>a:focus {
+				text-decoration: none;
+			}
+			
+			.apply {
+				padding: 0 3.5rem;
+			}
+			
+			.apply span {
+				cursor: pointer;
+				margin-right: 10px;
+				color: #145ccd;
+			}
+			
+			.apply span:hover {
+				color: #0d3d88;
+				text-decoration: underline;
+			}
+			
+			.apply span i {
+				margin-right: 5px;
+			}
+			
+			.tree-anchor>.tree-checkbox {
+				top: -11px;
+			}
+			
+			.father:after {
+				content: "";
+				height: 0;
+				visibility: hidden;
+				display: block;
+				clear: both;
+			}
+			
+			.loadpos {
+				position: relative;
+				height: 200px;
+			}
+			
+			span.nodata {
+				padding-top: 86px;
+				position: absolute;
+				left: 50%;
+				top: 50%;
+				margin: -50px 0 0 -65px;
+				background: url(../../Static/Img/OrderManage/nodata.png) no-repeat left top;
+				display: block;
+				height: 125px;
+				width: 129px;
+				color: #333;
+				line-height: 24px;
+				text-align: center;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-2">
+					<div class="card" style="height: 100%;">
+						<div class="jobsType" style="height: 55%;">
+							<p>知识库类型</p>
+							<div id="type_id" style="height: 88%;">
+								<div style="width: 100%;overflow: auto;height:100% ;box-sizing: border-box;border-radius: 3px;padding: 5px;margin-bottom: 5px;">
+									<div id="jsTree"></div>
+								</div>
+							</div>
+						</div>
+						<div class="jobsLabel" style="height: 35%;">
+							<p>知识库标签</p>
+							<div id="tag_id" style="height:80%;overflow: auto;margin-left: 15px;">
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-10">
+					<!--<div class="card">-->
+					<!--<div class="input-group" style="width: 30%;">-->
+					<!--<input type="text" class="form-control" id="search" style="border: 1px solid #bfbfbf;" placeholder="请输入标题/关联申请单">-->
+					<!--<span class="input-group-btn">-->
+					<!--<button class="btn btn-default" type="button" onclick="search()">-->
+					<!--<i class="icon icon-search"></i></button>-->
+					<!--</span>-->
+					<!--</div>-->
+					<!--</div>-->
+					<div class="input-group" style="width: 30%;">
+						<div class="input-control search-box has-icon-left has-icon-right search-example" id="searchbox">
+							<input id="search" type="search" class="form-control search-input empty" placeholder="请输入标题/关联申请单" v-model="searchKey">
+							<label for="search" class="input-control-icon-left search-icon"><i class="icon icon-search"></i></label>
+						</div>
+						<span class="input-group-btn">
+                            <button onclick="search()" class="btn btn-primary" type="button">搜索</button>
+                        </span>
+					</div>
+					<div class="card" style="height: 89.5%;overflow: auto;">
+						<div class="list">
+							<div id="centenr" class="items items-hover">
+
+							</div>
+							<footer>
+								<ul class="pager" data-ride="pager" id="page">
+								</ul>
+							</footer>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../../Lib/jquery-3.4.1.min.js" type="text/javascript"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js" type="text/javascript"></script>
+		<script src="../../Lib/jsTree/jstree.js"></script>
+		<script src="../../Lib/select/jquery.ellipsis.js"></script>
+		<script src="../../Lib/public.js"></script>
+		<script src="../../Lib/layer/layer.js"></script>
+		<script type="text/javascript">
+			var P_APPLY_ID = $.url("P_APPLY_ID");
+			var treeid = 0;
+			var TAG_ID = "";
+			var pageClick = 0;
+			var newTrigger = new $.zui.ModalTrigger();
+			$(function() {
+				layer.load(2);
+				$('#search').bind('keypress', function(event) {
+					if(event.keyCode == "13") {
+						layer.load(2);
+						search();
+					}
+				});
+				getTree();
+				getdate();
+				getquestMC();
+				$("#jsTree").on("changed.jstree", function(e, node) { //触发事件
+					if(node.selected.length) {
+						treeid = node.instance.get_node(node.selected[0]).id;
+						getInfobyTagid("", 0, 1, 6, treeid);
+					} //输出点击的内容
+				});
+
+			})
+			//事件标签
+			function getquestMC() {
+				var html = "";
+				webapi("/ProcessHandler/GetProcessType", {
+					'P_TABLE': 'TR_KNOWLEDGE_TAG',
+					'P_COLUMN': 'TAG_ID'
+				}, function(res) {
+					html = '<a class="leftSelected" onclick="getInfobyTagid(this,0,1,6,0)">全部</a>';
+					for(var i = 0; i < res.length; i++) {
+						html += '<a onclick="getInfobyTagid(this,\'' + res[i].ID + '\',1,6,0)">' + res[i].TEXT + '</a>';
+					}
+					$("#tag_id").html(html);
+				})
+			}
+			//获取树/事件类型
+			function getTree() {
+
+				$("#jsTree").jstree({
+					'core': {
+						'data': {
+							"url": urlpath + "/approval/getTypeSelect?lazy",
+							"data": function(node) {
+								return {
+									"operation": "get_children",
+									"id": node.id
+								};
+							}
+						}
+					}
+				})
+				//$('#jstree').jstree().open_all();
+			}
+
+			//获取数据
+			function getdate() {
+				var par = {
+					"P_APPLY_ID": P_APPLY_ID,
+					'P_TYPE_ID': treeid,
+					'PAGE': 1,
+					'recPerPage': 6,
+					'P_TAG_ID': 0,
+					'KEYWORD': $("#search").val()
+				};
+				webapi("/approval/getKnowledgeInfoByTagId", par, function(res) {
+					layer.closeAll('loading');
+					if(res.result == 'success') {
+						$("#centenr").html("");
+						if(res.data.length < 1) {
+							$("#centenr").html("<div class='loadpos'><span class='nodata'></span></div>");
+						} else {
+							for(var i = 0; i < res.data.length; i++) {
+								conenter(res.data[i].KNOWLEDGE_ID, res.data[i].TYPE_ID, res.data[i].TITLE, res.data[i].CONTENT, res.data[i].CREATE_TIME, res.data[i].YL_NUM, res.data[i].FAAN_NUM);
+							}
+						}
+					}
+					var userListPage = $('#page').data('zui.pager');
+					userListPage.set(res.pager.page, res.pager.recTotal, res.pager.recPerPage);
+					$('#page').on('onPageChange', function(e, state, oldState) {
+						if(state.page !== oldState.page) {
+							var par = {
+								'P_TAG_ID': 0,
+								'PAGE': state.page,
+								'recPerPage': 6,
+								'P_TYPE_ID': treeid,
+								'KEYWORD': $("#search").val()
+							};
+							webapi("/approval/getKnowledgeInfoByTagId", par, function(res) {
+								if(res.result == 'success') {
+									$("#centenr").html("");
+									if(res.data.length < 1) {
+										$("#centenr").html("<div class='loadpos'><span class='nodata'></span></div>");
+									} else {
+										for(var i = 0; i < res.data.length; i++) {
+											conenter(res.data[i].KNOWLEDGE_ID, res.data[i].TYPE_ID, res.data[i].TITLE, res.data[i].CONTENT, res.data[i].CREATE_TIME, res.data[i].YL_NUM, res.data[i].FAAN_NUM);
+										}
+									}
+
+								}
+							});
+						}
+					});
+				}, function(err) {
+					layer.closeAll('loading');
+				});
+			}
+
+			function search() {
+				layer.load(2);
+				getInfobyTagid("", TAG_ID, 1, 6, treeid);
+
+			}
+
+			function getInfobyTagid(obj, tag_id, page, recPerPage, typeId) {
+				TAG_ID = tag_id;
+				$(obj).siblings().removeClass('leftSelected');
+				$(obj).addClass('leftSelected');
+				// 刷新评论信息
+				$(".item-footer").children(".comment,footer").remove();
+				$(".exComment").removeClass("exComment");
+				var param = {
+					"P_APPLY_ID": P_APPLY_ID,
+					'P_TAG_ID': TAG_ID,
+					'PAGE': page,
+					'recPerPage': recPerPage,
+					'P_TYPE_ID': typeId,
+					'KEYWORD': $("#search").val()
+				};
+				webapi("/approval/getKnowledgeInfoByTagId", param, function(res) {
+					layer.closeAll('loading');
+					if(res.result == 'success') {
+						$("#centenr").html("");
+						if(res.data.length < 1) {
+							$("#centenr").html("<div class='loadpos'><span class='nodata'></span></div>");
+						} else {
+							for(var i = 0; i < res.data.length; i++) {
+								conenter(res.data[i].KNOWLEDGE_ID, res.data[i].TYPE_ID, res.data[i].TITLE, res.data[i].CONTENT, res.data[i].CREATE_TIME, res.data[i].YL_NUM, res.data[i].FAAN_NUM);
+							}
+						}
+					}
+					var userListPage = $('#page').data('zui.pager');
+					if(res.message == "未查询到相关数据") {
+						userListPage.set(1, res.pager.recTotal, 6);
+						return false;
+					}
+					userListPage.set(
+						res.pager.page,
+						res.pager.recTotal,
+						res.pager.recPerPage
+					);
+					$('#page').on('onPageChange', function(e, state, oldState) {
+						if(state.page !== oldState.page && pageClick != 1) {
+							var par = {
+								"P_APPLY_ID": P_APPLY_ID,
+								'P_TAG_ID': TAG_ID,
+								'PAGE': state.page,
+								'recPerPage': recPerPage,
+								'P_TYPE_ID': typeId,
+								'KEYWORD': $("#search").val()
+							};
+							webapi("/approval/getKnowledgeInfoByTagId", par, function(result) {
+								if(result.result == 'success') {
+									$("#centenr").html("");
+									if(res.data.length < 1) {
+										$("#centenr").html("<div class='loadpos'><span class='nodata'></span></div>");
+									} else {
+										for(var i = 0; i < res.data.length; i++) {
+											conenter(res.data[i].KNOWLEDGE_ID, res.data[i].TYPE_ID, res.data[i].TITLE, res.data[i].CONTENT, res.data[i].CREATE_TIME, res.data[i].YL_NUM, res.data[i].FAAN_NUM);
+										}
+									}
+									$(".item-footer").children(".comment,footer").remove();
+									$(".exComment").removeClass("exComment");
+								}
+							});
+							pageClick = 1;
+						}
+					});
+				}, function(err) {
+					layer.closeAll('loading');
+				})
+			}
+
+			function conenter(KNOWLEDGE_ID, TYPE_ID, TITLE, CONTENT, CREATE_TIME, TITL, NUM) {
+				var html = "";
+				if(CONTENT == undefined) {
+					CONTENT = '<span style="color:#fff;background:red ;">无内容</span>';
+				}
+				//				onclick="getConent(\'' + KNOWLEDGE_ID + '\',\'' + TYPE_ID + '\',\'' + NUM + '\')"
+				html = '<div class="item father"><div onclick="getConent(' + KNOWLEDGE_ID + ',' + TYPE_ID + ',' + NUM + ')" style="width: 85%;float: left;cursor: pointer">' +
+					'<div  class="item-heading">' +
+					'<h3    style="color: #145ccd;">' +
+					'<div class="icon-question-box"><img src="../../Static/Img/gongdan/wenti (1).png" style="height: 28px;width: 28px;"></div>' +
+					TITLE + '</h3></div>' +
+					'<div class="item-content">' +
+					'<div class="textBox">' +
+					CONTENT +
+					'</div>' +
+					'</div></div>' +
+					'<div style="width: 15%;float: right;">' +
+					'<div class="item-content">' +
+					'<div class="pull-right"><span style="padding-right: 20px;" class="text-muted">' + CREATE_TIME + '</span></div>' +
+					'</div><div class="item-content">' +
+					'<p class="pull-right" style="padding-right: 20px;" style="color: gray;">浏览次数：<span style="color: green;">' + TITL + '</span></p>' +
+					'</div></div></div>';
+				$("#centenr").append(html);
+				$('.textBox').ellipsis({
+					row: 2
+				});
+			}
+
+			function getConent(pid, typeid, m) {
+				num(pid);
+				var url = 'knowledgeBaseConent.html?itemid=' + pid + '&itemtypeid=' + typeid + '&NUM=' + m;
+				window.open(url);
+				//				layer.open({
+				//					type: 2,
+				//					title: '解决方案详情',
+				//					shadeClose: true,
+				//					shade: [0.8, '#393D49'],
+				//					maxmin: true, //开启最大化最小化按钮
+				//					area: ['100%', '100%'],
+				//					content: 'knowledgeBaseConent.html?itemid=' + pid + '&itemtypeid=' + typeid + '&NUM=' + m
+				//				});
+			}
+
+			function loadwindow1(size, wsize, title, icon, url, isrue) {
+				//				window.open (url);
+				var _height = window.parent.parent.outerHeight;
+				var _width = 600;
+				if(size != '') {
+					_height = size;
+				}
+				if(wsize != '') {
+					_width = wsize;
+				}
+				window.parent.$.zui.modalTrigger.show({
+					title: title,
+					icon: icon,
+					size: 'fullscreen',
+					type: 'iframe',
+					height: _height,
+					width: _width,
+					iframe: url
+				});
+			}
+
+			//添加浏览次数
+			function num(id) {
+				var par = {
+					'P_ID': id
+				};
+				webapi("/approval/knowledgeBrowseAdd", par, function(result) {
+					if(result.result == 'SUCCESS') {
+						//成功浏览了一次
+					}
+				});
+			}
+		</script>
+	</body>
+
+</html>

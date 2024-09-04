@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html xmlns:v-bind="http://www.w3.org/1999/xhtml">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>事件处理</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Static/Css/timeline.css" />
+		<link rel="stylesheet" href="../../Lib/easyUpload/main.css">
+		<style>
+			html,
+			body {
+				width: 100%;
+				height: 100%;
+				background-color: #EEEEEE;
+				overflow: hidden;
+			}
+			a {
+				color: #000000;
+				text-decoration: none;
+			}
+			
+			a:hover {
+				text-decoration: none;
+			}
+			
+			.container {
+				width: 90%;
+				height: 97%;
+				background-color: #FFFFFF;
+				border-radius: 10px;
+				margin-top: 10px;
+			}
+			
+			#top {
+				width: 100%;
+				height: 40px;
+				font-size: 16px;
+				;
+				border-bottom: solid 1px #EEEEEE;
+				overflow: hidden;
+			}
+			
+			#bottom {
+				width: 100%;
+				height: calc(100%);
+				overflow: hidden;
+			}
+			
+			#bottom_left,
+			#bottom_right {
+				width: 49.9%;
+				height: 100%;
+				float: left;
+			}
+			
+			#bottom_left {
+				border-right: solid 1px #3BA4FF;
+				overflow: auto;
+			}
+			
+			#bottom_right {
+				float: right;
+			}
+			
+			#bottom_right_top {
+				width: 100%;
+				height: 60%;
+				overflow-x: hidden;
+				overflow-y: auto !important;
+			}
+			
+			#bottom_right_bottom {
+				width: 100%;
+				height: 40%;
+				padding: 1%;
+				overflow-x: hidden;
+				overflow-y: auto !important;
+			}
+			
+			#tjan {
+				width: 100%;
+				height: 30px;
+				padding: 10px 100px 0px 0px;
+				margin-left: 80%;
+			}
+			
+			.infospan {
+				font-size: 15px;
+				vertical-align: middle;
+				font-weight: bold;
+			}
+			
+			#infotable {
+				margin-left: 30%;
+				width: 70%;
+				border-spacing: 10px 30px;
+				border-collapse: separate;
+			}
+			
+			#dsc {
+				width: 85%;
+				height: 120px;
+				border: solid 1px #3ba4ff;
+				border-radius: 5px;
+				margin-top: 5px;
+				margin-left: 30px;
+			}
+			
+			#fbpl {
+				position: relative;
+				width: 100%;
+				height: 30px;
+				margin-top: 10px;
+			}
+			
+			#fbpl a {
+				position: absolute;
+				right: 15px;
+			}
+			
+			.bottom-content {
+				list-style: none;
+				margin: 5px;
+				overflow: auto;
+				margin-left: 10%;
+				margin-right: 5%;
+			}
+			
+			.bottom-item {
+				display: inline-block;
+				padding: 5px;
+				width: 100%;
+			}
+			
+			.title-frist {
+				display: inline-block;
+				width: 100%;
+				height: 20px;
+				line-height: 20px;
+				font-weight: 800;
+				color: rgb(7, 17, 27);
+				font-size: 13px;
+			}
+			
+			.item-title {
+				display: inline-block;
+				width: 130px;
+				height: 20px;
+				line-height: 20px;
+				font-weight: 800;
+				color: rgb(7, 17, 27);
+				font-size: 15px;
+				float: left;
+			}
+			
+			.icon {
+				margin-right: 5px;
+				color: #3BA4FF;
+				font-size: 18px;
+			}
+			
+			.jinjicss {
+				padding: 2px;
+				border-radius: 5px;
+				background: red;
+				color: #fff;
+			}
+			/*.errinfo {*/
+			/*	color: red;*/
+			/*}*/
+			
+			.item-info {
+				color: rgba(7, 17, 27, 0.7);
+				margin: 14px;
+				line-height: 2em;
+			}
+			
+			.checkincon {
+				color: red;
+			}
+			
+			h4 a {
+				vertical-align: top;
+				color: #145CCD;
+				margin-left: 5px;
+			}
+			
+			.filea {
+				color: black;
+				/* border: 1px black; */
+				/* border: 1px solid #607D8B; */
+				border-radius: 5px;
+				padding: 3px;
+				margin: 3px;
+			}
+			
+			.filea:hover {
+				font-weight: bolder;
+			}
+			
+			.Collection {
+				position: absolute;
+				right: 15px;
+				top: 4px;
+				font-size: 16px;
+				color: rgb(37, 124, 210);
+				cursor: pointer;
+				line-height: 50px;
+			}
+			
+			.knowDiv {
+				padding: 5px 10px;
+				cursor: pointer;
+				color: #145ccd;
+			}
+			
+			.knowDiv:hover {
+				color: #0d3d88;
+				text-decoration: underline;
+			}
+			
+			[v-cloak] {
+				display: none;
+			}
+			
+			.textover {
+				position: absolute;
+				left: -46px;
+				top: 12px;
+				display: none;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<div v-cloak id="container" class="container">
+			<div id="bottom">
+
+				<div id="bottom_left">
+					<div id="top">
+						<span style="margin-left:10px;line-height: 40px;">事件详情</span>
+						<span style="float: right;margin-right: 20px;line-height: 40px;">
+							<a v-if="tjinfo" class="knowClass" @click="unKnowledge">
+								<i :class="{checkincon:tjinfo}" class="icon icon-signout" style="font-size: 18px;"></i><span>取消知识库关联</span>
+						</a>
+						<a v-else class="knowClass" @click="Knowledge">
+							<i class="icon icon-signout" style="font-size: 18px;"></i><span>关联知识</span>
+						</a>
+						<a v-if="scinfo" style="font-size: 16px;margin-left: 5px;" @click="unCollection()">
+							<i :class="{checkincon:scinfo}" class="icon icon-heart" style="font-size: 18px;color: red;"></i>&nbsp;取消收藏
+						</a>
+						<a v-else style="font-size: 16px;margin-left: 5px;" @click="Collection()">
+							<i class="icon icon-heart" style="font-size: 18px;"></i>&nbsp;收藏
+						</a>
+						</span>
+					</div>
+
+					<ul class="bottom-content">
+						<li v-for="(item,key,i) in orderinfo" class="bottom-item" v-if="key==='附件上传'">
+							<i style="float: left;" :class="cssmap[i]"></i><span class="item-title">附件：</span><br />
+							<div style="padding: 10px;">
+								<div v-for="(file,index) in files" style="width: 100%;">
+									<a style="text-decoration: none;" v-cloak class="filea" class="item-info" :href="file.FUJIAN_URL" :download="file.FUJIAN_NAME"><i class="icon icon-file-text-o"></i>{{file.FUJIAN_NAME}}&nbsp;&nbsp;<span>下载</span>&nbsp;&nbsp;</a>
+									<span style="cursor: pointer;margin-right: 10px;text-decoration: none;" v-show="file.FUJIAN_NAME.split('.')[1]=='pdf'||file.FUJIAN_NAME.split('.')[1]=='txt'? false:true" class="yi-lan" @click="yialan(index,file)">预览</span>
+								</div>
+							</div>
+							<div style="margin-left: 5%;padding-top: 10px;">
+								<img v-for="img in imgs" data-toggle="lightbox" :src="img.FUJIAN_URL" :data-image="img.FUJIAN_URL" class="img-thumbnail" alt="" width="140">
+							</div>
+						</li>
+						<li  class="bottom-item" v-else-if="key==='工单号'"  v-show="false">
+
+						</li>
+						<li v-show="noshow.indexOf(key)==-1" class="bottom-item" v-else>
+							<!--<i :class="cssmap[i]"></i><span class="item-title">{{key}}：</span> <span :class="{jinjicss:(key==='紧急程度'||key==='事件状态'),errinfo:item==='待处理'}"-->
+							<div v-cloak class="item-title"><i :class="cssmap[i]"></i>{{key}}：</div>
+							<div class="" style="float: left;width: 75%;background: rgb(251, 247, 247);"><span :class="{jinjicss:(key==='紧急程度'||key==='事件状态'),errinfo:item==='待处理'}" v-cloak class="item-value">&nbsp;{{item}}&nbsp;</span></div>
+
+						</li>
+					</ul>
+				</div>
+				<div id="bottom_right" style="overflow: auto;overflow-x: hidden;">
+					<div id="bottom_right_top">
+						<ul class="nav nav-tabs">
+							<li @click="showsf" v-bind:class="[logactive?'active':'']">
+								<a>事件日志</a>
+							</li>
+							<!--							<li @click="showsfqu" v-bind:class="[wayactive?'active':'']" v-show="plinfo.length>0"><a >解决办法</a></li>-->
+							<li @click="showKs" v-bind:class="[knowactive?'active':'']" v-show="pknowInfo.length>0">
+								<a>相关知识</a>
+							</li>
+						</ul>
+						<div class="track-list" v-show="logactive">
+							<ul id="lcul">
+								<li v-for="item in LCInfo">
+									<span ref='acp' class="textover" v-if="item.CL_STATE===1">待处理</span>
+									<span ref='acp' class="textover" v-else>已处理</span>
+									<i @mouseover="mouseOver" @mouseleave="mouseLeave" v-if="item.CL_STATE===1" class="node-icon-on"></i>
+									<i @mouseover="mouseOver" @mouseleave="mouseLeave" v-else class="node-icon"></i>
+									<span class="time">{{item.TIME_INFO}}</span>
+									<span class="txt">{{item.LC_STATE}}</span>
+									<span class="txt1">{{item.CZ_USER}}</span>
+									<span v-show="item.OPINION" class="op">{{item.OPINION}}</span>
+								</li>
+							</ul>
+						</div>
+
+						<div v-show="knowactive">
+							<ul style="list-style: none;overflow: auto;height: 80%;">
+								<li v-for="it in pknowInfo">
+									<div class="items items-hover">
+										<div class="item">
+											<div class="item-content">
+												<div @click="opknow(it)" class="knowDiv" v-cloak class="text" style="padding: 5px 10px;cursor:pointer;color: #145ccd;">{{it.TITLE}}</div>
+											</div>
+										</div>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div id="bottom_right_bottom">
+						<div style="min-height: 75px;padding-left: 20px;">
+							<label class="col-sm-10 control-label">附件上传</label>
+							<div class="col-sm-10">
+								<div id="uploader"></div>
+							</div>
+							<input type="hidden" name="P_FUJIAN_ID" id="P_FUJIAN_ID">
+						</div>
+						<div>
+							<label style="height: 20px;line-height: 20px;cursor: pointer;display: none;">是否短信验证&nbsp;&nbsp;&nbsp;<input style="vertical-align: text-bottom;width: 15px;height: 15px;"  id="senddx" type="checkbox" /></label>
+						</div>
+						<textarea placeholder="简述解决办法 / 处理意见 / 处理结果" id="dsc"></textarea>
+
+						<div id="tjan">
+							<a href="javascript:dealWith()" class="btn btn-primary-new" style="padding: 6px;border-radius: 5px;">提交处理</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script src="../../Lib/easyUpload/easyUploader.js"></script>
+		<script src="../../Lib/public.js"></script>
+		<script src="../../Lib/vue.js"></script>
+		<script type="text/javascript">
+			var id = $.url("P_APPLY_ID");
+			var op_id = 106;
+			var fileid = "";
+			var vim = new Vue({
+				el: '#container',
+				data: {
+					urlPath: urlpath,
+					orderinfo: {
+						type: Object
+					},
+					fujianinfo: [],
+					pknowInfo: [],
+					files: [],
+					imgs: [],
+					plinfo: {
+						type: Object,
+						default: function() {
+							return {}
+						}
+					},
+					LCInfo: {
+						type: Object
+					},
+					noshow: [
+						'提醒方式', '提醒内容', 'SCORE', 'ISSC', '事件号'
+					],
+					cssmap: [
+						'icon icon-question-sign', 'icon icon-chat', 'icon icon-globe', 'icon icon-user', 'icon icon-circle-arrow-right',
+						'icon icon-globe', 'icon icon-phone-sign', 'icon icon-warning-sign', 'icon icon-comment',
+						'icon icon-windows', 'icon icon-chat-dot', 'icon icon-time', 'icon icon-spin icon-spinner-indicator', 'icon icon-user',
+						'icon icon-sitemap', 'icon icon-time', 'icon icon-file'
+					],
+					scinfo: '',
+					tjinfo: '',
+					logactive: true,
+					knowactive: false
+				},
+				created: function() {
+					var that = this;
+					$.ajax({
+						type: "get",
+						url: urlpath + "/approval/getApplyInfo",
+						//        async:true,
+						dataType: 'json',
+						xhrFields: {
+							withCredentials: true
+						},
+						data: {
+							'P_APPLY_ID': id
+						},
+						crossDomain: true == !(document.all), //兼容ie
+						success: function(data) {
+							if(data != null && data.length > 0) {
+								that.orderinfo = data[0];
+								that.scinfo = data[0].ISSC > 0 ? true : false;
+							}
+						},
+						complete: function(data) {}
+					});
+					//判断是否有添加事件至知识库权限
+					$.ajax({
+						type: "post",
+						url: urlpath + "/approval/getKnowledgeApply",
+						//        async:true,
+						dataType: 'json',
+						xhrFields: {
+							withCredentials: true
+						},
+						data: {
+							'P_APPLY_ID': id
+						},
+						crossDomain: true == !(document.all), //兼容ie
+						success: function(data) {
+							if(data.isPower < 1) {
+								$(".knowClass").css("display", "none");
+							} else {
+								that.tjinfo = data.isAdd > 0 ? true : false;
+							}
+						},
+						complete: function(data) {}
+					});
+					$.ajax({
+						type: "get",
+						url: urlpath + "/approval/getApplyLogInfo",
+						data: {
+							'P_APPLY_ID': id
+						},
+						xhrFields: {
+							withCredentials: true
+						},
+						crossDomain: true == !(document.all), //兼容ie
+						success: function(data) {
+							if(data != null && data.length > 0) {
+								that.LCInfo = data;
+							}
+						}
+					});
+					$.ajax({
+						type: 'get',
+						url: urlpath + '/approval/getFujian',
+						data: {
+							"P_TABLE_NAME": "TR_BASE_APPLY",
+							"P_FIELD_ID": id
+						},
+						xhrFields: {
+							withCredentials: true
+						},
+						crossDomain: true == !(document.all), //兼容ie
+						success: function(data) {
+							var filesList = [];
+							var imgsList = [];
+							if(data != null && data.length > 0) {
+								for(var i = 0; i < data.length; i++) {
+									if(that.isImg(data[i].FUJIAN_URL)) {
+										filesList.push(data[i]);
+									} else {
+										imgsList.push(data[i]);
+									}
+								}
+							}
+							that.files = filesList;
+							that.imgs = imgsList;
+						}
+
+					});
+					$.ajax({
+						type: "post",
+						url: urlpath + "/approval/listApplyToKnowledge",
+						//        async:true,
+						dataType: 'json',
+						xhrFields: {
+							withCredentials: true
+						},
+						data: {
+							'P_APPLY_ID': id
+						},
+						crossDomain: true,
+						success: function(data) {
+							that.pknowInfo = data;
+						},
+						complete: function(data) {}
+					});
+				},
+				methods: {
+					mouseOver() {
+                      var acps = this.$refs.acp;
+                      for(var i=0;i<acps.length;i++){
+                      	acps[i].style.display='block';
+                      }
+                     
+					},
+					// 移出
+					mouseLeave() {
+                          var acps = this.$refs.acp;
+                          for(var i=0;i<acps.length;i++){
+                      	 acps[i].style.display='none';
+                      }
+                         
+					},
+					getplinfo: function() {
+						webapi();
+					},
+					Collection: function() {
+						var that = this;
+						$.ajax({
+							type: 'post',
+							url: urlpath + '/approval/addCollectionInfo',
+							dataType: 'text',
+							data: {
+								"P_ID": id
+							},
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true == !(document.all), //兼容ie
+							success: function(data) {
+								if(data == 'SUCCESS') {
+									that.scinfo = !that.scinfo;
+									(new $.zui.ModalTrigger({
+										custom: '<div class="alert alert-success with-icon"><i class="icon-warning-sign"></i><div class="content">收藏成功！</div></div>'
+									})).show();
+								} else {
+									(new $.zui.ModalTrigger({
+										custom: '<div class="alert alert-warning with-icon"><i class="icon-warning-sign"></i><div class="content">' +
+											data + '</div></div>'
+									})).show();
+								}
+							}
+						});
+					},
+					unCollection: function() {
+						var that = this;
+						new $.zui.Messager('警告：确定取消收藏吗？', {
+							type: 'success',
+							close: false,
+							actions: [{
+									name: 'y',
+									icon: 'ok-sign',
+									text: '确定',
+									action: function() {
+										$.ajax({
+											type: 'post',
+											url: urlpath + '/approval/removeCollectionInfo',
+											dataType: 'text',
+											data: {
+												"P_ID": id
+											},
+											xhrFields: {
+												withCredentials: true
+											},
+											crossDomain: true == !(document.all), //兼容ie
+											success: function(data) {
+												if(data == 'SUCCESS') {
+													that.scinfo = !that.scinfo;
+													(new $.zui.ModalTrigger({
+														custom: '<div class="alert alert-success with-icon"><i class="icon-warning-sign"></i><div class="content">您已取消收藏！</div></div>'
+													})).show();
+												} else {
+													(new $.zui.ModalTrigger({
+														custom: '<div class="alert alert-warning with-icon"><i class="icon-warning-sign"></i><div class="content">' +
+															data + '</div></div>'
+													})).show();
+												}
+											}
+										});
+									}
+								},
+								{
+									name: 'n',
+									icon: 'undo',
+									text: '撤销',
+									action: function() { // 点击该操作按钮的回调函数
+										return;
+									}
+								}
+							]
+						}).show();
+					},
+					isImg: function(item) {
+						if(item.toLowerCase().lastIndexOf(".png") != -1 || item.toLowerCase().lastIndexOf(".jpg") != -1 || item.toLowerCase().lastIndexOf(".jpeg") != -1 || item.toLowerCase().lastIndexOf(".gif") != -1) {
+							return false;
+						} else {
+							return true;
+						}
+					},
+					Knowledge: function() {
+						var that = this;
+						loadwindow('', '', '关联到知识库', 'cogs', '../../Layout/adminUsers/addApplyToKnowledge.html?p_apply_id=' + id, 'fullscreen');
+					},
+					opknow: function(item) {
+						loadwindow('', '', '查看知识库', 'cogs', '../ordinaryUsers/knowledgeBaseConent.html?itemid=' + item.KNOWLEDGE_ID+ '&itemtypeid='+item.TYPE_ID, 'fullscreen');
+					},
+					showsf: function() {
+						this.logactive = true;
+						this.knowactive = false;
+					},
+					showKs: function() {
+						this.logactive = false;
+						this.knowactive = true;
+					},
+					yialan: function(id, file) {
+						var $this = this;
+						$.ajax({
+							type: "get",
+							url: urlpath + "/approval/FileConversion",
+							data: {
+								'P_FUJIAN_ID': file.FUJIAN_ID,
+								'P_FUJIAN_URL': file.FUJIAN_URL
+							},
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true == !(document.all), //兼容ie
+							success: function(data) {
+								if(data != "") {
+									//								window.location.href =;
+									window.open($this.urlPath + data);
+								} else {
+									alert("路径为空!");
+								}
+							}
+						});
+					}
+				}
+			});
+
+			function getOrderInfo() {
+				$.ajax({
+					type: "get",
+					url: urlpath + "/approval/getApprovalInfoAN",
+					//      async:true,
+					dataType: 'json',
+					xhrFields: {
+						withCredentials: true
+					},
+					data: {
+						'P_APPLY_ID': id
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					success: function(data) {
+						if(data.length > 0) {
+							$("#wtlx").text(data[0].ORDER_TYPE);
+							$("#fqz").text(data[0].USER_NAME);
+							$("#fqsj").text(data[0].START_TIME);
+							$("#jjcd").text(data[0].EM_LEVEL);
+							$("#hjtlsc").text(data[0].STAY_TIME);
+							$("#xq").text(data[0].DETAIL);
+						}
+					},
+					error: function(err) {
+						alert("错误提示，获取事件基本数据错误！");
+					}
+				});
+			}
+
+			function getOrderLCinfo() {
+				$.ajax({
+					type: "get",
+					url: urlpath + "/approval/getApplyLogInfo",
+					data: {
+						'P_APPLY_ID': id
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					success: function(data) {
+						if(data.length > 0) {
+							var listr = "";
+							$.each(data, function(index, item) {
+								listr += '<li><i';
+								if(item.CL_STATE == 1) {
+									listr += ' class="node-icon-on"></i>'
+								} else {
+									listr += ' class="node-icon"></i>'
+								}
+								listr += '<span class="time">' + item.TIME_INFO + '</span>' +
+									'<span class="txt">' + item.LC_STATE + '</span>' +
+									'<span class="txt">' + item.CZ_USER + '</span>';
+								if(!isEmpty(item.OPINION)) {
+									listr += '<span class="op">' + item.OPINION + '</span>'
+								}
+							});
+							$("#lcul").html(listr);
+
+						}
+					},
+					error: function(err) {
+						alert('警告，获取流程信息错误！');
+					}
+				});
+			}
+			//处理意见
+			function dealWith() {
+				$.ajax({
+					type: "post",
+					url: urlpath + "/approval/workProcess",
+					dataType: 'text',
+					xhrFields: {
+						withCredentials: true
+					},
+					data: {
+						'P_APPLY_ID': id,
+						'P_OP_ID': op_id,
+						'P_RESULT_DSC': $('#dsc').val(),
+						'P_FUJIAN_INFO': fileid,
+						'P_TYPE': $('#senddx').is(":checked") ? 1 : 0
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					success: function(data) {
+						if(data != null && data == 'SUCCESS') {
+							new $.zui.Messager('处理成功！', {
+								icon: 'heart',
+								placement: 'center' // 定义显示位置
+							}).show();
+							$('#dsc').val("");
+							//关闭窗口
+							window.parent.reload();
+							window.parent.$.zui.modalTrigger.close();
+
+						}
+					}
+				});
+
+			}
+
+			function Collection() {
+				$('#sc').attr("src", "../../img/scxz.png");
+				$.ajax({
+					type: 'post',
+					url: urlpath + '/approval/addCollectionInfo',
+					dataType: 'text',
+					data: {
+						"P_ID": id
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					success: function(data) {
+						if(data == 'SUCCESS') {
+							(new $.zui.ModalTrigger({
+								custom: '<div class="alert alert-success with-icon"><i class="icon-warning-sign"></i><div class="content">收藏成功！</div></div>'
+							})).show();
+						} else {
+							(new $.zui.ModalTrigger({
+								custom: '<div class="alert alert-warning with-icon"><i class="icon-warning-sign"></i><div class="content">' + data + '</div></div>'
+							})).show();
+						}
+					}
+				});
+			}
+
+			//转派功能
+			function Transfer() {
+				loadwindow('', '', '事件转派', 'share', '../../Layout/ordinaryUsers/turnsendorder.html?p_apply_id=' + id, '');
+			}
+
+			function isEmpty(obj) {
+				if(obj == null || obj == "") {
+					return true;
+				} else {
+					return false;
+				}
+			}
+
+			function closeDialog() {
+				$.zui.modalTrigger.close();
+			}
+
+			function reload() {
+				window.parent.reload();
+				window.parent.closeDialog();
+			}
+
+			var uploader = easyUploader({
+				id: "uploader",
+				/* 渲染容器id */
+				accept:'.jpg,.png,.gif,.txt,.pdf,.docx,.doc,.xlsx,.xls,.zip,.ppt,.pptx',
+				/* 上传类型 */
+				action: urlpath + "/attach/uploadFile",
+				/* 上传地址 */
+				autoUpload: true,
+				/* 是否开启自动上传 */
+				crossDomain: true,
+				/* 是否允许跨域 */
+				data: null,
+				/* 上传配置参数，依据dataFormat而不同， */
+				dataFormat: 'formData',
+
+				/* 上传表单类型，有formData和base64两种 */
+				dataType: 'json',
+				/* 同$.ajax，�默认返回数据格式为json */
+				headers: {
+					// testKey: 'testValue'
+				},
+				/* 上传的请求头部，视需要配置 */
+				maxCount: 5,
+				/* 最大上传文件数 */
+				maxSize: 3,
+				/* 最大上传文件体积，单位M */
+				multiple: true,
+				/* 是否开启多选上传 */
+				name: 'upfile',
+				/* 上传的文件字段名 */
+				previewWidth: 70,
+				/* 压缩预览图的宽度，样式中高度等于宽度 */
+				processData: false,
+				/* 同$.ajax参数，这里默认为false */
+				successKey: 'code',
+				/* 标识上传成功的key */
+				successValue: 200,
+				/* 标识上传成功对应的value */
+				showAlert: true,
+				/* 是否开启alert提示 */
+				timeout: 0,
+				/* ajax请求超时时间，默认值为0，表示永不超时*/
+				withCredentials: true,
+				/* 是否支持发送 cookie 凭证信息 */
+				beforeUpload: null,
+				/* ajax上传前的回调函数 */
+				onAlert: null, //alert时的钩子
+				onChange: null, // input选中时触发
+				onError: function(err) { //上传失败时的钩子
+					new $.zui.Messager('文件上传失败', {
+						icon: 'info-sign',
+						placement: 'center', // 定义显示位置
+						time: 1500,
+						type: 'danger'
+					}).show();
+				},
+				onRemove: function(removedFiles, files) {
+					/*
+					 *批量删除时只返回removedFiles:剩下的文件信息,files为空
+					 *单个删除时返回removedFiles，files,removedFiles:剩下的文件信息,files:删除的文件信息
+					 */
+					//console.log(removedFiles);
+					fileid = "";
+					for(var i = 0; i < removedFiles.length; i++) {
+						if(fileid.indexOf(removedFiles[i].ajaxResponse.original) == -1){
+							fileid += removedFiles[i].ajaxResponse.original + '|' + removedFiles[i].ajaxResponse.url+',';
+						}
+					};
+				}, //移除文件时的钩子
+				onSuccess: function(res) { //上传成功时的钩子
+					if(res.state == "SUCCESS") {
+						if(fileid.indexOf(res.original) == -1) {
+							fileid += res.original + "|" + res.url + ",";
+						}
+					} else {
+						new $.zui.Messager('系统暂只支持上传.jpg,.png,.gif,.txt,.pdf,.docx,.doc,.xlsx,.xls,.zip,.ppt,.pptx格式的文件!', {
+							icon: 'info-sign',
+							placement: 'center', // 定义显示位置
+							time: 1500,
+							type: 'danger'
+						}).show();
+					}
+				}
+			});
+		</script>
+
+	</body>
+
+</html>

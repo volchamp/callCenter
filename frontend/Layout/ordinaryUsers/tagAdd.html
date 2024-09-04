@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <title>标签更改</title>
+    <link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+    <link rel="stylesheet" href="../../Lib/easyUpload/main.css">
+    <link rel="stylesheet" href="../../Lib/jsTree/style.min.css">
+    <style>
+        html,
+        body {
+            font-family: "微软雅黑";
+            font-size: 14px;
+            background: #F9F9F9;
+            overflow: auto;
+            width: 100%;
+        }
+
+        .container-fluid {
+            padding: 5px;
+            width: 98%;
+        }
+
+        .form-group {
+            display: inline-flex;
+            width: 100%;
+        }
+
+        .col-sm-9 {
+            width: 85%;
+        }
+
+        .panel-heading {
+            margin: 0px 10px 0px 10px;
+        }
+
+
+        .form-group {
+            margin-bottom: 0px;
+        }
+
+        .panel-body {
+            padding: 1px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-2">
+                <div class="panel" style="width: 100%;min-width: 550px;">
+                    <div class="panel-body">
+                        <form class="form-horizontal" id="form">
+                            <div class="form-group">
+                                <label
+                                    class="col-sm-3 control-label required">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名称</label>
+                                <div class="col-sm-9">
+                                    <input class="form-control" type="text" id="P_TEXTR" name="P_TEXTR" maxlength="50">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label
+                                    class="col-sm-3 control-label required">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;数值</label>
+                                <div class="col-sm-9" id="bqDiv">
+                                    <input class="form-control" type="text" id="P_VAL" name="P_VAL" maxlength="8">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label
+                                    class="col-sm-3 control-label">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;描述</label>
+                                <div class="col-sm-9" id="bqDiv">
+                                    <input class="form-control" type="text" id="P_DESCR" name="P_DESCR" maxlength="100">
+                                </div>
+                            </div>
+                            <button class="btn btn-primary" style="float:left;margin-left: 36%;margin-top: 15px;"
+                                onclick="submitBtn()" type="button" data-loading-text="正在提交...">提交</button>
+                            <button class="btn btn-primary" style="float:left;margin-left: 1%;margin-top: 15px;"
+                                onclick="closeBtn()" type="button">取消</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../../Lib/jquery-3.4.1.min.js"></script>
+    <script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+    <script src="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js"></script>
+    <script src="../../Lib/public.js"></script>
+    <script type="text/javascript">
+        var newTrigger = new $.zui.ModalTrigger();
+        var P_ID = $.url("PID");
+        var butnum = [];
+        var IDs = "";
+        $(function () {
+            if (P_ID != "") {
+                getData();
+            }
+        });
+
+        function getData() {
+            $.ajax({
+                type: "post",
+                url: urlpath + "/approval/zdTagData",
+                data: {
+                    P_ID: P_ID
+                },
+                xhrFields: {
+                    withCredentials: true
+                },
+                crossDomain: true == !(document.all), //兼容ie
+                dataType: 'json',
+                success: function (res) {
+                    $("#P_TEXTR").val(res.TEXT);
+                    $("#P_VAL").val(res.VAL);
+                    $("#P_DESCR").val(res.DSC);
+                },
+                error: function (err, error) {
+                    new $.zui.Messager('获取数据失败！', {
+                        type: 'danger',
+                        placement: 'center'
+                    }).show();
+                }
+            });
+        }
+        // 提交按钮事件
+        function submitBtn() {
+            var P_TEXTR = $("#P_TEXTR").val();
+            var P_VAL = $("#P_VAL").val();
+            var P_DESCR = $("#P_DESCR").val();
+            var pat=/^[1-9]\d*$/;
+            var data = $("#form").serializeArray();
+            //console.log(str.length);
+            if (P_TEXTR == "") {
+                new $.zui.Messager('名称不能为空！', {
+                    type: 'danger',
+                    placement: 'center'
+                }).show();
+                return false;
+            }
+            if (P_VAL == "") {
+                new $.zui.Messager('数值不能为空！', {
+                    type: 'danger',
+                    placement: 'center'
+                }).show();
+                return false;
+            }
+            if(!pat.test(P_VAL))
+            {
+                new $.zui.Messager('请输入大于0的数字！', {
+                    type: 'danger',
+                    placement: 'center'
+                }).show();
+                return false;
+            }
+            //编辑
+            if (P_ID != "") {
+                data.push({
+                    name: 'P_ID',
+                    value: P_ID
+                });
+                // 验证通过，执行提交方法
+                $.ajax({
+                    url: urlpath + "/approval/zdTagCount",
+                    type: "post",
+                    data: data,
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    crossDomain: true == !(document.all), //兼容ie
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res == "0") {
+                            $.ajax({
+                                url: urlpath + "/approval/zdTagUpdate",
+                                type: "post",
+                                data: data,
+                                xhrFields: {
+                                    withCredentials: true
+                                },
+                                crossDomain: true == !(document.all), //兼容ie
+                                dataType: 'json',
+                                success: function (res) {
+                                    if (res.result == "SUCCESS") {
+                                        new $.zui.Messager('提示消息：提交成功', {
+                                            type: 'success',
+                                            placement: 'center'
+                                        }).show();
+                                        window.parent.closeTrigger();
+                                        window.parent.updateGrid(); //刷新列表数据
+                                    } else {
+                                        new $.zui.Messager('提示消息：提交失败', {
+                                            type: 'danger',
+                                            placement: 'center'
+                                        }).show();
+                                    }
+                                },
+                                error: function (res) {}
+                            })
+                        } else {
+                            new $.zui.Messager('提示消息：已经存在相同数值的记录！', {
+                                type: 'danger',
+                                placement: 'center'
+                            }).show();
+                        }
+                    },
+                    error: function (res) {}
+                });
+            } else {
+                // 验证通过，执行提交方法
+                data.push({
+                    name: 'P_ID',
+                    value: '0'
+                });
+                $.ajax({
+                    url: urlpath + "/approval/zdTagCount",
+                    type: "post",
+                    data: data,
+                    xhrFields: {
+                        withCredentials: true
+                    },
+                    crossDomain: true == !(document.all), //兼容ie
+                    dataType: 'json',
+                    success: function (res) {
+                        if (res == "0") {
+                            $.ajax({
+                                url: urlpath + "/approval/zdTagAdd",
+                                type: "post",
+                                data: data,
+                                xhrFields: {
+                                    withCredentials: true
+                                },
+                                crossDomain: true == !(document.all), //兼容ie
+                                dataType: 'json',
+                                success: function (res) {
+                                    if (res.result == "SUCCESS") {
+                                        new $.zui.Messager('提示消息：提交成功', {
+                                            type: 'success',
+                                            placement: 'center'
+                                        }).show();
+                                        window.parent.closeTrigger();
+                                        window.parent.updateGrid(); //刷新列表数据
+                                    } else {
+                                        new $.zui.Messager('提示消息：提交失败', {
+                                            type: 'danger',
+                                            placement: 'center'
+                                        }).show();
+                                    }
+                                },
+                                error: function (res) {}
+                            })
+                        } else {
+                            new $.zui.Messager('提示消息：已经存在相同数值的记录！', {
+                                type: 'danger',
+                                placement: 'center'
+                            }).show();
+                        }
+                    },
+                    error: function (res) {}
+                });
+            }
+
+        }
+
+        //关闭弹框按钮事件
+        function closeBtn() {
+            window.parent.closeTrigger();
+        }
+    </script>
+</body>
+
+</html>

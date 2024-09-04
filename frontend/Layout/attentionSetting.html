@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>相关设置</title>
+    <link rel="stylesheet" href="../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+    <style>
+    	html,body{
+    		height: 100%;
+    	}
+        .container,
+        .row,
+        .col-md-2,
+        .col-md-10 {
+            height: 93%;
+        }
+
+        .col-md-2 {
+            margin: 50px 0;
+            height: calc(100% - 100px);
+            border-right: 1px solid #DFDFDF;
+        }
+
+        .col-md-2>p {
+            font-size: 2.5rem;
+            height: 60px;
+            line-height: 40px;
+        }
+
+        .col-md-2>ul {
+            list-style: none;
+        }
+
+        .col-md-2>ul>li {
+            font-size: 2rem;
+            cursor: pointer;
+            height: 50px;
+            line-height: 50px;
+        }
+
+        .icon-circle {
+            color: #ccc;
+            position: relative;
+            bottom: 2px;
+        }
+
+        .select,
+        .select .icon-circle {
+            color: #469AFD;
+        }
+
+        .col-md-10 {
+            padding: 80px 100px;
+        }
+
+        .col-md-10>p {
+            color: red;
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 40px;
+        }
+
+        #btnType {
+            height: calc(100% - 90px);
+            overflow: auto;
+        }
+         #date {
+            height: calc(100% - 90px);
+            overflow: hidden;
+            text-align: center;
+        }
+        #btnType .btn {
+            background: transparent;
+            margin: 20px 30px;
+            color: #C8C8C8;
+            border-color: #C8C8C8;
+        }
+
+        .btn:focus,
+        .btn:active:focus,
+        .btn.active:focus,
+        .btn.focus,
+        .btn:active.focus,
+        .btn.active.focus {
+            outline: none;
+            box-shadow: none;
+        }
+
+        #btnType .btn-lg {
+            padding: 15px 40px;
+            font-size: 18px;
+        }
+
+        #btnType .group {
+            text-align: center;
+        }
+
+        #btnType .group .btn-primary {
+            color: #0B5EE3;
+            border-color: #0B5EE3;
+        }
+
+        #saveBox {
+            text-align: center;
+        }
+
+        #save {
+            padding: 10px 50px;
+        }
+        
+    </style>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-2">
+                <p>设置</p>
+                <ul id="setSelect">
+                    <li class="select"><i class="icon icon-circle"></i>&nbsp;关注设置</li>
+                    <li ><i class="icon icon-circle"></i>&nbsp;催单间隔配置</li>
+                </ul>
+            </div>
+            <div id="guanzhu" class="col-md-10">
+                <p>选择您所关注的类型，我们将会为您推送相关的事件及知识~</p>
+                <div id="btnType">
+                </div>
+                <div id="saveBox">
+                    <button class="btn btn-lg btn-primary" id="save" onclick="save()" type="button">保存</button>
+                </div>
+            </div>
+            <div id="shijian" style="display: none;" class="col-md-10">
+                <p>请配置催单时间间隔~</p>
+                <div id="date">
+                	<label class="col-md-5" style="padding: 5px 8px;text-align: right;font-size: 16px;">时间设置<strong>(/分钟)</strong>:</label>
+                	<div class="col-md-7">
+                		<input type="number" maxlength="2" style="width: 200px;" id="DATE_TIME" name="DATE_TIME" class="form-control" />
+                	</div>
+                </div>
+                <div id="saveBox">
+                    <button class="btn btn-lg btn-primary" id="save" onclick="savetime()" type="button">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="../Lib/jquery-3.4.1.min.js"></script>
+    <script src="../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+    <script src="../Lib/public.js"></script>
+    <script>
+        $(function () {
+            getBtnType();
+            getdate();
+            $("#setSelect li").on("click", function () {
+                if (!$(this).hasClass("select")) {
+                    $(this).siblings().removeClass("select");
+                    $(this).addClass("select");
+                }
+                $("#shijian").toggle();
+                $("#guanzhu").toggle();
+            })
+        })
+
+        function getBtnType() {
+            var par = {
+                'P_TABLE': 'TR_BASE_APPLY_XX',
+                'P_COLUMN': 'TYPE'
+            };
+            webapi("/focusController/attentionGetType", par, function (res) {
+                var group = Math.ceil(res.length / 5);
+                for (var i = 0; i < group; i++) {
+                    $("#btnType").append('<div class="group"></div>');
+                    var j = i * 5;
+                    var x = j + 5;
+                    for (j; j < x; j++) {
+                        if (res[j] == undefined) { break; }
+                        if (res[j]["STATE_TYPE"] == '1') {
+                            var html = '<button class="btn btn-lg btn-primary" type="button" typeid="' + res[j]["ID"] + '" onclick="selectType(this,\''+res[j]["TEXT"]+'\')">' + res[j]["TEXT"] + '<i class="icon icon-check"></i></button>';
+                        } else {
+                            var html = '<button class="btn btn-lg" type="button" typeid="' + res[j]["ID"] + '" onclick="selectType(this,\''+res[j]["TEXT"]+'\')">' + res[j]["TEXT"] + '</button>';
+                        }
+                        $("#btnType .group:eq(" + i + ")").append(html);
+                    }
+                    $("#btnType .group:eq(" + i + ") .btn:eq(2)").after('<br>');
+                }
+            })
+        }
+
+        function selectType(obj,text) {
+            if ($(obj).hasClass("btn-primary")) {
+                $(obj).removeClass("btn-primary");
+                $(obj).children('i').remove();
+            } else {
+                $(obj).addClass("btn-primary");
+                var ml=text+'<i class="icon icon-check"></i>';
+                 $(obj).html(ml);
+            }
+        }
+
+        function save() {
+            var num = $("#btnType .group .btn-primary").length;
+            var typeid = "";
+            for (var i = 0; i < num; i++) {
+                if (i == num - 1) {
+                    typeid += $("#btnType .group .btn-primary").eq(i).attr("typeid");
+                    continue;
+                }
+                typeid += $("#btnType .group .btn-primary").eq(i).attr("typeid") + ",";
+            }
+            webapi("/focusController/addAttention", { P_ATTENTION_TYPE: typeid }, function (res) {
+                if (res.indexOf("SUCCESS") != -1) {
+                    new $.zui.Messager('关注设置成功', {
+                        type: 'success',
+                        icon: "ok-sign"
+                    }).show();
+
+                    setTimeout(function () {
+                        var _iframe1 = window.parent.document.getElementById('mainframe');
+                        _iframe1.contentWindow.location.reload(true);
+                    }, 1500)
+                }
+            })
+        }
+        function getdate(){
+        	webapi("/approval/getUrgentInterval","", function (res) {
+                $("#DATE_TIME").val(res)
+            })
+        }
+        function savetime(){
+        	var pra={
+        		"P_INTERVAL":$("#DATE_TIME").val()
+        	}
+        	console.log($("DATE_TIME").val());
+        	webapi("/approval/setUrgentInterval",pra, function (res) {
+        		if(res=="SUCCESS"){
+        			 new $.zui.Messager('设置成功', {
+                        type: 'success',
+                        icon: "ok-sign"
+                    }).show();
+        		}
+            })
+        }
+    </script>
+</body>
+
+</html>

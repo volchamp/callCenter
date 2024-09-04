@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>退回界面</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<!--<link href="../../Lib/zui-1.9.1-dist/lib/datetimepicker/datetimepicker.min.css" rel="stylesheet">-->
+		<style>
+			html,
+			body {
+				font-family: "微软雅黑";
+				font-size: 14px;
+				background: #F9F9F9;
+			}
+			
+			.container-fluid {
+				padding: 20px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-2">
+					<div class="panel" style="width: 550px;">
+						<div class="panel-body">
+							<div class="input-control search-box has-icon-right" id="searchbox">
+							</div>
+							<form class="form-horizontal" id="form">
+								<div class="form-group">
+									<div style="height: 10px;"></div>
+									<div style="font-size: 18px;" for="jobsState"> &#12288;退单原因:</div>
+									<textarea style="height: 100px; width: 96%; margin:10px 10px 10px 10px ;" id="P_BACK_DSC" name="P_BACK_DSC" type="text" class="form-control" placeholder="请输入退回原因"></textarea>
+								</div>
+ 						<button style="margin-left: 39%; margin-bottom: 20px; font-size:18px ;" type="button" class="btn btn-primary" data-position="center" data-toggle="modal" data-target="#myModal">&#12288;退回&#12288;</button>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!--消息对话框-->
+		<div class="modal fade" id="myModal">
+			<div class="modal-dialog" style="width: 400px;">
+				<div class="modal-content">
+					<div class="modal-header" style="background: #469AFD;padding: 5px;">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">关闭</span></button>
+						<h2 style="color: #FFFFFF;" class="modal-title">提示</h4>
+					</div>
+					<div class="modal-body" style="display: inline-flex;height: 100px;padding:6%;">
+						<img src="../../Static/Img/a.png" width="60px" height="55px" class="img-circle" alt="圆形图片">
+						<div style="font-size:20px; margin: 15px;">确认退回？</div>
+					</div>
+					<div class="modal-footer">
+						<button style="margin-right: 5%;" type="button" class="btn btn-default" data-dismiss="modal">&#12288;&#12288;取消&#12288;&#12288;</button>
+						<button style="margin-right: 20%;" id="submitTransFerred" type="button" class="btn btn-primary">&#12288;&#12288;确定&#12288;&#12288;</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js"></script>
+		<script src="../../Lib/public.js"></script>
+		<script type="text/javascript">
+			var apply_id=$.url("p_apply_id");
+			var op_id=$.url("P_OP");
+			var type=$.url("APPLY_STATUS");
+			$(function() {});
+			$('#submitTransFerred').on('click', function() {
+				var $btn = $(this);
+                $btn.button('loading');
+                var data1=$("#form").serializeArray();
+                data1.push({
+                	name:"P_APPLY_ID",
+                	value:apply_id
+                });
+                data1.push({
+                	name:"P_OP",
+                	value:op_id
+                });
+                 data1.push({
+                	name:"P_NOW_STATE",
+                	value:type
+                });              
+				$.ajax({
+            	type:"post",
+            	url:urlpath+"/approval/orderBack",
+            	data:data1,
+            	xhrFields: {
+                withCredentials: true
+              	},
+              	crossDomain:true==!(document.all),//兼容ie
+            	dataType:'json',
+            	success:function(res){
+            		if(res.RESULT=="SUCCESS"){
+            			new $.zui.Messager('提示消息：退回成功', {
+					    type: 'success',
+					    placement:'center'
+						}).show();
+						//调用父页面上的
+						window.parent.closeDialog();
+            		}else if(res.RESULT=="FAILE"){
+            			new $.zui.Messager('提示消息：退回失败', {
+					    type: 'danger',
+					    placement:'center'
+						}).show();
+            		}
+            	},
+            	error:function(res){
+
+            	}
+            });
+			});
+		</script>
+	</body>
+
+</html>

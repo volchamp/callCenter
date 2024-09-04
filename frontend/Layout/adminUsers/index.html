@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>首页</title>
+    <link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+    <link rel="stylesheet" href="../../Static/Css/timeline.css" />
+    <style>
+    	html,body {
+    		width: 100%;
+    		height: 100%;
+    		background-color: #FFFFFF;
+            overflow: hidden;
+        }
+        #left{
+        	width: 65%;
+        	height: 100%;
+        	float: left;	
+        	padding: 3% 20px 3% 3%;
+        }
+        #right{
+        	width: 35%;
+        	height: 100%;
+        	float: left;
+        	padding: 3% 3% 3% 0;
+        }
+        #left_top,#right_top,#left_bottom,#right_bottom{
+        	width: 100%;
+        	height: 50%;
+        	border:solid 1px #E4E4E4;
+        	float: left;
+        }
+        #left_bottom,#right_bottom{
+        	margin-top:20px;
+        }
+        #left_bottom{
+        	border :0px;
+        	overflow: hidden;
+        }
+        #left_bottom_left{
+        	width: 40%;
+        	height: 100%;
+        	border:solid 1px #E4E4E4;
+        	float: left;
+        }
+        #left_bottom_right{
+        	height: 100%;
+        	border:solid 1px #E4E4E4;
+        	float: left;
+        	margin-left: 20px;
+        }
+        #left_top_title,#lleft_bottom_left_title,#left_bottom_right_title,#right_top_title,#right_bottom_title{
+        	width: 100%;
+        	height: 35px;
+        	border-bottom: solid 1px #E4E4E4;
+        }
+        #left_top_content,#lleft_bottom_left_content,#left_bottom_right_content,#right_top_content,#right_bottom_content{
+        	width: 100%;
+        }
+        span{
+        	line-height: 40px;
+        	margin-left: 50px;
+        }
+        input{
+        	width:100px;
+        	height: 30px;
+        	line-height: 40px;
+        	float: right;
+        	margin:2px 20px;
+        	padding: 4px 50px;
+        	border-radius: 5px;
+        	border:solid 1px #E4E4E4;
+        }
+        
+    </style>
+    <script src="../../Lib/jquery-3.4.1.min.js"></script>
+    <script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+    <script src="../../Lib/public.js"></script>
+    <script type="text/javascript">
+    	$(document).ready(function(){
+			 $('#left_bottom_right').width($('#left_bottom').width()-$('#left_bottom_left').width()-24);
+			 $('#left_top_content,#lleft_bottom_left_content,#left_bottom_right_content,#right_top_content,#right_bottom_content').height($('#left_top').height()-36);
+		});
+    </script> 	
+	</head>
+	<body>
+		<!--左边块-->
+		<div id="left">
+			<!--左边上边块-->
+			<div id="left_top">
+				<div id="left_top_title">
+					<span>问题及时率</span>
+					<input id="wtjsl"/>
+				</div>
+				<div id="left_top_content"></div>
+			</div>
+			<!--左边下边块-->
+			<div id="left_bottom">
+				<div id="left_bottom_left">
+					<div id="lleft_bottom_left_title">
+						<span>完成率</span>
+						<input id="wcl"/>
+					</div>
+				    <div id="left_bottom_left_content"></div>
+				</div>
+				<div id="left_bottom_right">
+					<div id="left_bottom_right_title">
+						<span>部门完成量</span>
+						<input id="bmwclsj"/>
+						<input id="bmwclbm" style="margin-left:0px ;"/>
+					</div>
+					<div id="left_bottom_right_content"></div>
+				</div>
+			</div>
+		</div>
+		<!--右边块-->
+		<div id="right">
+			<!--右边上边块-->
+			<div id="right_top">
+				<div id="right_top_title">
+					<span>问题类型</span>
+					<input id="wtlxsj"/>
+				</div>
+				<div id="right_top_content"></div>
+			</div>
+			<!--右边下边块-->
+			<div id="right_bottom">
+				<div id="right_bottom_title">
+					<span>部门项目统计</span>
+					<input id="xmtjbm"/>
+				</div>
+				<div id="right_bottom_content"></div>
+			</div>
+		</div>
+	</body>
+</html>

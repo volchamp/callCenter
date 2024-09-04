@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en">
+<html xmlns:v-bind="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>知识库信息</title>
+    <link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+    <link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.css">
+    <!--    <link href="../../Lib/zui-1.9.1-dist/lib/datetimepicker/datetimepicker.min.css" rel="stylesheet">-->
+    <style>
+        html,
+        body {
+            font-family: "微软雅黑";
+            font-size: 14px;
+            background: #F9F9F9;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        .col-sm-9,
+        .col-sm-3 {
+            height:98%;
+        }
+
+        #TAG_ID dd {
+            margin-left: 10px;
+        }
+
+        .article {
+            padding-top: 0px;
+        }
+
+        .item-heading h4 a {
+            text-decoration: none;
+        }
+
+        .list {
+            height: 100%;
+        }
+        /* 设置滚动条的样式 */
+
+        ::-webkit-scrollbar {
+            width: 8px;
+            /*background-color: aqua;*/
+        }
+        /* 滚动槽 */
+
+        ::-webkit-scrollbar-track {
+            border-radius: 10px;
+        }
+        /* 滚动条滑块 */
+
+        ::-webkit-scrollbar-thumb {
+            width: 2px;
+            border-radius: 10px;
+            background: #C1C1C1;
+        }
+
+        .huifu {
+            cursor: pointer;
+            color: #808080;
+            margin-left: 10px;
+        }
+
+        .huifu:hover {
+            color: #145CCD;
+        }
+
+        .Collection {
+            float: right;
+            cursor: pointer;
+            display: none;
+            margin-top: 10px;
+        }
+
+        .lefttitle {
+            float: left;
+            width: auto;
+        }
+        .lefttitle >h3{
+            margin-top: 10px;
+        }
+        .header{
+            padding-bottom: 0px;
+        }
+        .header:after {
+            content: "";
+            display: block;
+            height: 0;
+            clear: both;
+            visibility: hidden;
+        }
+        .colse{
+            position: fixed;
+            right: 15px;
+        }
+        .colse:hover{
+            color: #0000FF;
+        }
+        dl{
+            margin-bottom: 0px;
+            margin-top: 6px;
+        }
+    </style>
+</head>
+
+<body>
+<!--<div οnclick="window.close()" class="colse">关闭</div>-->
+<div class="list">
+    <header class="header">
+        <span class="Collection" id="cancelCollect" onclick="doCollect();"><i class="icon icon-heart" style="font-size: 18px;color:red"></i><span>&nbsp;取消收藏</span></span>
+        <span class="Collection" id="collect" onclick="doCollect();"><i class="icon icon-heart-empty" style="font-size: 18px;color:red"></i><span>&nbsp;收藏</span></span>
+        <div class="lefttitle">
+            <h3 id="P_TITLE"><i class="icon-list-ul"></i> 解决办法 <small>0条</small>
+            </h3>
+        </div>
+        <div class="lefttitle" style="margin-left: 10px;">
+            <dl class="dl-inline">
+                <dd class="pull" id="TAG_ID">
+            </dl>
+            <dl class="dl-inline" id="infoId" style="display: none">
+                <dt style="font-size: 14px;">问题详情：</dt>
+                </dd>
+                <dd class="pull" id="TITLE_INFO"></dd>
+            </dl>
+        </div>
+    </header>
+
+    <div id="bottom_right_top" style="height: 90%;">
+        <div class="col-sm-9">
+            <ul class="nav nav-tabs">
+                <li class="active">
+                    <a href="#contentAll" onclick="getKnowledgeInfo()" data-toggle="tab">知识库</a>
+                </li>
+                <li>
+                    <a href="#knowledge" onclick="getOrderInfo()" data-toggle="tab">关联工单</a>
+                </li>
+            </ul>
+            <div class="tab-content" style="height: 95%;overflow:auto;">
+                <div class="tab-pane fade in active" id="contentAll">
+                    <div class="item">
+                        <div class="item-heading">
+                            <div class="pull-right"><span class="text-muted">2013-11-11 16:14:37</span> &nbsp;
+                                <a href="#" class="text-muted"><i class="icon-comments"></i> 243</a>
+                            </div>
+                            <h4><a href="###"></a></h4>
+                        </div>
+                        <div class="item-content">
+                            <div class="text">无内容</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="knowledge" style="height: 96%;">
+                    <div class="item">
+                        <div class="item-heading">
+                            <div class="pull-right"><span class="text-muted">2013-11-11 16:14:37</span> &nbsp;
+                                <a href="#" class="text-muted"><i class="icon-comments"></i> 243</a>
+                            </div>
+                            <h4><a href="###"></a></h4>
+                        </div>
+                        <div class="item-content">
+                            <div class="text">无内容</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="col-sm-3">
+            <div class="card" style="height: 100%;margin-top: 3px;">
+                <div class="list" style="overflow: auto;height: 100%;">
+                    <div id="centenr" class="items items-hover">
+                        <div class="item father" id="content_id">
+                            <div style="width: 100%;">
+                                <div class="item-footer">
+                                    <i class="icon-comments"></i>
+                                    <span class="text-muted" id="pinlun" style="cursor: pointer;" onclick="comment()">
+											评论(<span id="sum"></span>)
+											</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="../../Lib/jquery-3.4.1.min.js"></script>
+<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+<script src="../../Lib/public.js"></script>
+<script type="text/javascript">
+    var P_ID = $.url("itemid");
+    var P_TOTAL = $.url("itemtypeid");
+    var NUM = $.url("NUM");
+    var std = "";
+    $(function() {
+        getKnowledgeInfo();
+        acomment(P_TOTAL, P_ID);
+        getCollectState();
+    });
+
+    // 根据knowledgeid查询附件信息,目前该方法没有采用
+    function getFjInfo() {
+        $.ajax({
+            type: "post",
+            url: urlpath + "/approval/getFjInfoById",
+            data: {
+                'P_KNOWLEDGE_ID': P_ID
+            },
+            xhrFields: {
+                withCredentials: true
+            },
+            crossDomain: true == !(document.all), //兼容ie
+            dataType: 'json',
+            success: function(res) {
+                var str = "";
+                if(res[0] != null) {
+                    var FJ = res[0].FJ_INFO;
+                    var FJ_PATH = FJ.replace(/PP_PATH/g, urlpath);
+                    str += "<div class='item-heading'>" +
+                        "<h4><a href='###'>" + "相关附件" + "</a></h4></div>" +
+                        "<div class='item-content'>" +
+                        "<div class='text'>" + FJ_PATH + "</div></div></div>";
+                    $("#contentfj").html(str);
+                }
+            },
+            error: function(res) {
+                // console.log("err");
+            }
+        });
+    }
+    //根据knowledgeid查询知识库详情
+    function getKnowledgeInfo() {
+        var arr = ["label label-success", "label label-warning", "label label-info", "label label-danger"];
+        $.ajax({
+            type: "post",
+            url: urlpath + "/approval/getContentInfoById",
+            data: {
+                'P_KNOWLEDGE_ID': P_ID
+            },
+            xhrFields: {
+                withCredentials: true
+            },
+            crossDomain: true == !(document.all), //兼容ie
+            dataType: 'json',
+            success: function(res) {
+                var str = "";
+                var str1 = "";
+                var str2 = "";
+                var str3 = ""
+                str2 += "<i class='con-list-ul'></i>" + res[0].TITLE + " <small>解决办法(" + res.length + "种)</small>";
+                $("#P_TITLE").html(str2);
+                if(res[0].TITLE_INFO != null && res[0].TITLE_INFO != 'undefine') {
+                    str3 = "<span>" + res[0].TITLE_INFO + "</span> ";
+                    $("#infoId").css("display", "inline-block");
+                    $("#TITLE_INFO").html(str3);
+                }
+                var NAMES = res[0].TAG_NAME.split(',');
+                var P_TAG = "";
+                for(var i = 0; i < NAMES.length; i++) {
+                    P_TAG = "P_TAG_" + i;
+                    str += "<span id='" + P_TAG + "' class='" + arr[Math.floor(Math.random() * arr.length)] + "'>" + NAMES[i] + "</span> ";
+                }
+                $("#TAG_ID").html(str);
+                for(var k = 0; k < res.length; k++) {
+                    var FJ_PATH = res[k].FJ_INFO.replace(/PP_PATH/g, urlpath);
+                    str1 += "<div class='item'>" +
+                        "<div style='display:none;' class='item-heading'>" +
+                        "<div class='pull-right'><span class='text-muted'>" + res[k].CREATE_TIME + "</div>" +
+                        "<h4><a href='###'>" + res[k].USER_NAME + "</a></h4></div>" +
+                        "<div class='item-content'>" +
+                        "<div style='margin-right: 10px;' class='text'>" + res[k].CONTENT + "</div>" +
+                        "<div>" + FJ_PATH + "</div></div></div>";
+                }
+                $("#contentAll").html(str1);
+            },
+            error: function(res) {
+                // console.log("err");
+            }
+        });
+    }
+
+    function getOrderInfo() {
+        $.ajax({
+            type: "post",
+            url: urlpath + "/approval/knowledgeRecordOrderList",
+            data: {
+                'P_KNOWLEDGE_ID': P_ID
+            },
+            xhrFields: {
+                withCredentials: true
+            },
+            crossDomain: true == !(document.all), //兼容ie
+            dataType: 'json',
+            success: function(res) {
+                console.log(res);
+                var str = "";
+                var str1 = "";
+                var str2 = "";
+                var str3 = "";
+                str2 += "<i class='con-list-ul'></i>" + "相关事件信息" + " <small></small>";
+                $("#P_TITLE").html(str2);
+                str = "<span class='label label-info' style='color:#fff;'>知识库关联相关事件</span>"
+                $("#TAG_ID").html(str);
+                for(var k = 0; k < res.length; k++) {
+                    str1 += "<div class='item'>" +
+                        "<div class='item-heading'>" +
+                        "<div class='pull-right'><span class='text-muted'>" + res[k].CREATE_TIME + "</div>" +
+                        "<h4><a  href='javascript:openwindow1(" + res[k].DB_ID + ","+res[k].EVENT_ID+");'>" + res[k].ORDER_NAME + "</a></h4></div>" +
+                        "<div class='item-content'>" +
+                        "</div></div>";
+
+                }
+                $("#knowledge").html(str1);
+            },
+            error: function(res) {
+                // console.log("err");
+            }
+        });
+    }
+
+    function getCollectState() {
+        $.ajax({
+            type: "post",
+            url: urlpath + "/approval/getKnowledgeCollectCount",
+            data: {
+                'P_KNOWLEDGE_ID': P_ID
+            },
+            xhrFields: {
+                withCredentials: true
+            },
+            crossDomain: true == !(document.all), //兼容ie
+            dataType: 'json',
+            success: function(res) {
+                std = res;
+                if(res == 0) {
+                    $("#collect").show();
+                } else {
+                    $("#cancelCollect").show();
+                }
+            },
+            error: function(res) {
+                new $.zui.Messager('获取收藏状态失败！', {
+                    icon: 'frown',
+                    placement: 'center' // 定义显示位置
+                }).show();
+            }
+        });
+    }
+
+    function doCollect() {
+        $.ajax({
+            type: "post",
+            url: urlpath + "/approval/updateCollection",
+            data: {
+                'P_KNOWLEDGE_ID': P_ID
+            },
+            xhrFields: {
+                withCredentials: true
+            },
+            crossDomain: true == !(document.all), //兼容ie
+            dataType: 'json',
+            success: function(res) {
+                if(res.result == "SUCCESS") {
+                    if(std > 0) {
+                        $("#cancelCollect").hide();
+                        $("#collect").show();
+                        std = 0;
+                    } else {
+                        $("#collect").hide();
+                        $("#cancelCollect").show();
+                        std = 1;
+                    }
+                    new $.zui.Messager('操作成功！', {
+                        icon: 'info-sign',
+                        placement: 'center' // 定义显示位置
+                    }).show();
+                } else {
+                    new $.zui.Messager('操作失败！', {
+                        icon: 'frown',
+                        placement: 'center' // 定义显示位置
+                    }).show();
+                }
+            },
+            error: function(res) {
+                new $.zui.Messager('操作失败！', {
+                    icon: 'frown',
+                    placement: 'center' // 定义显示位置
+                }).show();
+            }
+        });
+    }
+
+    function openwindow1(orderid,eventid) {
+        // loadwindow1('', '', '事件查看', 'cogs', '../../Layout/adminUsers/orderDetails.html?p_apply_id=' + orderid + '&P_OP=' + 108, 'fullscreen')
+        switch (eventid) {
+            case 1000:
+                window.open("../../OrderManage/QuestionManage/QuestionInfo.html?P_DB_ID="+orderid+"&P_EVENT_ID="+eventid,"问题详情");
+                break;
+            case 1011:
+                window.open('../../OrderManage/ReleaseManage/ReleaseDetail.html?P_DB_ID='+orderid+"&P_EVENT_ID="+eventid,"发布详情");
+                break;
+            case 1020:
+                window.open("../../OrderManage/EventManage/EventBaseInfo.html?P_DB_ID="+orderid+"&P_EVENT_ID="+eventid,"事件详情");
+                break;
+            case 1010:
+                window.open("../../OrderManage/ChanageManage/ChangeBaseInfo.html?P_DB_ID="+orderid+"&P_EVENT_ID="+eventid,"需求详情");
+                break;
+        }
+
+    }
+
+    function loadwindow1(size, wsize, title, icon, url, isrue) {
+        var _height = window.parent.outerHeight;
+        var _width = 600;
+        if(size != '') {
+            _height = size;
+        }
+        if(wsize != '') {
+            _width = wsize;
+        }
+        window.$.zui.modalTrigger.show({
+            title: title,
+            icon: icon,
+            size: 'fullscreen',
+            type: 'iframe',
+            height: _height,
+            width: _width,
+            iframe: url
+        });
+    }
+    //操作评论
+    function comment(TYPE_ID, KNOWLEDGE_ID) {
+        if($("#pinlun").hasClass("exComment")) {
+            $("#pinlun").prev(".icon-comments").removeClass("exComment");
+            $("#pinlun").removeClass("exComment");
+        } else {
+            $("#pinlun").prev(".icon-comments").addClass("exComment");
+            $("#pinlun").addClass("exComment");
+        }
+        acomment(TYPE_ID, KNOWLEDGE_ID);
+    }
+
+    function acomment(TYPE_ID, KNOWLEDGE_ID) {
+        if($("#pinlun").next(".comment").length != 0) {
+            $("#pinlun").parent(".item-footer").children(".comment,footer").toggle();
+            return;
+        }
+        var par = {
+            'P_APPLY_ID': KNOWLEDGE_ID,
+            'P_TYPE': TYPE_ID
+        };
+        webapi("/approval/getEvaluation", par, function(res) {
+            $("#sum").html(res.length);
+            if(res == "") {
+                $("#pinlun").after('<p class="comment notComment" style="text-align:center;">暂无评论</p>');
+            } else {
+                for(var r in res) {
+                    var html = "";
+                    if(res[r]["BUTTON_INFO"] == "1") {
+                        var delHtml = "<p>确定删除该评论吗？</p><button class='btn btn-mini' type='button'" +
+                            "onclick='deleteComment(" + res[r]["EVALUATE_ID"] + ")'>确定</button>" +
+                            "<button class='btn btn-mini' type='button' onclick='hideTooltip()'>取消</button>";
+
+                        html = '<span style="cursor:pointer;color:#808080;margin-left: 10px;" data-toggle="tooltip"' +
+                            'title="' + delHtml + '"data-html="true" data-trigger="click">删除</span>';
+                    }
+                    if(res[r]["REPLY_ID"] != 0) {
+                        //								$(".replyList" + res[r]["REPLY_ID"]).append(
+                        //									'<div class="comments-list">' +
+                        $("#pinlun").parent(".item-footer").append(
+                            '<div class="comment replyList' + res[r]["EVALUATE_ID"] + '">' +
+                            '<a href="###" class="avatar">' +
+                            '<i class="icon-user icon-2x"></i>' +
+                            '</a>' +
+                            '<div class="content">' +
+                            '<div class="pull-right text-muted">' + res[r]["EVALUATE_TIME"] + '</div>' +
+                            '<div>' +
+                            '<a href="#"><strong>' + res[r]["USER_NAME"] + '</strong></a>' +
+                            '<span class="text-muted">回复</span> <a href="###">' + $(".replyList" + res[r]["REPLY_ID"] + " .userName").text() + '</a>' +
+                            '</div>' +
+                            '<div class="text">' + res[r]["EVALUATE_DSC"] + '</div>' +
+                            '<div class="actions">' +
+                            '<span style="cursor:pointer;color:#808080;margin-left: 10px;" data-toggle="popover" data-placement="top" title="回复">回复</span>' +
+                            html + '</div></div></div>'
+                            //									+'</div>'
+                        );
+                    } else {
+                        $("#pinlun").parent(".item-footer").append(
+                            '<div class="comment replyList' + res[r]["EVALUATE_ID"] + '">' +
+                            '<a href="#" class="avatar">' +
+                            '<i class="icon-user icon-2x"></i>' +
+                            '</a>' +
+                            ' <div class="content">' +
+                            '<div class="pull-right text-muted">' + res[r]["EVALUATE_TIME"] + '</div>' +
+                            '<div><a href="#"><strong class="userName">' + res[r]["USER_NAME"] + '</strong></a></div>' +
+                            ' <div class="text">' + res[r]["EVALUATE_DSC"] + '</div>' +
+                            '<div class="actions">' +
+                            '<span style="cursor:pointer;color:#808080;margin-left: 10px;" data-toggle="popover" data-placement="top" title="回复">回复</span>' +
+                            html +
+                            '</div>' +
+                            '</div>' +
+                            '</div>');
+                    }
+
+                    $('[data-toggle="popover"]').popover({
+                        html: true,
+                        container: 'body',
+                        content: '<textarea class="form-control" rows="3" placeholder="请输入回复信息"></textarea>' +
+                            '<button class="btn replyBtn" type="button" ' +
+                            'onclick="reply(this,' + res[r]["EVALUATE_ID"] + ',' + TYPE_ID + ',' + KNOWLEDGE_ID + ',\'回复\')">回复</button>'
+                    });
+                }
+            }
+
+            //评论框
+            $("#pinlun").parent(".item-footer").append(
+                '<footer style="padding-top: 10px;">' +
+                '<div class="reply-form">' +
+                '<form class="form">' +
+                '<div class="form-group" style="text-align: -webkit-right;">' +
+                '<textarea class="form-control new-comment-text" rows="2" placeholder="撰写评论..."></textarea>' +
+                '<button type="button" class="btn btn-block btn-primary" style="width:100px;margin-top: 10px;" ' +
+                'onclick="reply(this,\'\',' + TYPE_ID + ',' + KNOWLEDGE_ID + ',\'评论\')">' +
+                '评论' +
+                '</button>' +
+                '</div>' +
+                '</form>' +
+                '</div>' +
+                '</footer>');
+            initToolPop();
+        });
+    }
+
+    function initToolPop() {
+        $('[data-toggle="tooltip"]').tooltip();
+        $('[data-toggle="tooltip"]').on('show.zui.tooltip', function() {
+            closeOtherPop();
+        });
+        $('[data-toggle="popover"]').on('show.zui.popover', function() {
+            closeOtherPop();
+        });
+    }
+
+    function closeOtherPop() {
+        $('[data-toggle="tooltip"]').tooltip('hide');
+        $('[data-toggle="popover"]').popover('hide');
+    }
+
+    //回复评论
+    function reply(obj, id, typeId, applyId, typeMes) {
+        var replyVal = $(obj).prev('textarea').val();
+        if(replyVal == "") {
+            new $.zui.Messager('请填写' + typeMes + '信息', {
+                type: 'error'
+            }).show();
+            return;
+        }
+        var par = {
+            P_APPLY_ID: applyId,
+            P_EVALUATE_DSC: replyVal,
+            P_TYPE: typeId,
+            P_REPLY_ID: id
+        };
+        webapi("/approval/evaluateAdd", par, function(res) {
+            if(res.result == "SUCCESS") {
+                new $.zui.Messager(typeMes + '成功！', {
+                    type: 'success'
+                }).show();
+                var delHtml = '<p>确定删除该评论吗？</p>' +
+                    "<button class='btn btn-mini' type='button'" +
+                    "onclick='deleteComment(" + res.data[0]["EVALUATE_ID"] + ")'>确定</button>" +
+                    " <button class='btn btn-mini' type='button' onclick='hideTooltip()'>取消</button>";
+
+                var commentHtml = '<div class="comment replyList' + res.data[0]["EVALUATE_ID"] + '">' +
+                    '<a href="###" class="avatar">' +
+                    '<i class="icon-user icon-2x"></i>' +
+                    '</a>' +
+                    '<div class="content">' +
+                    '<div class="pull-right text-muted">' + res.data[0]["EVALUATE_TIME"] + '</div>' +
+                    '<div>' +
+                    '<a href="#"><strong>' + res.data[0]["USER_NAME"] + '</strong></a></div>' +
+                    '<div class="text">' + res.data[0]["EVALUATE_DSC"] + '</div>' +
+                    '<div class="actions">' +
+                    '<span  class="huifu" data-toggle="popover" data-placement="top" title="回复">回复</span>' +
+                    '<span  class="huifu" data-toggle="tooltip" title="' + delHtml +
+                    '" data-html="true" data-trigger="click">删除</span>' +
+                    '</div>' +
+                    ' </div>' +
+                    ' </div>';
+                var commentHtmll = '<div class="comment replyList' + res.data[0]["EVALUATE_ID"] + '">' +
+                    '<a href="###" class="avatar">' +
+                    '<i class="icon-user icon-2x"></i>' +
+                    '</a>' +
+                    '<div class="content">' +
+                    '<div class="pull-right text-muted">' + res.data[0]["EVALUATE_TIME"] + '</div>' +
+                    '<div>' +
+                    '<a href="#"><strong>' + res.data[0]["USER_NAME"] + '</strong></a>' +
+                    '<span class="text-muted">回复</span> <a href="###">' + $(".replyList" + res.data[0]["REPLY_ID"] + " .userName").text() + '</a>' +
+                    '</div>' +
+                    '<div class="text">' + res.data[0]["EVALUATE_DSC"] + '</div>' +
+                    '<div class="actions">' +
+                    '<span  class="huifu" data-toggle="popover" data-placement="top" title="回复">回复</span>' +
+                    '<span  class="huifu" data-toggle="tooltip" title="' + delHtml +
+                    '" data-html="true" data-trigger="click">删除</span>' +
+                    '</div>' +
+                    ' </div>' +
+                    ' </div>';
+
+                if(typeMes == "评论") {
+                    if($(obj).parents(".item-footer").children(".notComment").length != 0) {
+                        $(obj).parents(".item-footer").children(".notComment").remove();
+                    }
+                    $(obj).parents("footer").before(commentHtml);
+                } else if(typeMes == "回复") {
+                    //							$(".replyList" + id).append('<div class="comments-list">' + commentHtml + '</div>');
+                    $("footer").before(commentHtmll);
+                }
+
+                $('[data-toggle="popover"]').popover({
+                    html: true,
+                    container: 'body',
+                    content: '<textarea class="form-control" rows="3" placeholder="请输入回复信息"></textarea>' +
+                        '<button class="btn replyBtn" type="button" ' +
+                        'onclick="reply(this,' + res.data[0]["EVALUATE_ID"] + ',' + typeId + ',' + applyId + ',\'回复\')">回复</button>'
+                });
+
+                $(obj).prev('textarea').val("");
+                initToolPop();
+            } else {
+                new $.zui.Messager(typeMes + '失败！', {
+                    type: 'error'
+                }).show();
+            }
+        });
+        closeOtherPop();
+    }
+
+    //删除评论
+    function deleteComment(id) {
+        closeOtherPop();
+        webapi("/approval/evaluateDelete", {
+            P_ID: id
+        }, function(res) {
+            if(res == "SUCCESS") {
+                new $.zui.Messager('删除成功！', {
+                    type: 'success'
+                }).show();
+                if($(".replyList" + id).parent(".item-footer").children(".comment").length == 1) {
+                    $(".replyList" + id).parent(".item-footer").children("footer").before(
+                        '<p class="comment notComment" style="text-align:center;">暂无评论</p>');
+                }
+                $(".replyList" + id).remove();
+            } else {
+                new $.zui.Messager('删除失败！', {
+                    type: 'error'
+                }).show();
+            }
+        });
+    }
+
+    function hideTooltip() {
+        $('[data-toggle="tooltip"]').tooltip('hide');
+    }
+</script>
+</body>
+
+</html>

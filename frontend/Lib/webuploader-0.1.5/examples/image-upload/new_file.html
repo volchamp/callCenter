@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<!--文件上传要兼容ie必须要写这一句-->
+		<meta http-equiv="X-UA-Compatible" content="IE=7">		
+		<title></title>
+		 <link rel="stylesheet" type="text/css" href="../../css/webuploader.css" />
+    <link rel="stylesheet" type="text/css" href="./style.css" />
+	</head>
+	<body>
+	<div class="panel panel-default" id="panel" style="width:400px;">
+				
+	</div>
+	<!--如果要兼容ie6/7/8必须要用jquery1.2/jquery2.0,否则只能兼容到ie9-->
+	<script src="jquery.js"></script>
+	<script type="text/javascript" src="../../dist/webuploader.js"></script>
+	<script src="uploadwebupload.js"></script>
+	<script type="text/javascript">
+		$(function() {
+		myUpload();
+	   });
+	</script>
+	</body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta http-equiv="X-UA-Compatible" content="ie=edge" />
+		<title>工单处理</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Lib/easyUpload/main.css">
+		<style>
+			html,
+			body {
+				margin: 0px;
+				width: 100%;
+				height: 100%;
+			}
+			
+			.container-fluid {
+				padding: 10px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<form class="form-horizontal">
+				
+				<div class="form-group">
+					<label for="DSC" class="col-sm-3 required">备注</label>
+					<div class="col-sm-6">
+						<textarea id="DSC" name="DSC" class="form-control" placeholder="请填写备注"></textarea>
+					</div>
+					<div class="col-sm-3" style="height: 50px;">
+					<div style="height: 100%;">
+					<a onclick="Knowledge()" style="background:#008000;height:100%;width: 160px;display: block;color: #fff;text-decoration: none;float: right;">
+						<h3 style="height: 100%;line-height: 50px;padding-right: 20px;margin: 0px;float: right;">
+							关联到知识库<i class="icon icon-signout" style="font-size: 18px;"></i>
+						</h3>
+					</a>
+					</div>
+				</div>
+				</div>
+				<div class="form-group">
+					<label class="col-sm-3">附件</label>
+					<div class="col-sm-6" id="uploader">
+						<div class="easy-uploader">
+							<div class="btn-box"><span class="btn-select-file btn">选取文件</span><i style="display: none !important;" class="btn-check-all cursor-select checkbox unchecked"></i><input class="input-file" type="file" accept=".*" multiple="multiple" style="display:none;"></div>
+							<ul class="list"></ul>
+						</div>
+					</div>
+				</div>
+			</form>
+		</div>
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/layer/layer.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script src="../../Lib/easyUpload/easyUploader.js"></script>
+		<script src="../../Lib/public.js"></script>
+		<script src="../../Lib/all.js"></script>
+		<script type="text/javascript">
+			var fileid = "";
+			var id=$.url("ID");
+			var operid=$.url("PERID");
+			function Knowledge() {
+				layer.open({
+					type: 2,
+					title: '关联知识库',
+					shadeClose: true,
+					shade: false,
+					maxmin: true, //开启最大化最小化按钮
+					area: ['95%', '95%'],
+					content: '../../Layout/adminUsers/addApplyToKnowledge.html?p_apply_id=' + id
+				});
+			}
+
+			function formValidator() {
+				if($("#DSC").val() == "") {
+					layer.alert("请填写备注！");
+					return false;
+				}
+				firm("确定提交吗？", "", $("#DSC").val(), fileid,id,operid,"");
+			}
+			var uploader = easyUploader({
+				id: "uploader",
+				/* 渲染容器id */
+				accept: '.jpg,.png,.gif,.txt,.pdf,.docx,.doc,.xlsx,.xls,.zip,.ppt,.pptx',
+				/* 上传类型 */
+				action: urlpath + "/attach/uploadFile",
+				/* 上传地址 */
+				autoUpload: true,
+				/* 是否开启自动上传 */
+				crossDomain: true,
+				/* 是否允许跨域 */
+				data: null,
+				/* 上传配置参数，依据dataFormat而不同， */
+				dataFormat: 'formData',
+
+				/* 上传表单类型，有formData和base64两种 */
+				dataType: 'json',
+				/* 同$.ajax，�默认返回数据格式为json */
+				headers: {
+					// testKey: 'testValue'
+				},
+				/* 上传的请求头部，视需要配置 */
+				maxCount: 5,
+				/* 最大上传文件数 */
+				maxSize: 3,
+				/* 最大上传文件体积，单位M */
+				multiple: true,
+				/* 是否开启多选上传 */
+				name: 'upfile',
+				/* 上传的文件字段名 */
+				previewWidth: 70,
+				/* 压缩预览图的宽度，样式中高度等于宽度 */
+				processData: false,
+				/* 同$.ajax参数，这里默认为false */
+				successKey: 'code',
+				/* 标识上传成功的key */
+				successValue: 200,
+				/* 标识上传成功对应的value */
+				showAlert: true,
+				/* 是否开启alert提示 */
+				timeout: 0,
+				/* ajax请求超时时间，默认值为0，表示永不超时*/
+				withCredentials: true,
+				/* 是否支持发送 cookie 凭证信息 */
+				beforeUpload: null,
+				/* ajax上传前的回调函数 */
+				onAlert: null, //alert时的钩子
+				onChange: null, // input选中时触发
+				onError: function(err) { //上传失败时的钩子
+					layer.msg("文件上传失败");
+				},
+				onRemove: function(removedFiles, files) {
+					/*
+					 *批量删除时只返回removedFiles:剩下的文件信息,files为空
+					 *单个删除时返回removedFiles，files,removedFiles:剩下的文件信息,files:删除的文件信息
+					 */
+					//console.log(removedFiles);
+					fileid = "";
+					for(var i = 0; i < removedFiles.length; i++) {
+						if(fileid.indexOf(removedFiles[i].ajaxResponse.original) == -1) {
+							fileid += removedFiles[i].ajaxResponse.original + '|' + removedFiles[i].ajaxResponse.url + ',';
+						}
+					};
+				}, //移除文件时的钩子
+				onSuccess: function(res) { //上传成功时的钩子
+					if(res.state == "SUCCESS") {
+						if(fileid.indexOf(res.original) == -1) {
+							fileid += res.original + "|" + res.url + ",";
+						}
+					} else {
+						layer.msg('系统暂只支持上传.jpg,.png,.gif,.txt,.pdf,.docx,.doc,.xlsx,.xls,.zip,.ppt,.pptx格式的文件!');
+					}
+				}
+			});
+		</script>
+	</body>
+
+</html>

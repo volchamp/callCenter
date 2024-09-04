@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>人工调配</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.css">
+		<link href="../../Lib/zui-1.9.1-dist/dist/lib/chosen/chosen.min.css" rel="stylesheet">
+		<style>
+			.col-md-7 {
+				height: 100%;
+			}
+			
+			.container>.row {
+				padding-top: 30px;
+				height: 100%;
+			}
+			
+			.datagrid-row {
+				line-height: 34px;
+			}
+			
+			.card,
+			#userList .card div {
+				padding: 20px;
+			}
+			
+			#userList {
+				padding-top: 15px;
+				height: calc(100% - 110px);
+				overflow: auto;
+			}
+			
+			#userList .cardBox {
+				display: inline-table;
+			}
+			
+			#userList .card {
+				width: 30%;
+				min-width: 290px;
+				padding: 0;
+				cursor: pointer;
+				display: inline-block;
+				margin-right: 15px;
+			}
+			
+			#userList .card p {
+				position: absolute;
+				top: 24px;
+				left: 90px;
+				color: #9F9F9F;
+			}
+			
+			#userList .card p span:first-child {
+				font-size: 20px;
+			}
+			
+			#userList .card ul {
+				list-style: none;
+				padding: 0;
+			}
+			
+			#userList .card ul li {
+				float: left;
+				text-align: center;
+				width: 25%;
+				margin-bottom: 10px;
+			}
+			
+			#userList .card ul li span:first-child {
+				font-size: 18px;
+			}
+			
+			#userList .card ul li span:last-child {
+				color: #9F9F9F;
+			}
+			
+			#userListPage {
+				float: right;
+				margin-right: 60px;
+			}
+			
+			.collapseJobs {
+				border-top-left-radius: 10px;
+				border-bottom-left-radius: 10px;
+				margin-bottom: 0;
+			}
+			
+			.collapseJobs .panel-body {
+				padding: 0;
+				height: 50px;
+				line-height: 50px;
+				border-left: 10px solid #46D8AB;
+				border-top-left-radius: 10px;
+				border-bottom-left-radius: 10px;
+				font-size: 15px;
+				overflow: hidden;
+			}
+			
+			.outTimeBody {
+				border-left: 10px solid #FF0302 !important;
+			}
+			
+			.assignedAmountBody {
+				border-left: 10px solid #3BA4FF !important;
+			}
+			
+			.collapseJobs .panel-body p {
+				padding: 0 10px;
+			}
+			
+			.collapseJobs .panel-body p span {
+				float: right;
+				color: #A3A3A3;
+				font-size: 15px;
+			}
+			
+			.pending {
+				color: #E98B7F;
+			}
+			
+			.outTime {
+				color: #A92727;
+			}
+			
+			.applyId,
+			.userId {
+				display: none;
+			}
+			
+			.assignedAmount {
+				color: #4F9FE3;
+			}
+			
+			.average {
+				color: #393939;
+			}
+			
+			.mask {
+				width: 100%;
+				height: 100%;
+				position: absolute;
+				left: 0;
+				top: 0;
+				z-index: 998;
+				background-color: #fff;
+				opacity: 0;
+				color: #fff;
+			}
+			
+			.cardBox {
+				width: 305px;
+			}
+			
+			#multiDroppableContainer .datagrid-row,
+			#removeJobsContainer .collapseJobs {
+				cursor: move;
+				/* 为被拖动的按钮更改光标类型 */
+			}
+			
+			.datagrid-cell-head {
+				line-height: 22px;
+			}
+			
+			.titttt {
+				filter: grayscale(100%);
+				opacity: 0.5;
+			}
+			
+			.rades {
+				text-decoration: none;
+				position: absolute;
+				top: 27px;
+				left: 21px;
+				width: 10px;
+				height: 10px;
+				border-radius: 50%;
+				background: rgb(70, 247, 116);
+			}
+			
+			.offline {
+				background: red!important;
+			}
+			
+			.text-line {
+				text-decoration: none;
+				position: absolute;
+				top: -40px;
+				left: 253px;
+				font-size: 12px;
+				height: 75px;
+				width: 82px;
+				padding-left: 27px;
+				/* display: none; */
+				transform: rotate(45deg);
+				color: #fff;
+			}
+			
+			.backgrounds1 {
+				background: #ea5761;
+			}
+			
+			.backgrounds2 {
+				background: #30c776;
+			}
+			
+			.container1 {
+				width: 100%!important;
+				padding: 10px;
+			}
+			
+			#m_num {
+				width: 22px;
+				min-width: 14px;
+				height: 22px;
+				padding: 6px 1px;
+				font-size: 12px;
+				line-height: 10px;
+				border-radius: 70%;
+				position: absolute;
+				left: 84px;
+				top: -8px;
+				background: #ea644a;
+			}
+			
+			.cardlist {
+				background: #0000F1;
+			}
+			
+			#bianjie {
+				text-decoration: none;
+				border: 1px solid #3BA4FF;
+				border-radius: 3px;
+				/*padding: 3px;*/
+				background: #3BA4FF;
+				color: #fff;
+				font-size: 16px;
+			}
+			
+			#bianjie:hover {
+				border: 1px solid #3280FC;
+				background: #3280FC;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container1" id="multiDroppableContainer">
+			<div class="row" id="removeJobsContainer">
+				<div class="col-md-4">
+					<div class="card" style="padding-top: 0px;">
+						<div id="daichuli" class="datagrid datagrid-borderless">
+							<header class="clearfix">
+								<div class="row" style="margin-bottom: 15px;">
+									<div class="col-md-12">
+										<h3 style="color: rgb(59, 164, 255);">待处理事件</h3>
+										<button class="btn btn-primary" style="margin-left: 10px;height: 32px;padding: 0px 10px;" onclick="javascript:dispatch('diaodu')">事件调度</button>
+										<button class="btn btn-primary" style="margin-left: 10px;height: 32px;padding: 0px 10px;" onclick="javascript:register()">事件登记</button>
+										<div style="float: left;width: 40%;">
+											<select style="margin-left: 20px;width: 50%;" data-placeholder="选择问题类型" class="chosen-select form-control" tabindex="2">
+												<option value=""></option>
+											</select>
+										</div>
+									</div>
+								</div>
+							</header>
+							<div class="datagrid-container"></div>
+							<div class="pager"></div>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-8">
+					<div class="row">
+						<div class="col-md-6">
+							<div class="input-control search-box has-icon-right" id="SearchUser">
+								<input style="height: 34px;" id="Search" type="search" class="form-control search-input" placeholder="处理人/处理人所在部门或者厂家">
+								<label for="Search" class="input-control-icon-right search-icon">
+									<i class="icon icon-search"></i></label>
+							</div>
+						</div>
+						<div class="col-md-6">
+							<button class="btn btn-primary" onclick="loadwindow('','', '便捷事件信息', 'cogs', '../../Layout/adminUsers/completionList.html','fullscreen');">
+								便捷事件<span id="m_num" class="label label-badge label-danger" v-text="messageNum">0</span>
+							</button>
+						</div>
+					</div>
+					<div id="userList">
+					</div>
+					<ul class="pager" id="userListPage" data-ride="pager" data-elements="prev_icon,nav,next_icon"></ul>
+				</div>
+
+			</div>
+		</div>
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/chosen/chosen.min.js"></script>
+		<script src="../../Lib/public.js"></script>
+		<script type="text/javascript">
+			var myDataGrid;
+			var newTrigger = new $.zui.ModalTrigger();
+			var dataSourceObj = {
+				cols: [{
+						name: 'APPLY_ID',
+						label: 'ID',
+						sort: false,
+						checkbox: true,
+						width: 60
+					},
+					{
+						name: "TITLE",
+						label: "事件名称",
+						width: 120,
+						sort: false
+					},
+					{
+						name: 'OP_TYPE',
+						label: '操作',
+						width: 140,
+						html: true,
+						sort: false
+					},
+					{
+						name: 'EM_LEVEL',
+						label: '紧急程度',
+						width: 90,
+						html: true,
+						valueOperator: {
+							getter: function(dataValue, cell, dataGrid) {
+								var applyId = cell.config.data.APPLY_ID;;
+								if(dataValue == "特急" || dataValue == "紧急") {
+									return "<a href='javascript:void(0);' onclick='jjcdSet(1," + applyId + ")' style='color:red;text-decoration:underline;'>紧急</a>";
+								} else if(dataValue == "加急" || dataValue == "高") {
+									return "<a href='javascript:void(0);' onclick='jjcdSet(2," + applyId + ")' style='color:#f4e60d;text-decoration:underline;'>高</a>";
+								} else if(dataValue == "较急" || dataValue == "中") {
+									return "<a href='javascript:void(0);' onclick='jjcdSet(3," + applyId + ")' style='color:orange;text-decoration:underline;'>中</a>";
+								} else if(dataValue == "一般" || dataValue == "低") {
+									return "<a href='javascript:void(0);' onclick='jjcdSet(4," + applyId + ")' style='color:#11bae1;text-decoration:underline;'>低</a>";
+								} else {
+									return dataValue;
+								}
+							}
+						}
+					},
+					{
+						name: 'TYPE',
+						label: '问题类型',
+						width: 109
+					},
+					{
+						name: "SOURCE",
+						label: "问题来源",
+						width: 120
+					},
+					{
+						name: 'USER_NAME',
+						label: '发起人',
+						width: 109,
+						sort: false
+					},
+					{
+						name: 'RESEND_NUM',
+						label: '重发次数',
+						width: 100,
+						sort: false,
+						html: true,
+						valueOperator: {
+							getter: function(dataValue, cell, datagrid) {
+								if(dataValue == "0") {
+									return "<span style='color: #65CA4B'>无重发记录</span>";
+								} else {
+									return "<span style='color:#de1c31;'>重发" + dataValue + "次</span>";
+								}
+							}
+						}
+					},
+					{
+						name: "DETAIL",
+						label: "问题详情",
+						width: 120,
+						sort: false
+					},
+					{
+						name: 'CREATE_TIME',
+						label: '发起时间',
+						width: 134
+					}
+				],
+				remote: function(params) {
+					return {
+						// 请求地址
+						url: urlpath + '/approval/getApplycationList',
+						// 请求类型
+						type: 'post',
+						// 数据类型
+						dataType: 'json',
+						xhrFields: {
+							withCredentials: true
+						},
+						crossDomain: true == !(document.all), //兼容ie
+					};
+				}
+			};
+			var jobUsersPage = 1;
+			var jobUsersSerach = "";
+			$(function() {
+
+				getDataGrid();
+				getJobUsers(jobUsersSerach);
+				getJobsType();
+				multiDroppableContainer();
+				removejobs();
+				removecard();
+				$('#SearchUser').searchBox({
+					escToClear: true, // 设置点击 ESC 键清空搜索框
+					onSearchChange: function(searchKey, isEmpty) {
+						jobUsersSerach = searchKey;
+						getJobUsers(searchKey);
+					}
+				});
+				//监听页码变更
+				$('#userListPage').on('onPageChange', function(e, state, oldState) {
+					if(state.page !== oldState.page) {
+						jobUsersPage = state.page;
+						getJobUsers(jobUsersSerach);
+					}
+				});
+				$("#userList").on("mousemove", ".show-hide", function(e) {
+					var ali = document.getElementById('userList');
+					var all = ali.getElementsByClassName('show-hide');
+
+				});
+
+				$.ajax({
+					type: "post",
+					url: urlpath + "/approval/completionCount",
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'text',
+					success: function(res) {
+						$("#m_num").text(res);
+					}
+				});
+			});
+
+			function getDataGrid() {
+				$('#daichuli').datagrid({
+					rowDefaultHeight: 50,
+					showRowIndex: false,
+					checkable: true,
+					height: 'page',
+					sortable: true,
+					checkByClickRow: false,
+					dataSource: dataSourceObj,
+					states: {
+						pager: {
+							page: 1,
+							recPerPage: 12
+						},
+						sortBy: {}
+					}
+				});
+				// 获取数据表格实例
+				myDataGrid = $('#daichuli').data('zui.datagrid');
+			}
+
+			function getJobUsers(searchKey) {
+				var par = {
+					P_TYPE: 1,
+					P_USER_TYPE: 2,
+					P_DEPART_TYPE: "",
+					keyword: searchKey,
+					page: jobUsersPage,
+					recPerPage: 16 //每页条数
+				};
+				webapi("/ReportHander/getOrderInfo", par, function(result) {
+					$("#userList").empty();
+					var res = result.data;
+					var html = "";
+					var mgimg = "";
+					for(var r in res) {
+						html += '<div class="cardBox">' +
+							'<div class="card">' +
+							'<div class="show-hide">';
+						if(res[r].IMG_URL == undefined) {
+							mgimg = "../../Static/Img/photo.jpg";
+						} else {
+							mgimg = "";
+							mgimg = res[r].IMG_URL;
+						}
+						if(res[r].STATUS == 1) {
+							html += '<img src="' + mgimg + '" width="60px" height="60px" class="img-circle">' +
+								' <span style="display:none" class="rades"></span>' +
+								'<span class="text-line backgrounds2"></br></br></br>在线</span>';
+						} else if(res[r].STATUS == 2) {
+							html += '<img src="' + mgimg + '" width="60px" height="60px" class="img-circle titttt">' +
+								'<span  style="display:none" class="rades"></span><span class="text-line backgrounds2"></br></br></br>外出</span>';
+						} else {
+							html += '<img src="' + mgimg + '" width="60px" height="60px" class="img-circle titttt">' +
+								'<span style="display:none" class="rades offline"></span><span class="text-line backgrounds1"></br></br></br>离线</span>';
+						}
+						html += '<p>' +
+							'<span>' + res[r]['用户名'] + '</span><br>' +
+							'<span>' + res[r]['DEPART_NAME'] + '</span>' +
+							'<span class="typeName"></span>' +
+							'<span class="userId">' + res[r]['USER_ID'] + '</span>' +
+							' </p>' +
+							'</div>' +
+							'<ul>' +
+							'<li data-toggle="collapse" data-target="#pending' + r + '" data-parent="#accordion' + r + '" onclick="getPending(' + r + ')">' +
+							' <span class="pending">' + res[r]['未处理'] + '</span><br>' +
+							'<span>待处理</span>' +
+							' </li>' +
+							' <li data-toggle="collapse" data-target="#outTime' + r + '" data-parent="#accordion' + r + '" onclick="getOutTime(' + r + ')">' +
+							' <span class="outTime">' + res[r]['未处理超时工单'] + '</span><br>' +
+							'<span>未处理超时</span>' +
+							' </li>' +
+							'<li data-toggle="collapse" data-target="#assignedAmount' + r + '" data-parent="#accordion' + r + '">' +
+							' <span class="assignedAmount">0</span><br>' +
+							'<span>分配量</span>' +
+							'</li>' +
+							' <li>' +
+							' <span class="average">' + res[r]['平均处理时长'] + '</span><br>' +
+							'<span>平均时长</span>' +
+							'</li>' +
+							'</ul>' +
+							'</div>' +
+
+							'<div id="accordion' + r + '">' +
+							'<div class="collapse" id="pending' + r + '"style="min-width:290px;width:30%;position: relative;bottom: 30px;">' +
+							'<div class="panel"style="border-top:0;border-bottom:0;border-bottom-left-radius: 10px;">' +
+							'<div class="panel-body pendingDro" style="padding: 0">' +
+							'</div>' +
+							' </div>' +
+							'</div>' +
+
+							' <div class="collapse" id="outTime' + r + '"style="min-width:290px;width:30%;position: relative;bottom: 30px;">' +
+							' <div class="panel"style="border-top:0;border-bottom:0;border-bottom-left-radius: 10px;">' +
+							'<div class="panel-body outTimeDro" style="padding: 0">' +
+							'</div>' +
+							' </div>' +
+							'</div>' +
+
+							'<div class="collapse" id="assignedAmount' + r + '"style="min-width:290px;width:30%;position: relative;bottom: 30px;">' +
+							' <div class="panel" style="border-top:0;border-bottom:0;border-bottom-left-radius: 10px;">' +
+							'<div class="panel-body assignedAmountDro" style="padding: 0">' +
+							' </div>' +
+							'</div>' +
+							'</div>' +
+							' </div>' +
+							'</div>';
+						$("#userList").append(html);
+						html = "";
+					}
+
+					// 手动进行初始化
+					var userListPage = $('#userListPage').data('zui.pager');
+					userListPage.set(jobUsersPage, result.pager.recTotal, result.pager.recPerPage);
+				});
+			}
+
+			function getJobsType() {
+				var par = {
+					'P_TABLE': 'TR_BASE_APPLY_XX',
+					'P_COLUMN': 'TYPE'
+				};
+				webapi("/ProcessHandler/GetProcessType", par, function(res) {
+					for(var i in res) {
+						$(".chosen-select").append('<option value="' + res[i]['TEXT'] + '">' + res[i]['TEXT'] + '</option>')
+					}
+					$('select.chosen-select').chosen({
+						no_results_text: '没有找到', // 当检索时没有找到匹配项时显示的提示文本
+						disable_search_threshold: 6, // 6 个以下的选择项则不显示检索框
+						search_contains: true // 从任意位置开始检索
+					});
+					$('select.chosen-select').on('change', function(e, params) {
+						myDataGrid.search(params.selected);
+					});
+				})
+			}
+
+			function getPending(r) {
+				if($("#pending" + r + " .pendingDro .collapseJobs .ajaxed").length != 0) {
+					return false;
+				}
+				var par = {
+					P_USER_ID: $("#accordion" + r).parent(".cardBox").find(".userId").text(),
+					P_TYPE_NAME: $("#accordion" + r).parent(".cardBox").find(".typeName").text()
+				};
+				webapi("/approval/getApplyByUser", par, function(res) {
+					$("#pending" + r + " .pendingDro").empty();
+					for(var i in res) {
+						$("#pending" + r + " .pendingDro").append('<div class="panel collapseJobs apply' + res[i]['APPLY_ID'] + '">' +
+							'<div class="panel-body ajaxed" data-toggle="popover" data-tip-class="popover-success" ' +
+							' data-content="' + res[i]['TITLE'] + '" title="' + res[i]['CREATE_TIME'] + '" data-placement="top">' +
+							'<p>' + res[i]['TITLE'] + '<span>' + res[i]['CREATE_TIME'] + '</span></p>' +
+							' <span class="applyId">' + res[i]['APPLY_ID'] + '</span>' +
+							' </div>' +
+							'</div>');
+						if(res[i]['TITLE'].length > 6) {
+							$('[data-toggle="popover"]').popover({
+								trigger: "hover"
+							});
+						}
+					}
+				})
+			}
+
+			function closeDialog() {
+				//调用父页面上的
+				myDataGrid.setDataSource(dataSourceObj);
+				myDataGrid.render();
+				$.zui.modalTrigger.close();
+			}
+
+			function reload() {
+				//重新设置数据源信息
+				myDataGrid.setDataSource(dataSourceObj);
+				myDataGrid.render();
+				$.ajax({
+					type: "post",
+					url: urlpath + "/approval/completionCount",
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'text',
+					success: function(res) {
+						$("#m_num").text(res);
+					}
+				});
+			}
+
+			function getOutTime(r) {
+				if($("#outTime" + r + " .outTimeDro .collapseJobs .ajaxed").length != 0) {
+					return false;
+				} else {
+					var par = {
+						P_SP_USER: $("#accordion" + r).parent(".cardBox").find(".userId").text(),
+						P_TYPE_NAME: $("#accordion" + r).parent(".cardBox").find(".typeName").text()
+					};
+					webapi("/approval/getApplyOvertime", par, function(res) {
+						$("#outTime" + r + " .outTimeDro").empty();
+						for(var i in res) {
+							$("#outTime" + r + " .outTimeDro").append('<div class="panel collapseJobs apply' + res[i]['APPLY_ID'] + '">' +
+								'<div class="panel-body outTimeBody ajaxed" data-toggle="popover" data-tip-class="popover-success"' +
+								'data-content="' + res[i]['TITLE'] + '" title="' + res[i]['CREATE_TIME'] + '" data-placement="top">' +
+								'<p>' + res[i]['TITLE'] + '<span>' + res[i]['CREATE_TIME'] + '</span></p>' +
+								'<span class="applyId">' + res[i]['APPLY_ID'] + '</span>' +
+								' </div>' +
+								'</div>');
+							if(res[i]['TITLE'].length > 6) {
+								$('[data-toggle="popover"]').popover({
+									trigger: "hover"
+								});
+							}
+						}
+					})
+				}
+
+			}
+
+			//拖动操作
+			function multiDroppableContainer() {
+				var strid = "";
+				$('#multiDroppableContainer').droppable({
+					selector: '.datagrid-row', // 定义允许拖放的元素
+					target: '.cardBox', //定义可放置元素
+					stopPropagation: true,
+					move: true,
+					always: function(e) {
+						var str = e.event.target.id.replace(/cell/, "row");
+						strid = str.substring(0, str.length - 2);
+					},
+					before: function(e) {
+						console.log(e.event.currentTarget)
+						console.log(this)
+						$(".datagrid-row").css('width', '300px');
+
+					},
+					start: function(e) { //开始拖动
+						$(".datagrid-row").css('width', '300px');
+						$('#multiDroppableContainer .cardBox .card').append("<div class='mask'></div>");
+						$('#multiDroppableContainer .cardBox .card').mousemove(function(e) {
+							this.style.background = 'rgba(59, 164, 255, 0.97)';
+							e.currentTarget.childNodes[0].childNodes[3].childNodes[0].style.color = "#fff";
+							e.currentTarget.childNodes[0].childNodes[3].childNodes[2].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[0].childNodes[1].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[0].childNodes[3].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[2].childNodes[1].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[2].childNodes[3].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[3].childNodes[1].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[3].childNodes[3].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[5].childNodes[1].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[5].childNodes[3].style.color = "#fff";
+						});
+						$('#multiDroppableContainer .cardBox .card').mouseout(function(e) {
+							this.style.background = '#fff';
+							e.currentTarget.childNodes[0].childNodes[3].childNodes[0].style.color = "#9F9F9F";
+							e.currentTarget.childNodes[0].childNodes[3].childNodes[2].style.color = "#9F9F9F";
+							e.currentTarget.childNodes[1].childNodes[0].childNodes[1].style.color = "#E98B7F";
+							e.currentTarget.childNodes[1].childNodes[0].childNodes[3].style.color = "#9F9F9F";
+							e.currentTarget.childNodes[1].childNodes[2].childNodes[1].style.color = "#A92727";
+							e.currentTarget.childNodes[1].childNodes[2].childNodes[3].style.color = "#9F9F9F";
+							e.currentTarget.childNodes[1].childNodes[3].childNodes[1].style.color = "#4F9FE3";
+							e.currentTarget.childNodes[1].childNodes[3].childNodes[3].style.color = "#9F9F9F";
+							e.currentTarget.childNodes[1].childNodes[5].childNodes[1].style.color = "#393939";
+							e.currentTarget.childNodes[1].childNodes[5].childNodes[3].style.color = "#9F9F9F";
+						});
+					},
+					drop: function(event) { //拖动完成
+						$('#multiDroppableContainer .cardBox .card .mask').remove();
+						if(event.target) {
+							var apply_id = myDataGrid.getCell(event.element[0].dataset.row, 1).value;
+							var par = {
+								P_APPLY_ID: apply_id,
+								P_SP_USER: event.target.find(".userId").text(),
+								P_OP_ID: 105
+							}
+							webapi("/approval/addApplyByUser", par, function(res) {
+								if(res.result == "SUCCESS") {
+									var assigned = event.target.find('.assignedAmount');
+									if(assigned.text() == 0) {
+										assigned.text('+1')
+									} else {
+										assigned.text('+' + (parseInt(assigned.text().substr(1)) + 1))
+									}
+									event.target.find('.pending').text(parseInt(event.target.find('.pending').text()) + 1);
+									event.target.find(".pendingDro").append('<div class="panel collapseJobs apply' + apply_id + '">' +
+										'<div class="panel-body" data-toggle="popover" data-tip-class="popover-success"' +
+										'data-content="' + event.element.find('[data-col=2]').text() + '" title="' + event.element.find('[data-col=3]').text() + '" data-placement="top">' +
+										'<p>' + event.element.find('[data-col=2]').text() + '<span class="timeee">' + event.element.find('[data-col=3]').text() + '</span></p>' +
+										'<span class="applyId">' + apply_id + '</span>' +
+										' </div>' +
+										'</div>');
+									event.target.find(".assignedAmountDro").append('<div class="panel collapseJobs apply' + apply_id + '">' +
+										'<div class="panel-body assignedAmountBody"  data-toggle="popover" data-tip-class="popover-success"' +
+										' data-content="' + event.element.find('[data-col=2]').text() + '" title="' + event.element.find('[data-col=3]').text() + '" data-placement="top">' +
+										'<p>' + event.element.find('[data-col=2]').text() + '<span class="timeee">' + event.element.find('[data-col=3]').text() + '</span></p>' +
+										'<span class="applyId">' + apply_id + '</span>' +
+										'</div>' +
+										'</div>');
+
+									if(event.element.find('[data-col=2]').text().length > 6) {
+										$('[data-toggle="popover"]').popover({
+											trigger: "hover"
+										});
+									}
+									//刷新表格
+									myDataGrid.setDataSource(dataSourceObj);
+									myDataGrid.render();
+									$.zui.messager.show("成功添加");
+								} else if(res.result == "ERROR") {
+									$.zui.messager.show(res.message);
+								}
+							})
+
+						}
+					},
+					drag: function(event) {}, //拖动过程					
+					finish: function(e) { //拖动完成
+						$('#multiDroppableContainer .cardBox .card .mask').remove();
+					}
+				});
+			}
+
+			function removecard() {
+				$('#userList').droppable({
+					selector: '.collapseJobs', // 定义允许拖放的元素
+					target: '.cardBox',
+					start: function(e) {
+						$('#userList .cardBox .card').append("<div class='mask'></div>");
+						$('#userList .cardBox .card').mousemove(function(e) {
+							this.style.background = 'rgba(59, 164, 255, 0.97)';
+							e.currentTarget.childNodes[0].childNodes[3].childNodes[0].style.color = "#fff";
+							e.currentTarget.childNodes[0].childNodes[3].childNodes[2].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[0].childNodes[1].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[0].childNodes[3].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[2].childNodes[1].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[2].childNodes[3].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[3].childNodes[1].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[3].childNodes[3].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[5].childNodes[1].style.color = "#fff";
+							e.currentTarget.childNodes[1].childNodes[5].childNodes[3].style.color = "#fff";
+						});
+						$('#userList .cardBox .card').mouseout(function(e) {
+							this.style.background = '#fff';
+							e.currentTarget.childNodes[0].childNodes[3].childNodes[0].style.color = "#9F9F9F";
+							e.currentTarget.childNodes[0].childNodes[3].childNodes[2].style.color = "#9F9F9F";
+							e.currentTarget.childNodes[1].childNodes[0].childNodes[1].style.color = "#E98B7F";
+							e.currentTarget.childNodes[1].childNodes[0].childNodes[3].style.color = "#9F9F9F";
+							e.currentTarget.childNodes[1].childNodes[2].childNodes[1].style.color = "#A92727";
+							e.currentTarget.childNodes[1].childNodes[2].childNodes[3].style.color = "#9F9F9F";
+							e.currentTarget.childNodes[1].childNodes[3].childNodes[1].style.color = "#4F9FE3";
+							e.currentTarget.childNodes[1].childNodes[3].childNodes[3].style.color = "#9F9F9F";
+							e.currentTarget.childNodes[1].childNodes[5].childNodes[1].style.color = "#393939";
+							e.currentTarget.childNodes[1].childNodes[5].childNodes[3].style.color = "#9F9F9F";
+						});
+					},
+					drop: function(event) { //拖动完成
+						$('#userList .cardBox .card .mask').remove();
+						if(event.target) {
+							var apply_id = event.element.find(".applyId").text();
+							var par = {
+								P_APPLY_ID: apply_id,
+								P_SP_USER: event.target.find(".userId").text(), // event.element.parents(".cardBox").find(".userId").text(),//event.target.find(".userId").text(),
+								P_OP_ID: 105
+							}
+							console.log(apply_id + ',' + event.element.parents(".cardBox").find(".userId").text())
+							webapi("/approval/addApplyByUser", par, function(res) {
+								if(res.result == 'SUCCESS') {
+									var assigned = event.target.find('.assignedAmount');
+									if(assigned.text() == 0) {
+										assigned.text('+1')
+									} else {
+										assigned.text('+' + (parseInt(assigned.text().substr(1)) + 1))
+									}
+									event.target.find('.pending').text(parseInt(event.target.find('.pending').text()) + 1);
+
+									event.target.find(".pendingDro").append('<div class="panel collapseJobs apply' + apply_id + '">' +
+										'<div class="panel-body" data-toggle="popover" data-tip-class="popover-success"' +
+										'data-content="' + event.element.find('p').html().split("<span>")[0] + '" title="' + event.element.find('.timeee').text() + '" data-placement="top">' +
+										'<p>' + event.element.find('p').html().split("<span>")[0] + '<span class="timeee">' + event.element.find('.timeee').text() + '</span></p>' +
+										'<span class="applyId">' + apply_id + '</span>' +
+										' </div>' +
+										'</div>');
+									event.target.find(".assignedAmountDro").append('<div class="panel collapseJobs apply' + apply_id + '">' +
+										'<div class="panel-body assignedAmountBody"  data-toggle="popover" data-tip-class="popover-success"' +
+										' data-content="' + event.element.find('p').html().split("<span>")[0] + '" title="' + event.element.find('.timeee').text() + '" data-placement="top">' +
+										'<p>' + event.element.find('p').html().split("<span>")[0] + '<span>' + event.element.find('.timeee').text() + '</span></p>' +
+										'<span class="applyId">' + apply_id + '</span>' +
+										'</div>' +
+										'</div>');
+									if(event.element.find('p').text().length > 6) {
+										$('[data-toggle="popover"]').popover({
+											trigger: "hover"
+										});
+									}
+									$.zui.messager.show("成功重派");
+									var judge = event.element.parent().attr("class");
+									var pending = event.element.parents(".cardBox").find(".pending");
+									var assigned = event.element.parents(".cardBox").find(".assignedAmount");
+									if(judge.indexOf("outTime") != -1) { //超时订单移除
+										var outTime = event.element.parents(".cardBox").find(".outTime");
+										outTime.text(outTime.text() - 1);
+										event.element[0].remove();
+									} else if(judge.indexOf("assignedAmount") != -1) { //从·分配量·移除新分配
+										pending.text(pending.text() - 1);
+										assigned.text('+' + (parseInt(assigned.text().substr(1)) - 1));
+										event.element.parents('div[id^="accordion"]').find(".apply" + apply_id).remove();
+									} else if(judge.indexOf("pending") != -1) { //从·待处理·移除
+										var applyId = event.element.parents('div[id^="accordion"]').find(".assignedAmountDro").children(".collapseJobs").attr("class");
+										if(applyId != undefined) {
+											applyId = applyId.split(" ")[2].substr(5);
+										}
+										if(applyId == apply_id) { //新增加的
+											assigned.text('+' + (parseInt(assigned.text().substr(1)) - 1));
+										}
+										pending.text(pending.text() - 1);
+										event.element.parents('div[id^="accordion"]').find(".apply" + apply_id).remove();
+									}
+								} else {
+									alert(res.message);
+								}
+							})
+						}
+					},
+					finish: function(event) {
+						myDataGrid.showMessage();
+					},
+					drag: function(event) {} //拖动过程
+				});
+			}
+
+			function removejobs() {
+				$('#removeJobsContainer').droppable({
+					selector: '.collapseJobs', // 定义允许拖放的元素
+					target: '.datagrid-container',
+					start: function() {
+						myDataGrid.showMessage('拖动到这', 'success', 0);
+					},
+					drop: function(event) { //拖动完成
+						myDataGrid.showMessage();
+						if(event.target) {
+							/*逻辑复杂
+							1.判断移除的事件是新增的还是超时的
+							2.移除超时事件不影响·待处理·和·分配量·
+							3.从·分配量·移除事件时，待处理数量-1
+							4.从·待处理·移除事件时，需判断是否是新分配的：
+							    (1)新分配的，·分配量·数量-1；
+							    (2)不是新分配的不影响·分配量·
+							*/
+							var apply_id = event.element.find(".applyId").text();
+							var par = {
+								P_SP_USER: event.element.parents(".cardBox").find(".userId").text(),
+								P_APPLY_ID: apply_id
+							};
+							webapi("/approval/delApplyByUser", par, function(res) {
+								var judge = event.element.parent().attr("class");
+								var pending = event.element.parents(".cardBox").find(".pending");
+								var assigned = event.element.parents(".cardBox").find(".assignedAmount");
+
+								if(judge.indexOf("outTime") != -1) { //超时订单移除
+									var outTime = event.element.parents(".cardBox").find(".outTime");
+									outTime.text(outTime.text() - 1);
+									event.element[0].remove();
+								} else if(judge.indexOf("assignedAmount") != -1) { //从·分配量·移除新分配
+									pending.text(pending.text() - 1);
+									assigned.text('+' + (parseInt(assigned.text().substr(1)) - 1));
+									event.element.parents('div[id^="accordion"]').find(".apply" + apply_id).remove();
+								} else if(judge.indexOf("pending") != -1) { //从·待处理·移除
+									var applyId = event.element.parents('div[id^="accordion"]').find(".assignedAmountDro").children(".collapseJobs").attr("class");
+									if(applyId != undefined) {
+										applyId = applyId.split(" ")[2].substr(5);
+									}
+									if(applyId == apply_id) { //新增加的
+										assigned.text('+' + (parseInt(assigned.text().substr(1)) - 1));
+									}
+									pending.text(pending.text() - 1);
+									event.element.parents('div[id^="accordion"]').find(".apply" + apply_id).remove();
+								}
+								//刷新表格
+								myDataGrid.setDataSource(dataSourceObj);
+								myDataGrid.render();
+								$.zui.messager.show("成功移除");
+							})
+						}
+					},
+					drag: function(event) {},
+					finish: function(event) {
+						myDataGrid.showMessage();
+						$('#removeJobsContainer .cardBox .card .mask').remove();
+					}
+
+				});
+			}
+			//批量调度
+			var APPLY_IDS = "";
+
+			function dispatch(p_type) {
+				var data = myDataGrid.getCheckItems();
+				var str = '';
+				if(data.length > 0) {
+					for(var i = 0; i < data.length; i++) {
+						if(data[i] == null) {
+							str += str;
+						} else {
+							str += data[i].APPLY_ID + ',';
+						}
+
+					}
+					APPLY_IDS = str.substring(0, str.lastIndexOf(','));
+					loadwindow(500, '500', '事件调度', 'cogs', '../../Layout/adminUsers/userTree.html?inputId=' + p_type, '');
+				} else {
+					new $.zui.Messager('请选择您需要调度的事件！', {
+						type: 'warning',
+						time: 2000
+					}).show();
+				}
+			}
+
+			function loadUser(userIds, txt, type) {
+				var sp_user = userIds[0];
+				new $.zui.Messager('是否要将这些事件调度到' + txt + '？', {
+					type: 'warning',
+					time: 0,
+					actions: [{
+						name: 'yes',
+						icon: 'remove-sign',
+						text: '是',
+						action: function() {
+							$.ajax({
+								type: "post",
+								url: urlpath + "/approval/addApplyByUser",
+								data: {
+									'P_APPLY_ID': APPLY_IDS,
+									'P_SP_USER': sp_user,
+									'P_OP_ID': 105,
+									'P_TYPE': type
+								},
+								xhrFields: {
+									withCredentials: true
+								},
+								crossDomain: true == !(document.all), //兼容ie
+								dataType: 'json',
+								success: function(res) {
+									// console.log(res);
+									if(res.result == "SUCCESS") {
+										$.zui.messager.show("成功添加");
+										myDataGrid.setDataSource(dataSourceObj);
+										myDataGrid.render();
+									} else {
+										$.zui.messager.show(res.message);
+									}
+								}
+							});
+						}
+					}, {
+						name: 'undo',
+						icon: 'undo',
+						text: '取消',
+						action: function() { // 点击该操作按钮的回调函数
+							return;
+						}
+					}]
+				}).show();
+			}
+
+			function register() {
+				loadwindow($('body').height(), $('body').width(), '事件登记', 'cogs', '../../Layout/ordinaryUsers/ordinaryCopy.html', '');
+			}
+
+			function jjcdSet(id, applyId) {
+				loadwindow(300, '400', '紧急程度调整', 'cogs', '../../Layout/adminUsers/PersonnelJjcdSet.html?applyId=' +
+					applyId + '&ccid=' + id);
+			}
+		</script>
+	</body>
+
+</html>

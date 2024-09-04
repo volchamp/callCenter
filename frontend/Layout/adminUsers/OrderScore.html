@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>事件评分</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Static/Css/timeline.css" />
+		<link rel="stylesheet" href="../../Lib/icon/iconfont.css" />
+		<style>
+			html,
+			body {
+				width: 100%;
+				height: 100%;
+				background-color: #EEEEEE;
+				overflow: auto;
+			}
+			
+			a {
+				color: #000000;
+				text-decoration: none;
+			}
+			
+			a:hover {
+				text-decoration: none;
+			}
+			
+			.container1 {
+				width: 90%;
+				height: 97%;
+				background-color: #FFFFFF;
+				border-radius: 10px;
+				padding-right: 0;
+				padding-left: 0;
+				margin-right: auto;
+				margin-left: auto;
+				margin-top: 10px;
+			}
+			
+			#top {
+				width: 100%;
+				height: 40px;
+				font-size: 16px;
+				;
+				border-bottom: solid 1px #EEEEEE;
+			}
+			
+			#bottom {
+				width: 100%;
+				/*height: 100%;*/
+				overflow: hidden;
+			}
+			
+			#bottom_left,
+			#bottom_right {
+				width: 49.9%;
+				/*height: 95%;*/
+				float: left;
+			}
+			
+			#bottom_left {
+				border-right: solid 1px #eeeeee;
+			}
+			
+			#bottom_right {
+				float: right;
+			}
+			
+			#bottom_right_top {
+				width: 100%;
+				/*height: 50%;*/
+			}
+			
+			#bottom_right_center {
+				width: 100%;
+				height: 10%;
+				padding-top: 2%;
+			}
+			
+			#bottom_right_bottom {
+				width: 100%;
+				padding: 5%;
+			}
+			
+			#score {
+				width: 90%;
+				height: 15%;
+				border: solid 1px #EEEEEE;
+				border-radius: 5px;
+			}
+			
+			#dsc {
+				width: 90%;
+				height: 120px;
+				margin-top: 10px;
+				border: solid 1px #EEEEEE;
+			}
+			
+			#fbpl {
+				width: 100%;
+				height: 30px;
+				padding: 10px 100px 0px 0px;
+				margin-left: 80%;
+			}
+			
+			.infospan {
+				font-size: 15px;
+				vertical-align: middle;
+				font-weight: bold;
+			}
+			
+			#infotable {
+				margin-left: 30%;
+				width: 70%;
+				border-spacing: 10px 30px;
+				border-collapse: separate;
+			}
+			
+			.cleanfloat {
+				height: 100%;
+				line-height: 100%;
+				list-style-type: none;
+				margin: 0;
+				padding: 0;
+				/*width: 90%;		*/
+				width: 260px;
+			}
+			
+			.starLi {
+				list-style: none;
+				float: left;
+				font-size: 30px;
+				margin: 2px;
+				color: #ccc;
+				cursor: pointer;
+				font-size: 30px;
+			}
+			
+			.cleanfloat::after {
+				display: block;
+				clear: both;
+				content: "";
+				visibility: hidden;
+				height: 0;
+			}
+			/*清浮动*/
+			
+			.hs,
+			.cs {
+				color: #FFD500;
+			}
+			/*五角星点击后样式*/
+			
+			#pfbt {
+				width: 100%;
+				/*			padding-left:30%;*/
+			}
+			
+			#dsc {
+				width: 90%;
+				height: 120px;
+				border: solid 1px #EEEEEE;
+			}
+			
+			.bottom-content {
+				list-style: none;
+				margin: 5px;
+				overflow: auto;
+			}
+			
+			.bottom-item {
+				display: inline-block;
+				padding: 5px;
+				width: 100%;
+			}
+			
+			.title-frist {
+				display: inline-block;
+				width: 100%;
+				height: 20px;
+				line-height: 20px;
+				font-weight: 800;
+				color: rgb(7, 17, 27);
+				font-size: 13px;
+			}
+			
+			.item-title {
+				display: inline-block;
+				width: 100px;
+				height: 20px;
+				line-height: 20px;
+				font-weight: 800;
+				color: rgb(7, 17, 27);
+				font-size: 13px;
+			}
+			
+			.icon {
+				margin-right: 5px;
+				color: #e2e2e2;
+			}
+			
+			.jinjicss {
+				border: 1px solid red;
+				padding: 4px;
+				border-radius: 5px;
+				color: red;
+			}
+			
+			.errinfo {
+				color: red;
+			}
+			
+			.item-info {
+				color: rgba(7, 17, 27, 0.7);
+				margin: 14px;
+				line-height: 2em;
+			}
+			
+			.checkincon {
+				color: red;
+			}
+			
+			h4 a {
+				vertical-align: top;
+				color: #145CCD;
+				margin-left: 5px;
+			}
+			
+			.filea {
+				color: black;
+				border-radius: 5px;
+				padding: 3px;
+				margin: 3px;
+			}
+			
+			.filea:hover {
+				font-weight: bolder;
+			}
+			
+			.checkincon {
+				color: red;
+			}
+			
+			.title-frist {
+				display: inline-block;
+				width: 100%;
+				height: 20px;
+				line-height: 20px;
+				font-weight: 800;
+				color: rgb(7, 17, 27);
+				font-size: 13px;
+			}
+			
+			.item-title {
+				display: inline-block;
+				width: 130px;
+				height: 20px;
+				line-height: 20px;
+				font-weight: 800;
+				color: rgb(7, 17, 27);
+				font-size: 15px;
+				float: left;
+			}
+			
+			.icon {
+				margin-right: 5px;
+				color: #3BA4FF;
+				font-size: 18px;
+			}
+			
+			.jinjicss {
+				padding: 2px;
+				border-radius: 5px;
+				background: red;
+				color: #fff;
+			}
+			
+			[v-cloak] {
+				display: none;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div v-cloak class="container1" id="container">
+			<div id="bottom">
+				<div id="bottom_left">
+					<div id="top">
+				<span class="title-frist" v-for="(item,key,i) in orderinfo" v-if="key==='问题名称'" style="margin-left:1%;line-height: 40px;font-size: 16px;">{{item}}</span>
+			</div>
+					<ul class="bottom-content">
+						<li class="bottom-item" v-for="(item,key,i) in orderinfo" v-if="key==='附件上传'">
+							<i style="float: left;" :class="cssmap[i]"></i><span v-cloak class="item-title">附件：</span><br />
+							<span v-for="fujian in fujianinfo">
+							<a class="item-info" :href="fujian.FUJIAN_URL" :download="fujian.FUJIAN_NAME"
+								v-if="isImg(fujian.FUJIAN_NAME)">{{fujian.FUJIAN_NAME}}</a><img style="width: 70px;"
+								v-else :src="fujian.FUJIAN_URL" />
+						</span>
+
+							<div style="padding: 10px;">
+								<a v-cloak class="filea" v-for="file in files" class="item-info" :href="file.FUJIAN_URL" :download="file.FUJIAN_NAME"><i class="icon icon-file-text-o"></i>{{file.FUJIAN_NAME}}</a>
+							</div>
+							<div style="margin-left: 5%">
+								<img v-for="img in imgs" data-toggle="lightbox" :src="img.FUJIAN_URL" :data-image="img.FUJIAN_URL" class="img-thumbnail" alt="" width="140">
+								<!--									<img v-for="img in imgs" :src="urlPath+img.FUJIAN_URL" width="200px" height="200px" class="img-thumbnail"/>-->
+							</div>
+						</li>
+						<li class="bottom-item" v-else-if="key==='工单号'" v-show="false">
+
+						</li>
+						<li v-show="noshow.indexOf(key)==-1" class="bottom-item" v-else>
+							<div v-cloak class="item-title"><i :class="cssmap[i]"></i>{{key}}：</div>
+							<div v-cloak class="" style="float: left;width: 75%;background: rgb(251, 247, 247);"><span :class="{jinjicss:(key==='紧急程度'||key==='事件状态'),errinfo:item==='待处理'}" v-cloak class="item-value">&nbsp;{{item}}&nbsp;</span></div>
+
+						</li>
+					</ul>
+				</div>
+				<div id="bottom_right">
+					<div id="bottom_right_top">
+						<ul class="nav nav-tabs">
+							<li @click="showsf" v-bind:class="[logactive?'active':'']">
+								<a>处理流程</a>
+							</li>
+							<li @click="showsfqu1" v-bind:class="[wayactive?'active':'']" v-show="plinfo1.length>0">
+								<a>评论</a>
+							</li>
+							<li @click="showKs" v-bind:class="[knowactive?'active':'']" v-show="pknowInfo.length>0">
+								<a>相关知识</a>
+							</li>
+							<li @click="showsfqu2" v-bind:class="[methodctive?'active':'']" v-show="plinfo2.length>0">
+								<a>解决办法</a>
+							</li>
+						</ul>
+						<div class="track-rcol" v-show="logactive">
+							<div class="track-list">
+								<ul id="lcul">
+									<li v-for="item in LCInfo"><i v-if="item.CL_STATE===1" class="node-icon-on"></i>
+										<i v-else class="node-icon"></i>
+										<span class="time">{{item.TIME_INFO}}</span>
+										<span class="txt">{{item.LC_STATE}}</span>
+										<span class="txt1">{{item.CZ_USER}}</span>
+										<span v-show="item.OPINION" class="op">{{item.OPINION}}</span>
+									</li>
+								</ul>
+							</div>
+<!--							<div>-->
+<!--								<div id="pfbt" style="font-size: 15px;vertical-align: middle;font-weight: bold;">请为处理人的解决方案打分？</div>-->
+<!--								<div style="padding: 5px 0;">-->
+<!--									<span style="display: inline-block;width: 75px;font-weight: 500;color: rgb(245, 116, 6);font-size: 15px;">总体评分：</span>-->
+<!--									<ul class="cleanfloat total" style="display: inline-block">-->
+<!--										<li class="starLi total">&#9733;</li>-->
+<!--										<li class="starLi total">&#9733;</li>-->
+<!--										<li class="starLi total">&#9733;</li>-->
+<!--										<li class="starLi total">&#9733;</li>-->
+<!--										<li class="starLi total">&#9733;</li>-->
+<!--									</ul>-->
+<!--								</div>-->
+<!--								<div v-for="item in scoreType" style="padding:5px 0;">-->
+<!--									<span style="display: inline-block;width: 75px;font-weight: 500;color: rgb(245, 116, 6);font-size: 15px;">{{item.TEXT}}：</span>-->
+<!--									<ul class="cleanfloat" :class="'TYPE'+item.ID" style="display: inline-block">-->
+<!--										<li class="starLi" :class="'TYPE'+item.ID">&#9733;</li>-->
+<!--										<li class="starLi" :class="'TYPE'+item.ID">&#9733;</li>-->
+<!--										<li class="starLi" :class="'TYPE'+item.ID">&#9733;</li>-->
+<!--										<li class="starLi" :class="'TYPE'+item.ID">&#9733;</li>-->
+<!--										<li class="starLi" :class="'TYPE'+item.ID">&#9733;</li>-->
+<!--									</ul>-->
+<!--								</div>-->
+<!--							</div>-->
+						</div>
+						<div style="height:88%;" v-show="wayactive">
+							<ul id="aa" class="" style="list-style: none;overflow: auto;height: 95%;">
+								<li v-for="item in plinfo1">
+									<div class="items items-hover">
+										<div class="item">
+											<div class="item-heading">
+												<div v-cloak class="pull-right"><span class="text-muted">{{item.评论时间}}</span>
+												</div>
+												<div v-cloak class="pull-right label label-success">{{item.infotg}}</div>
+												<h4>
+                                                        <div v-cloak class="label label-success">{{item.INFOTG}}</div><a style="text-decoration: none;" href="###">{{item.评论人}}</a>
+                                                    </h4>
+											</div>
+											<div class="item-content">
+												<div v-cloak class="text" style="padding: 5px 10px;">{{item.处理意见}}</div>
+											</div>
+											<div v-show="item.FJ_NUM>0" class="item-footer" style="padding: 5px 10px;">
+												<i class="icon-file"></i>
+												<span class="text-muted" style="cursor: pointer;" @click="lookfj(item,$event)">附件({{item.FJ_NUM}})
+                                                    </span>
+											</div>
+										</div>
+									</div>
+								</li>
+								<li>
+									<footer v-show="isShow">
+										<ul class="pager" data-ride="pager" id="myPage">
+										</ul>
+									</footer>
+								</li>
+							</ul>
+						</div>
+
+						<div style="height:88%;" v-show="knowactive">
+							<ul class="" style="list-style: none;overflow: auto;height: 80%;">
+								<li v-for="it in pknowInfo">
+									<div class="items items-hover">
+										<div class="item">
+											<div class="item-content">
+												<div @click="opknow(it)" class="knowDiv" v-cloak class="text" style="padding: 5px 10px;cursor:pointer;color: #145ccd;">{{it.TITLE}}</div>
+											</div>
+										</div>
+									</div>
+								</li>
+							</ul>
+						</div>
+						<div style="height:88%;" v-show="methodctive">
+							<ul id="aa" class="" style="list-style: none;overflow: auto;height: 95%;">
+								<li v-for="item in plinfo2">
+									<div class="items items-hover">
+										<div class="item">
+											<div class="item-heading">
+												<div v-cloak class="pull-right"><span class="text-muted">{{item.评论时间}}</span>
+												</div>
+												<div v-cloak class="pull-right label label-success">{{item.infotg}}</div>
+												<h4>
+                                                <div v-cloak class="label label-success">{{item.INFOTG}}</div><a style="text-decoration: none;" href="###">{{item.评论人}}</a>
+                                            </h4>
+											</div>
+											<div class="item-content">
+												<div v-cloak class="text" style="padding: 5px 10px;">{{item.处理意见}}</div>
+											</div>
+											<div v-show="item.FJ_NUM>0" class="item-footer" style="padding: 5px 10px;">
+												<i class="icon-file"></i>
+												<span class="text-muted" style="cursor: pointer;" @click="lookfj(item,$event)">附件({{item.FJ_NUM}})</span>
+											</div>
+									</div>
+								</li>
+								<li>
+									<footer v-show="isShow2">
+										<ul class="pager" data-ride="pager" id="myPage2">
+										</ul>
+									</footer>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div id="bottom_right_bottom">
+						<div>
+							<div id="pfbt" style="font-size: 15px;vertical-align: middle;font-weight: bold;">请为处理人的解决方案打分？</div>
+							<div style="padding: 5px 0;">
+								<span style="display: inline-block;width: 75px;font-weight: 500;color: rgb(245, 116, 6);font-size: 15px;">总体评分：</span>
+								<ul class="cleanfloat total" style="display: inline-block">
+									<li class="starLi total">&#9733;</li>
+									<li class="starLi total">&#9733;</li>
+									<li class="starLi total">&#9733;</li>
+									<li class="starLi total">&#9733;</li>
+									<li class="starLi total">&#9733;</li>
+								</ul>
+							</div>
+							<div v-for="item in scoreType" style="padding:5px 0;">
+								<span style="display: inline-block;width: 75px;font-weight: 500;color: rgb(245, 116, 6);font-size: 15px;">{{item.TEXT}}：</span>
+								<ul class="cleanfloat" :class="'TYPE'+item.ID" style="display: inline-block">
+									<li class="starLi" :class="'TYPE'+item.ID">&#9733;</li>
+									<li class="starLi" :class="'TYPE'+item.ID">&#9733;</li>
+									<li class="starLi" :class="'TYPE'+item.ID">&#9733;</li>
+									<li class="starLi" :class="'TYPE'+item.ID">&#9733;</li>
+									<li class="starLi" :class="'TYPE'+item.ID">&#9733;</li>
+								</ul>
+							</div>
+						</div>
+						<textarea placeholder="我的意见" id="dsc" name="dsc"></textarea>
+						<div id="fbpl">
+							<a href="javascript:dealWith()" class="btn btn-primary-new" style="padding: 6px;border-radius: 5px;width:50px;">评分</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script src="../../Lib/public.js" type="text/javascript"></script>
+		<script src="../../Lib/vue.js" type="text/javascript"></script>
+		<script type="text/javascript">
+			var id =$.url("P_APPLY_ID");
+			var op_id = $.url("P_OP");
+			var score;
+			$(document).ready(function() {
+				$('#bottom').height($('.container').height() - 40);
+			});
+			var vim = new Vue({
+				el: '#container',
+				data: {
+					urlPath: urlpath,
+					orderinfo: {
+						type: Object
+					},
+					fujianinfo: [],
+					files: [],
+					imgs: [],
+					plinfo1: {
+						type: Object,
+						default: function() {
+							return {}
+						}
+					},
+					plinfo2: {
+						type: Object,
+						default: function() {
+							return {}
+						}
+					},
+					pknowInfo: [],
+					LCInfo: {
+						type: Object
+					},
+					noshow: [
+						'提醒方式', '提醒内容', 'SCORE', 'ISSC', '事件号'
+					],
+					cssmap: [
+						'icon icon-question-sign', 'icon icon-chat', 'icon icon-globe', 'icon icon-user',
+						'icon icon-circle-arrow-right',
+						'icon icon-globe', 'icon icon-phone-sign', 'icon icon-windows', 'icon icon-comment',
+						'icon icon-warning-sign',
+						'icon icon-chat-dot', 'icon icon-time', 'icon icon-spin icon-spinner-indicator',
+						'icon icon-user',
+						'icon icon-sitemap', 'icon icon-time', 'icon icon-file'
+					],
+					scinfo: '',
+					scoreType: [],
+					isShow: false,
+					isShow2: false,
+					logactive: true,
+					wayactive: false,
+					knowactive: false,
+					methodctive: false
+				},
+				created() {
+					var that = this;
+					$.ajax({
+						type: "get",
+						url: urlpath + "/approval/getApplyInfo",
+						dataType: 'json',
+						xhrFields: {
+							withCredentials: true
+						},
+						data: {
+							'P_APPLY_ID': id
+						},
+						crossDomain: true == !(document.all), //兼容ie
+						success: function(data) {
+							if(data != null && data.length > 0) {
+								that.orderinfo = data[0];
+								that.scinfo = data[0].ISSC > 0 ? true : false;
+							} else {
+								that.orderinfo = "";
+							}
+						},
+						complete: function(data) {}
+					});
+					$.ajax({
+						type: "get",
+						url: urlpath + "/approval/getApplyLogInfo",
+						data: {
+							'P_APPLY_ID': id
+						},
+						xhrFields: {
+							withCredentials: true
+						},
+						crossDomain: true == !(document.all), //兼容ie
+						success: function(data) {
+							if(data != null && data.length > 0) {
+								that.LCInfo = data;
+							}
+						}
+					});
+					$.ajax({
+						type: 'get',
+						url: urlpath + '/approval/getFujian',
+						data: {
+							"P_TABLE_NAME": "TR_BASE_APPLY",
+							"P_FIELD_ID": id
+						},
+						xhrFields: {
+							withCredentials: true
+						},
+						crossDomain: true == !(document.all), //兼容ie
+						success: function(data) {
+							var filesList = [];
+							var imgsList = [];
+							if(data != null && data.length > 0) {
+								for(var i = 0; i < data.length; i++) {
+									if(that.isImg(data[i].FUJIAN_URL)) {
+										filesList.push(data[i]);
+									} else {
+										imgsList.push(data[i]);
+									}
+								}
+							}
+							that.files = filesList;
+							that.imgs = imgsList;
+						}
+					});
+					$.ajax({
+						type: "post",
+						url: urlpath + "/ProcessHandler/GetProcessType",
+						data: {
+							'P_TABLE': 'TR_APPLY_SCORE_INFO',
+							'P_COLUMN': 'SCORE_TYPE'
+						},
+						xhrFields: {
+							withCredentials: true
+						},
+						crossDomain: true == !(document.all), //兼容ie
+						dataType: 'json',
+						success: function(res) {
+							that.scoreType = res;
+							setTimeout(function() {
+								$(".starLi").hover(function() {
+									score = $(this).index() + 1;
+									$(this).addClass('hs');
+									$(this).prevAll().addClass('hs');
+								}, function() {
+									score = $(this).index() + 1;
+									$(this).removeClass('hs');
+									$(this).prevAll().removeClass('hs');
+								});
+								$(".starLi").click(function() {
+									$(this).addClass('cs');
+									$(this).prevAll().addClass('cs');
+									$(this).nextAll().removeClass('cs');
+								})
+							}, 500)
+
+						},
+						error: function(res) {
+							new $.zui.Messager('字段获取失败', {
+								type: 'danger',
+								placement: 'center'
+							}).show();
+						}
+					});
+					$.ajax({
+						type: "post",
+						url: urlpath + "/approval/getEvaluationInfo",
+						//        async:true,
+						dataType: 'json',
+						xhrFields: {
+							withCredentials: true
+						},
+						data: {
+							'P_APPLY_ID': id,
+							'PAGE': 1,
+							"P_TYPE": 1,
+							'recPerPage': 4
+						},
+						crossDomain: true == !(document.all), //兼容ie
+						success: function(data) {
+							if(data.pager.recTotal > 4) {
+								that.isShow1 = true;
+							}
+							if(data != null && data.data.length > 0) {
+								that.plinfo1 = data.data;
+								if(that.plinfo1.length > 0) {
+									that.showsfqu1();
+								}
+
+							}
+							setTimeout(function() {
+								var userListPage = $('#myPage').data('zui.pager');
+								userListPage.set(data.pager.page, data.pager.recTotal, data.pager.recPerPage);
+								$('#myPage').on('onPageChange', function(e, state, oldState) {
+									if(state.page !== oldState.page) {
+										var par = {
+											'P_APPLY_ID': id,
+											"P_TYPE": 1,
+											'PAGE': state.page,
+											'recPerPage': 4
+										};
+										webapi("/approval/getEvaluationInfo", par, function(res) {
+											if(res != null) {
+												that.plinfo1 = res.data;
+											}
+										});
+									}
+								});
+							}, 1000);
+						}
+					});
+					$.ajax({
+						type: "post",
+						url: urlpath + "/approval/getEvaluationInfo",
+						//async:true,
+						dataType: 'json',
+						xhrFields: {
+							withCredentials: true
+						},
+						data: {
+							'P_APPLY_ID': id,
+							'PAGE': 1,
+							"P_TYPE": 2,
+							'recPerPage': 4
+						},
+						crossDomain: true == !(document.all), //兼容ie
+						success: function(data) {
+							if(data.pager.recTotal > 4) {
+								that.isShow2 = true;
+							}
+							if(data != null && data.data.length > 0) {
+								that.plinfo2 = data.data;
+								if(that.plinfo2.length > 0) {
+									that.showsfqu2();
+								}
+							}
+							setTimeout(function() {
+								var userListPage = $('#myPage2').data('zui.pager');
+								userListPage.set(data.pager.page, data.pager.recTotal, data.pager.recPerPage);
+								$('#myPage2').on('onPageChange', function(e, state, oldState) {
+									if(state.page !== oldState.page) {
+										var par = {
+											'P_APPLY_ID': id,
+											"P_TYPE": 2,
+											'PAGE': state.page,
+											'recPerPage': 4
+										};
+										webapi("/approval/getEvaluationInfo", par, function(res) {
+											if(res != null) {
+												that.plinfo2 = res.data;
+											}
+										});
+									}
+								});
+							}, 1000);
+						}
+					});
+					$.ajax({
+						type: "post",
+						url: urlpath + "/approval/listApplyToKnowledge",
+						//async:true,
+						dataType: 'json',
+						xhrFields: {
+							withCredentials: true
+						},
+						data: {
+							'P_APPLY_ID': id
+						},
+						crossDomain: true,
+						success: function(data) {
+							if(data.length > 0) {
+								that.pknowInfo = data;
+								that.showKs();
+							}
+						},
+						complete: function(data) {}
+					});
+				},
+				methods: {
+					showsf: function() {
+						this.methodctive = false;
+						this.wayactive = false;
+						this.logactive = true;
+						this.knowactive = false;
+					},
+					showsfqu1: function() {
+						this.methodctive = false;
+						this.wayactive = true;
+						this.logactive = false;
+						this.knowactive = false;
+					},
+					showsfqu2: function() {
+						this.methodctive = true;
+						this.wayactive = false;
+						this.logactive = false;
+						this.knowactive = false;
+					},
+
+					showKs: function() {
+						this.methodctive = false;
+						this.wayactive = false;
+						this.logactive = false;
+						this.knowactive = true;
+					},
+					getplinfo: function() {
+						webapi();
+					},
+					Collection: function() {
+						var that = this;
+						$.ajax({
+							type: 'post',
+							url: urlpath + '/approval/addCollectionInfo',
+							dataType: 'text',
+							data: {
+								"P_ID": id
+							},
+							xhrFields: {
+								withCredentials: true
+							},
+							crossDomain: true == !(document.all), //兼容ie
+							success: function(data) {
+								if(data == 'SUCCESS') {
+									that.scinfo = !that.scinfo;
+									(new $.zui.ModalTrigger({
+										custom: '<div class="alert alert-success with-icon"><i class="icon-warning-sign"></i><div class="content">收藏成功！</div></div>'
+									})).show();
+								} else {
+									(new $.zui.ModalTrigger({
+										custom: '<div class="alert alert-warning with-icon"><i class="icon-warning-sign"></i><div class="content">' +
+											data + '</div></div>'
+									})).show();
+								}
+							}
+						});
+					},
+					unCollection: function() {
+						var that = this;
+						new $.zui.Messager('警告：确定取消收藏吗？', {
+							type: 'success',
+							close: false,
+							actions: [{
+									name: 'y',
+									icon: 'ok-sign',
+									text: '确定',
+									action: function() {
+										$.ajax({
+											type: 'post',
+											url: urlpath + '/approval/removeCollectionInfo',
+											dataType: 'text',
+											data: {
+												"P_ID": id
+											},
+											xhrFields: {
+												withCredentials: true
+											},
+											crossDomain: true == !(document.all), //兼容ie
+											success: function(data) {
+												if(data == 'SUCCESS') {
+													that.scinfo = !that.scinfo;
+													(new $.zui.ModalTrigger({
+														custom: '<div class="alert alert-success with-icon"><i class="icon-warning-sign"></i><div class="content">您已取消收藏！</div></div>'
+													})).show();
+												} else {
+													(new $.zui.ModalTrigger({
+														custom: '<div class="alert alert-warning with-icon"><i class="icon-warning-sign"></i><div class="content">' +
+															data + '</div></div>'
+													})).show();
+												}
+											}
+										});
+									}
+								},
+								{
+									name: 'n',
+									icon: 'undo',
+									text: '撤销',
+									action: function() { // 点击该操作按钮的回调函数
+										return;
+									}
+								}
+							]
+						}).show();
+					},
+					lookfj: function(item, obj) {
+						var o = obj.target;
+						if($(o).next(".fileinfo").length != 0) {
+							$(o).parent(".item-footer").children(".fileinfo,footer").toggle();
+							return;
+						}
+						var par = {
+							"P_TABLE_NAME": "TR_BASE_APPLY_LC",
+							"P_FIELD_ID": item.LC_ID
+						};
+						webapi("/approval/getFujian", par, function(res) {
+							if(res != "") {
+								var imgstr = '<div style="margin-bottom: 5px;" class="fileinfo">';
+								var filestr = '<div class="fileinfo">';
+								for(var i = 0; i < res.length; i++) {
+									if(checkimg(res[i].FUJIAN_URL)) {
+										imgstr += '<img id="fj' + res[i].FUJIAN_ID + '" data-toggle="lightbox" src="' + res[i].FUJIAN_URL + '" data-image="' + res[i].FUJIAN_URL + '" class="img-thumbnail" alt="" width="140" height="70">';
+									} else {
+										filestr += '<a class="filea" class="item-info" href="' +res[i].FUJIAN_URL + '" download="' + res[i].FUJIAN_NAME + '"><i class="icon icon-file-text-o"></i>' + res[i].FUJIAN_NAME + '</a>';
+									}
+								}
+								imgstr += '</div>';
+								filestr += '</div>';
+								var str = imgstr + filestr;
+								$(o).parent(".item-footer").append(str);
+								for(var i = 0; i < res.length; i++) {
+									$("#fj" + res[i].FUJIAN_ID).lightbox({
+										image: res[i].FUJIAN_URL
+									});
+								}
+							}
+						})
+					},
+					isImg: function(item) {
+						if(item.toLowerCase().lastIndexOf(".png") != -1 || item.toLowerCase().lastIndexOf(".jpg") != -
+							1 || item.toLowerCase().lastIndexOf(".jpeg") != -1 || item.toLowerCase().lastIndexOf(
+								".gif") != -1) {
+							return false;
+						} else {
+							return true;
+						}
+					}
+				}
+			});
+
+			function validateScore(scoreStr) {
+				var score_arr = scoreStr.split(",");
+				var result = true;
+				for(var i = 0; i < score_arr.length; i++) {
+					if(score_arr[i] != "") {
+						var dt_arr = score_arr[i].split(":");
+						if(dt_arr[1] == "0") {
+							result = false;
+						}
+
+					}
+				}
+				return result;
+			}
+
+			//处理意见
+			function dealWith() {
+				var score_type = vim.scoreType;
+				var scoreStr = "";
+				var one = 0;
+				var two = 0;
+				var three = 0;
+
+				for(var i = 0; i < score_type.length; i++) {
+					var typeid = score_type[i].ID;
+					var scoreD = $(".cs.TYPE" + typeid).length;
+					scoreStr += score_type[i].ID + ":" + scoreD + ",";
+					two = $(".cs.TYPE" + score_type[0].ID).length;
+					three = $(".cs.TYPE" + score_type[1].ID).length;
+				}
+				//获取评分的分数
+				var score = $(".cs.total").length;
+				one = score;
+				if(!validateScore(scoreStr) || score == 0) {
+					new $.zui.Messager('请进行评分！', {
+						icon: 'heart',
+						placement: 'center' // 定义显示位置
+					}).show();
+				} else if($('#dsc').val() == "") {
+					new $.zui.Messager('请填写意见！', {
+						icon: 'heart',
+						placement: 'center' // 定义显示位置
+					}).show();
+					//return false;
+				}
+				
+				else {
+					$.ajax({
+						type: "post",
+						url: urlpath + "/approval/workProcess",
+						dataType: 'text',
+						xhrFields: {
+							withCredentials: true
+						},
+						data: {
+							'P_APPLY_ID': id,
+							'P_OP_ID': op_id,
+							'P_RESULT_DSC': $('#dsc').val(),
+							'P_SCORE': score,
+							"P_OTHER_SCORE": scoreStr
+						},
+						crossDomain: true == !(document.all), //兼容ie
+						success: function(data) {
+							if(data != null && data == 'SUCCESS') {
+								new $.zui.Messager('评分成功！', {
+									icon: 'heart',
+									placement: 'center' // 定义显示位置
+								}).show();
+								window.parent.reload();
+								window.parent.$.zui.modalTrigger.close();
+							}
+						},
+						error: function(err) {
+							alert("警告！提交数据错误！");
+						}
+					});
+				}
+
+			}
+			function checkimg(item) {
+				if(item.lastIndexOf(".png") != -1 || item.lastIndexOf(".jpg") != -1 || item.lastIndexOf(".jpeg") != -1 || item.lastIndexOf(".gif") != -1) {
+					return true;
+				} else {
+					return false;
+				}
+			}
+		</script>
+
+	</body>
+
+</html>

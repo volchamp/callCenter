@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<title>问题工单基本信息</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<link rel="stylesheet" href="../../Lib/bootstrap-3.3.7-dist/css/bootstrap.min.css">
+		<link rel="stylesheet" href="../../Lib/layer/theme/default/layer.css">
+		<link rel="stylesheet" href="../../Lib/select/css/select-mania.css" />
+		<link rel="stylesheet" href="../../Lib/bootstrap-datapicker/bootstrap-datetimepicker.min.css" />
+		<link rel="stylesheet" href="../../Lib/select/css/select-mania.css" />
+		<link rel="stylesheet" href="../../Lib/jsTree/style.min.css">
+		<link rel="stylesheet" href="../../Lib/easyUpload/main.css">
+		<link rel="stylesheet" href="../../Lib/font-awesome-4.7.0/css/font-awesome.css">
+		<link rel="stylesheet" href="../../OrderManage/allCss/timeLine.css">
+		<link rel="stylesheet" href="../../Static/Css/changeManage.css">
+        <link rel="stylesheet" href="../../Lib/bootstrap-table/dist/bootstrap-table.css" />
+
+		<style>
+			.nav-tabs>li.active>a,
+			.nav-tabs>li.active>a:focus,
+			.nav-tabs>li.active>a:hover {
+				color: #2d60d9!important;
+			}
+			
+			i {
+				padding-right: 2px;
+			}
+			
+			.table th {
+				width: 140px;
+				text-align: right;
+			}
+			
+			.float-right {
+				float: right;
+			}
+			.record_knowledge{
+				overflow: hidden;
+				padding: 20px 10px;
+			}
+			.record_knowledge >a{
+				float: right;
+				padding: 0 10px;
+				border: 1px solid #bcbcbc;
+				border-radius: 3px;
+				display: inline-block;
+				color: #333333;
+				font-size: 12px;
+				line-height: 22px;
+				cursor: pointer;
+			}
+			.record_knowledge >a:hover{
+				color: #2d60d9!important;
+				text-decoration: none;
+			}
+			.record_knowledge >a:active{
+				text-decoration: none;
+			}
+			.record_knowledge >a:link{
+				text-decoration: none;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<div class="floatParent" style="padding:15px;width: 100%;">
+			<div class="pageTitle">问题详情</div>
+			<div class="btnDiv" id="button" style="margin-right: 20px;float: right;">
+			</div>
+		</div>
+
+		<div style="padding: 0 15px;overflow: hidden">
+			<div class="col-md-9" style="border: 1px solid #ddd;padding-left: 0;padding-right: 0">
+				<ul class="nav nav-tabs" style="background-color:#f2f2f2 ">
+					<li role="presentation" class="active">
+						<a style="color: #0a0a0a" href="#baseInfo" data-toggle="tab"><i class="fa fa-home"></i>基本信息</a>
+					</li>
+					<li role="presentation">
+						<a style="color: #0a0a0a" href="#profile" data-toggle="tab"><i class="fa fa-list-alt" aria-hidden="true"></i>处理记录</a>
+					</li>
+					<li role="presentation">
+						<a style="color: #0a0a0a" href="#log" data-toggle="tab"><i class="fa fa-exchange"></i>流转记录</a>
+					</li>
+					<li role="presentation">
+						<a style="color: #0a0a0a" href="#fujian" data-toggle="tab"><i class="fa fa-file"></i>文档附件</a>
+					</li>
+					<li role="presentation">
+						<a style="color: #0a0a0a" href="#guanlian" data-toggle="tab"><i class="fa fa-window-restore"></i>关联工单</a>
+					</li>
+					<li role="presentation">
+						<a style="color: #0a0a0a" href="#zhishi" data-toggle="tab"><i class="fa fa-newspaper-o"></i>关联知识库</a>
+					</li>
+				</ul>
+				<div class="tab-content">
+					<!--基本信息tab-->
+					<div class="tab-pane active" id="baseInfo">
+						<div style="padding: 0 20px" id="infoTable">
+
+						</div>
+
+					</div>
+					<!--   处理记录      -->
+					<div class="tab-pane" id="profile">
+						<div id="record" class="container-fluid">
+						</div>
+					</div>
+
+					<!--流转记录-->
+					<div class="tab-pane" id="log">
+						<div style="padding: 20px">
+							<section class="content">
+								<div class="container-fluid">
+									<div class="row">
+										<div class="col-md-12">
+											<div class="timeline" id="timeline">
+												<div id="originLine" style="display:none">
+													<i class="fa fa-clock-o bg-gray"></i>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</section>
+						</div>
+					</div>
+					<!--附件信息的TAB                -->
+					<div class="tab-pane" id="fujian">
+
+					</div>
+					<!--关联事件                -->
+					<div class="tab-pane" id="guanlian">
+						<div style="padding: 20px 10px">
+							<table id="connectTable"></table>
+						</div>
+					</div>
+					<!--关联知识库                -->
+					<div class="tab-pane" id="zhishi">
+                        <div class="record_knowledge">
+                            <a href="javascript:recordKnowledge(P_DB_ID)"><i class="fa fa-plus"></i>关联知识</a>
+                        </div>
+                        <div style="padding: 0 10px">
+                            <table id="table"></table>
+                        </div>
+					</div>
+				</div>
+			</div>
+
+			<div class="col-md-3">
+				<div id="baseTable">
+
+				</div>
+				<div>
+					<div class="fs_lastitle">
+						<img style="width: 25px;margin-top: -2px;" src="../../Static/Img/OrderManage/chat.png"/><span>评论</span>
+					</div>
+					<div class="container-fluid_1">
+						<div class="card card-widget">
+
+							<div class="card-footer card-comments">
+								<div id="evaluate">
+
+								</div>
+								<div style="margin-top:20px;">
+									<form action="#" method="post">
+										<div class="img-push">
+											<input type="text" style="width: 80%;" class="form-control form-control-sm" id="evaluateInfo" placeholder="在此处输入评论">
+										    <button type="button" onclick="sendEvaluate()"style="width:15%;" class="btn btn-primary btn-sm">发表评论</button>
+										</div>
+										
+									</form>
+								</div>
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+		<script src="../../Lib/bootstrap-datapicker/bootstrap-datetimepicker.min.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../Lib/bootstrap-datapicker/bootstrap-datetimepicker.zh-CN.js" type="text/javascript" charset="utf-8"></script>
+		<script src="../../Lib/layer/layer.js"></script>
+		<script src="../../Lib/select/js/select-mania.js"></script>
+		<script src="../../Lib/easyUpload/easyUploader.js"></script>
+		<script src="../../Lib/jsTree/jstree.js"></script>
+		<script src="../../Static/Js/emLevel.js"></script>
+        <script type="text/javascript" src="../../Lib/colResizable-1.6.js"></script>
+        <script type="text/javascript" src="../../Lib/bootstrap-table/dist/bootstrap-table.js"></script>
+        <script type="text/javascript" src="../../Lib/bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+		<script src="../../Lib/public.js"></script>
+		<script src="../../Lib/all.js"></script>
+		<script type="text/javascript">
+			var P_DB_ID = $.url("P_DB_ID");
+			var EVENT_ID = $.url("P_EVENT_ID");
+			var Emergency=0;
+			$(function() {
+				webapi('/order/getOrderBaseInfo', {
+					"P_EVENT_ID": EVENT_ID,
+					"P_DB_ID": P_DB_ID
+				}, function(res) {
+					var info = res.BASE_INFO[0];
+					var base = "<table class=\"table table-striped\" style=\"border: 1px solid #ddd\" >";
+					base += "<tr><td>当前步骤</td><td>" + info.STEP_NAME + "</td></tr>" +
+						"<tr><td>创建人</td><td>" + info.CREATE_USER + "</td></tr>" +
+						"<tr><td>当前处理人</td><td>" + info.DEAL_USER + "</td></tr>"+
+						"<tr><td>紧急程度</td><td>" + setEmLevel(info.EMER_LEVEL) + "</td></tr>";
+					if(info.ISBJ == 0) {
+						base += "<tr><td style=\"text-align: center;\" colspan=\"2\">当前处理进度情况</td></tr>" +
+							"<tr><td>工单" + info.STEP_NAME + "停留时长</td><td>" + info.NOW_STAY_TIME + "分钟</td></tr>" +
+							"<tr><td>工单" + info.STEP_NAME + "处理时限</td><td>" + info.DEAL_LIMIT_TIME + "分钟</td></tr>";
+						if(info.NOW_IS_OVER_TIME == 1) {
+							base += "<tr><td>工单" + info.STEP_NAME + "环节时限进度</td><td><div class='progress' style='margin-bottom:0px;'>" +
+								"<div class='progress-bar' role='progressbar' aria-valuenow='100' aria-valuemin='0' aria-valuemax='100' style='width:100%;'></div></div></td></tr>" +
+								"<tr><td>工单" + info.STEP_NAME + "超出时长</td><td>超时" + info.OVER_TIME + "分钟</td></tr>";
+						} else {
+							base += "<tr><td>工单" + info.STEP_NAME + "进度</td><td><div class='progress' style='margin-bottom:0px;'><div class='progress-bar' role='progressbar' aria-valuenow=\'" +
+								parseInt(info.NOW_STAY_TIME) % parseInt(info.DEAL_LIMIT_TIME) + "\' aria-valuemin='0' aria-valuemax='100' style='width:" + parseInt(info.NOW_STAY_TIME) % parseInt(info.DEAL_LIMIT_TIME) + "%;'></div></div></td></tr>";
+						}
+						base += "<tr><td style=\"text-align: center;\" colspan=\"2\">总体进度情况</td></tr>" +
+							"<tr><td>工单总体停留时长</td><td>" + info.STAY_TIME + "分钟</td></tr>" +
+							"<tr><td>工单处理总时限</td><td>" + info.REM_TIME + "分钟</td></tr>";
+						if(info.IS_OVER_TIME == 1) {
+							base += "<tr><td>工单" + info.STEP_NAME + "流程时限进度</td><td><div class='progress' style='margin-bottom:0px;'>" +
+								"<div class='progress-bar' role='progressbar' aria-valuenow='100' aria-valuemin='0' aria-valuemax='100' style='width:100%;'></div></div></td></tr>" +
+								"<tr><td>工单总体停留时长</td><td>超时" + info.OVER_TIME + "分钟</td></tr>";
+						} else {
+							base += "<tr><td>工单" + info.STEP_NAME + "进度</td><td><div class='progress' style='margin-bottom:0px;'><div class='progress-bar' role='progressbar' aria-valuenow=\'" +
+								parseInt(info.STAY_TIME) % parseInt(info.REM_TIME) + "\' aria-valuemin='0' aria-valuemax='100' style='width:" + parseInt(info.REM_TIME) % parseInt(info.LIMIT_TIME) + "%;'></div></div></td></tr>";
+						}
+					} else {
+						base += "<tr><td style=\"text-align: center;\" colspan=\"2\">总体进度情况</td></tr>" +
+							"<tr><td>工单总体停留时长</td><td>" + info.STAY_TIME + "分钟</td></tr>" +
+							"<tr><td>工单处理总时限</td><td>" + info.REM_TIME + "分钟</td></tr>";
+						if(info.IS_OVER_TIME == 1) {
+							base += "<tr><td>工单" + info.STEP_NAME + "流程时限进度</td><td><div class='progress' style='margin-bottom:0px;'>" +
+								"<div class='progress-bar' role='progressbar' aria-valuenow='100' aria-valuemin='0' aria-valuemax='100' style='width:100%;'></div></div></td></tr>" +
+								"<tr><td>工单总体停留时长</td><td>超时" + info.OVER_TIME + "分钟</td></tr>";
+						} else {
+							base += "<tr><td>工单" + info.STEP_NAME + "进度</td><td><div class='progress' style='margin-bottom:0px;'><div class='progress-bar' role='progressbar' aria-valuenow=\'" +
+								parseInt(info.STAY_TIME) % parseInt(info.REM_TIME) + "\' aria-valuemin='0' aria-valuemax='100' style='width:" + parseInt(info.REM_TIME) % parseInt(info.LIMIT_TIME) + "%;'></div></div></td></tr>";
+						}
+						base +="<tr><td>"+info.SCORE_INFOR.split(',')[0].split("-")[1]+"</td><td><span>";
+						for(var i=0;i<parseInt(info.SCORE_INFOR.split(',')[0].split("-")[2]);i++){
+							base +='<i style="color: gold;font-size: 20px;" class="glyphicon glyphicon-star"></i>';
+						}
+						for(var i=0;i<5-parseInt(info.SCORE_INFOR.split(',')[0].split("-")[2]);i++){
+							base +='<i style="color: gainsboro;font-size: 20px;" class="glyphicon glyphicon-star"></i>';
+						}
+						base +="</span></td></tr>";
+						base +="<tr><td>"+info.SCORE_INFOR.split(',')[1].split("-")[1]+"</td><td><span>";
+						for(var i=0;i<parseInt(info.SCORE_INFOR.split(',')[1].split("-")[2]);i++){
+							base +='<i style="color: gold;font-size: 20px;" class="glyphicon glyphicon-star"></i>';
+						}
+						for(var i=0;i<5-parseInt(info.SCORE_INFOR.split(',')[1].split("-")[2]);i++){
+							base +='<i style="color: gainsboro;font-size: 20px;" class="glyphicon glyphicon-star"></i>';
+						}
+						base +="</span></td></tr>";
+						base +="<tr><td>"+info.SCORE_INFOR.split(',')[2].split("-")[1]+"</td><td><span>";
+						for(var i=0;i<parseInt(info.SCORE_INFOR.split(',')[2].split("-")[2]);i++){
+							base +='<i style="color: gold;font-size: 20px;" class="glyphicon glyphicon-star"></i>';
+						}
+						for(var i=0;i<5-parseInt(info.SCORE_INFOR.split(',')[2].split("-")[2]);i++){
+							base +='<i style="color: gainsboro;font-size: 20px;" class="glyphicon glyphicon-star"></i>';
+						}
+						base +="</span></td></tr>";
+					}
+					base +="</table>";
+					$("#baseTable").append(base);
+					
+					if (res.COLLECT_STATE == "0"){
+						$("#collect").show();
+						$("#uncollect").hide()
+					}else{
+						$("#collect").hide();
+						$("#uncollect").show();
+					}
+					setFormInfo(res.FORM_INFO);
+				}, function(err) {
+					alert('获取数据错误');
+				});
+
+				//获取附件信息
+				webapi('/order/getOrderFujian', {
+					"P_DB_ID": P_DB_ID,
+					"P_TYPE": 1
+				}, function(res) {
+					setFujian(res);
+				}, function(err) {
+					alert('获取数据错误');
+				});
+				getData();
+				getEvaluate();
+				getRecord();
+				getButton("#button", P_DB_ID);
+                $("#table").colResizable({
+                    liveDrag: true, //实时显示滑动位置
+                    resizeMode:'overflow', //mode can be 'fit', 'flex' or 'overflow'
+                    minWidth: 15, //minimum width value in pixels allowed for a column
+                    gripInnerHtml:"<div class='grip'></div>",
+                    disabledColumns:[0]
+                });
+                getKnowledgeInfo();
+                getConnectInfo();
+
+			});
+			
+			/**
+			 * 拼接基础信息的表格
+			 * @param formData
+			 */
+			function setFormInfo(formData) {
+				var formStr = "";
+				var count = 1;
+				$.each(formData, function(i, item) {
+					var dsc = item.COLUMN_DSC;
+					var value = item.COLUMN_VALUE;
+					if(dsc == "紧急程度") {
+						Emergency=value
+						value = setEmLevel(value);
+					}
+					if(value == undefined || value == null) {
+						value = '-';
+					}
+					if(dsc.indexOf('问题描述') != -1||dsc.indexOf('问题名称') != -1) {
+						formStr += "<tr><th>" + dsc + "</th><td colspan='3'>" + value + "</td></tr>";
+						count = 1;
+					} else {
+						if(count == 1) {
+							formStr += "<tr><th>" + dsc + "</th><td>" + value + "</td>";
+							count = 2;
+						} else {
+							formStr += "<th>" + dsc + "</th><td>" + value + "</td></tr>";
+							count = 1;
+						}
+					}
+
+				});
+				formStr += '</table>';
+				var html = "<table class='table'>" + formStr + "</table>";
+				$("#infoTable").html(html);
+			}
+
+			function setFujian(info) {
+				var fujianNum = 0;
+				var fjStr = "";
+				if(info.length==0 ){
+					fjStr="<div class='loadpos'><span class='nodata'></span></div>"
+				}else{
+					fjStr="<table class='table'><thead><td>附件名</td><td>操作</td></thead>";
+					$.each(info,function (i,item) {
+						if(item.FUJIAN_NAME!=null && item.FUJIAN_NAME!=undefined){
+							fujianNum+=1;
+							fjStr+="<tr><td>"+item.FUJIAN_NAME+"</td><td><a download href='"+item.FUJIAN_URL+"'>下载</a></td></tr>";
+						}
+
+					});
+					fjStr+="</table>";
+				}
+				if (fujianNum==0){
+					$("#fujian").html("<div class='loadpos'><span class='nodata'></span></div>");
+				}else{
+					$("#fujian").html(fjStr);
+				}
+
+			}
+
+			function getData() {
+				var dt = {
+					"P_DB_ID": P_DB_ID
+				};
+				webapi("/order/getOperationLog", dt, function(res) {
+					if(res != null && res.length > 0) {
+						drawLine(res);
+					} else {
+						$("#originLine").hide();
+						layer.msg("暂无数据", {
+							icon: 9,
+							time: 2000
+						});
+					}
+
+				}, function(err) {
+					$("#originLine").hide();
+					layer.msg("获取数据失败", {
+						icon: 5,
+						time: 2000
+					});
+				})
+			}
+
+			function drawLine(arr) {
+				var html = "";
+				if(arr.length > 0) {
+					for(var i = 0; i < arr.length; i++) {
+						if(arr[i].OPER_STATE == 1) {
+							if(arr[i].ISBJ==0){
+								html += "<div><i class='fa fa-check-square-o bg-ok'></i>" +
+									"<div class='timeline-item'><span class='time'>到达时间：" + arr[i].ARRIVE_TIME + "</span>" +
+									"<h3 class='timeline-header'>" + arr[i].STEP_NAME + "<span class='done'>（已处理）</span></h3>" +
+									"<div class='timeline-body'>" +
+									"<div class='person-info'>" +
+									"<span>操作人员：" + arr[i].OPER_USER + "</span>" +
+									"<span>操作时间：" + arr[i].OPER_TIME + "</span>" +
+									"</div>" +
+									"<div>操作名称:" + arr[i].OPER_DSC + "</div>" +
+									"<div class='content-info'>操作备注：" + arr[i].OPER_MSG +
+									"</div>" +
+									"<div class='content-info'>处理时长：" + arr[i].HAND_TIME +
+									"(分钟)</div>" +
+									"</div>" +
+									"</div>" +
+									"</div>";
+							}else{
+								html += "<div><i class='fa fa-check-square-o bg-ok'></i>" +
+									"<div class='timeline-item'><span class='time'>到达时间：" + arr[i].ARRIVE_TIME + "</span>" +
+									"<h3 class='timeline-header'>" + arr[i].STEP_NAME + "<span class='done'>（已处理）</span></h3>" +
+									"</div></div>";
+							}
+						} else {
+							html += "<div><i class='fa fa-clock-o bg-undo'></i>" +
+								"<div class='timeline-item'><span class='time'>到达时间：" + arr[i].ARRIVE_TIME + "</span>" +
+								"<h3 class='timeline-header'>" + arr[i].STEP_NAME + "<span class='undone'>（待响应）</span></h3>" +
+								"<div class='timeline-body'>" +
+								"<div class='person-info'>" +
+								"<span>待处理人：" + arr[i].DEAL_USER + "</span>"
+							"</div>" +
+							"<div class='content-info'>" +
+							"</div>" +
+							"</div>" +
+							"</div>" +
+							"</div>";
+						}
+
+					}
+					$("#timeline").prepend(html);
+				}
+			}
+
+			function getDealInfo() {
+				webapi('/order/getOrderDealInfo', {
+					"P_DB_ID": P_DB_ID
+				}, function(res) {
+					console.log(res);
+				}, function(err) {
+					layer.msg("获取数据失败", {
+						icon: 5,
+						time: 2000
+					});
+				})
+			}
+
+			function getEvaluate() {
+				var param = {
+					"P_DB_ID": P_DB_ID,
+					"P_TYPE": "1"
+				}
+				webapi('/order/getOrderEvaluate', param, function(res) {
+					if(res.length > 0) {
+						var str = "";
+						$.each(res, function(i, item) {
+							var iurl = "";
+							if(item.IMG_URL == null || item.IMG_URL == undefined || item.IMG_URL == "") {
+								iurl = "../../Static/Img/photo.jpg";
+							} else {
+								iurl = item.IMG_URL;
+							}
+							str += "<div class='card-comment'>" +
+								"<img src='" + iurl + "' class='img-circle img-sm' alt='User Image'>" +
+								"<div class='comment-text'>" +
+								"<span class='username'>" + item.EVALUATE_USER + "" +
+								"<span class='text-muted float-right'>" + item.EVALUATE_TIME + "</span>" +
+								"</span>" + item.EVALUATE_CONTENT +
+								"</div>";
+						});
+						$("#evaluate").html(str);
+					}
+				}, function(err) {
+					layer.msg("获取数据失败", {
+						icon: 5,
+						time: 2000
+					});
+				})
+			}
+
+			function sendEvaluate() {
+				var info = $("#evaluateInfo").val();
+				var isEmpty = /^[\s]*$/;
+				if(isEmpty.test(info)) {
+					layer.msg("请填写评论", {
+						icon: 5,
+						time: 2000
+					});
+				} else {
+					var param = {
+						"P_DB_ID": P_DB_ID,
+						"P_EVALUATE_CONTENT": info,
+						"P_TYPE_ID": "1"
+					}
+					webapi('/order/orderEvaluateAdd', param, function(res) {
+						if(res.RESULT == "SUCCESS") {
+							layer.open({
+								content: res.MESSAGE
+							});
+							getEvaluate();
+							$("#evaluateInfo").val('');
+						} else {
+							layer.open({
+								content: res.MESSAGE
+							});
+						}
+					}, function(err) {
+						layer.msg("后台错误", {
+							icon: 5,
+							time: 2000
+						});
+					})
+				}
+			}
+
+			function getRecord() {
+				var param = {
+					"P_DB_ID": P_DB_ID,
+					"P_TYPE": "2"
+				}
+				var html = "";
+				webapi('/order/getOrderDealInfo', param, function(res) {
+					if(res.length == 0) {
+						html = "<div class='loadpos'><span class='nodata'></span></div>";
+					} else {
+						for(var i = 0; i < res.length; i++) {
+							html += '<div class="card"><div class="card-header"><div id="person_info" class="fa fa-user">' +
+								res[i].人名 + '</div><div id="time_info">' + res[i].时间 + '</div></div><div class="card-body"><p class="card-text"></p>' +
+								res[i].text + '</div><div class="card-footer"><p class="fa fa-list-ul">&nbsp;附件列表：</p><div class="row"></div></div></div>';
+						}
+					}
+					$("#record").html(html);
+					//      		                   <div class="card">
+					//                          <div class="card-header">
+					//                              <div id="person_info" class="fa fa-user">
+					//                                  张三
+					//                              </div>
+					//                              <div id="time_info">
+					//                                  2019-12-25 22:15:22
+					//                              </div>
+					//                          </div>
+					//                          <div class="card-body">
+					//                              <p class="card-text"></p>
+					//                              这个问题先要这样然后那样就可以解决了 这个问题先要这样然后那样就可以解决了 这个问题先要这样然后那样就可以解决了 这个问题先要这样然后那样就可以解决了 这个问题先要这样然后那样就可以解决了 这个问题先要这样然后那样就可以解决了
+					//                              这个问题先要这样然后那样就可以解决了 这个问题先要这样然后那样就可以解决了 这个问题先要这样然后那样就可以解决了
+					//                          </div>
+					//                          <div class="card-footer">
+					//                              <p class="fa fa-list-ul">&nbsp;附件列表：</p>
+					//                              <div class="row">
+					//                                  <div class="col-md file_list">
+					//                                      <a href="javascript:void(0)">问题解决方案.doc</a>
+					//                                  </div>
+					//                                  <div class="col-md file_list">
+					//                                      <a href="javascript:void(0)">问题汇总说明.xls</a>
+					//                                  </div>
+					//                                  <div class="col-md file_list">
+					//                                      <a href="javascript:void(0)">问题会议纪要.pdf</a>
+					//                                  </div>
+					//                              </div>
+					//
+					//                          </div>
+					//                      </div>
+				}, function(err) {
+
+				});
+			}
+		</script>
+
+	</body>
+
+</html>

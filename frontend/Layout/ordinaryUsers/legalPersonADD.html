@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css" />
+		<link rel="stylesheet" href="../../Lib/jsTree/style.min.css" />
+		<title>设置责任人</title>
+	</head>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+		}
+		
+		html,
+		body {
+			width: 100%;
+			height: 100%;
+		}
+	</style>
+
+	<body>
+		<div id="container" class="container" style="overflow: hidden;">
+			<div style="width:50%;margin:30px auto;height: 70%;">
+				<div style="height: 5%;font-weight: 700;">责任人:<span id="user" style="display: inline-block;"></span></div>
+				<div id="jsTree" style="height:95%;overflow: auto;"></div>
+			</div>
+			<div style="width: 20%;margin: 0 auto;height: 15%;text-align: center;padding: 15px 0 ;">
+				<button class="btn btn-primary" type="button" onclick="loadUser()"> 提 交 </button>
+			</div>
+		</div>
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.js"></script>
+		<script src="../../Lib/public.js"></script>
+		<script src="../../Lib/jsTree/jstree.js"></script>
+		<script src="../../Lib/vue.js"></script>
+		<script src="../../Lib/public.js"></script>
+
+		<script type="text/javascript">
+			var P_FACTORY_ID = $.url("P_FACTORY_ID");
+			var P_ID = $.url("P_ID");
+			var depart = $.url("DEPART_ID");
+			$(document).ready(function() {
+				$('#jsTree').bind("activate_node.jstree", function(obj, e) {
+					var currentNode = e.node;
+					if(!e.instance.is_leaf(currentNode)) {
+						e.instance.deselect_node(currentNode);
+					};
+				});
+				$('#jsTree').jstree({
+					'core': {
+						 "multiple": false,
+						'data': {
+							"url": urlpath + "/CommonHander/getMUsrTree?lazy",
+							"data": function(node) {
+								return {
+									"id": node.id,
+									"departid": depart
+								};
+							},
+							success: function(res) {
+                             var html="";
+                             if(res.length<1){
+                             	html="<span style='color:red;display: inline-block;padding: 10px;font-weight: bold;'>该厂家没有责任人选!</span>";
+                             	$("#jsTree").html(html);
+                             }
+                             
+							}
+						}
+					},
+					"plugins": ["checkbox"]
+				})
+			});
+
+			function loadUser() {
+				var userIds;
+				var ref = $('#jsTree').jstree(true); // 获得整个树
+				userIds = ref.get_bottom_selected();
+				if(userIds == "") {
+					alert("请选择责任人!");
+				} else {
+					var data = {};
+					var title = "";
+					var title1 = "";
+					var urll = "";
+					if(P_FACTORY_ID == "") {
+						data = {
+							'P_ID': P_ID,
+							'P_DUTY_USER': userIds[0]
+						}
+						title = '变更成功！';
+						title1 = "变更失败!";
+						urll = "/rulesconfig/updataFactoryDuty";
+					} else if(P_ID == "") {
+						data = {
+							'P_DUTY_USER': userIds[0],
+							'P_FACTORY_ID': P_FACTORY_ID
+						}
+						title = '设置成功!';
+						title1 = "设置失败!";
+						urll = "/rulesconfig/addFactoryDuty";
+					}
+					$.ajax({
+						type: "post",
+						url: urlpath + urll,
+						data: data,
+						xhrFields: {
+							withCredentials: true
+						},
+						crossDomain:true==!(document.all),//兼容ie
+						dataType: 'json',
+						success: function(res) {
+							if(res.result == "SUCCESS") {
+								new $.zui.Messager(title, {
+									type: 'success'
+								}).show();
+								setTimeout(function() {
+									window.parent.renderTable();
+									parent.$.zui.modalTrigger.close();
+								}, 1000);
+							} else {
+								new $.zui.Messager(title1, {
+									type: 'danger'
+								}).show();
+							}
+						}
+					});
+				}
+			}
+		</script>
+
+	</body>
+
+</html>

@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>用户管理</title>
+
+		<link rel="stylesheet" href="../../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.css">
+		<link rel="stylesheet" href="../../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.css">
+		<link rel="stylesheet" href="../../../Lib/jsTree/style.min.css">
+
+		<style>
+			html,
+			body {
+				background: #F9F9F9;
+				overflow: hidden;
+			}
+			
+			form {
+				padding: 20px 0;
+			}
+			
+			.form-group {
+				margin-bottom: 25px;
+			}
+			
+			form>button {
+				float: right;
+				margin-top: 15px;
+			}
+			
+			.clearfix {
+				height: 70px;
+				/*line-height: 70px;*/
+			}
+			
+			.clearfix h2 {
+				display: inline-block;
+				margin: 0;
+			}
+			
+			input {
+				width: 85%;
+				height: 32px;
+				padding: 5px 8px;
+				font-size: 13px;
+				line-height: 1.53846154;
+				color: #222;
+				vertical-align: middle;
+				background-color: #fff;
+				border: 1px solid #eee;
+				border-radius: 4px;
+			}
+			
+			.font {
+				font-family: "微软雅黑";
+				font-size: 15px;
+				width: 130px;
+				font-weight: bold;
+				padding-left: 30px;
+			}
+			
+			.pwd_level {
+				float: left;
+				width: 50px;
+				height: 23px;
+				margin-right: 10px;
+				background-color: #eeeeee;
+				text-align: center;
+				color: #fff;
+				line-height: 23px;
+			}
+			
+			#InfoFrom table tr {
+				height: 48px;
+			}
+			
+			.col-sm-10 {
+				position: relative;
+				min-height: 1px;
+				padding-right: 50px;
+				padding-left: 0px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<form id="InfoFrom">
+			<table style="width:96%;" align="center">
+				<tr>
+					<td class="font">
+						<div><span>工号<font color="red">*</font>：</span></div>
+					</td>
+					<td><input id="P_USER_ID" name="P_USER_ID" /> </td>
+					<td></td>
+				</tr>
+				<tr>
+					<td class="font">
+						<div><span>姓名<font color="red">*</font>：</span></div>
+					</td>
+					<td><input id="P_USER_NAME" name="P_USER_NAME" /> </td>
+					<td></td>
+				</tr>
+				<tr>
+					<td class="font">
+						<div><span>部门<font color="red">*</font>：</span></div>
+					</td>
+					<td>
+						<div class="col-sm-10" id="departSelect">
+							<input id="departText" type="text" readonly class="form-control search-input" placeholder="请选择">
+							<input id="departValue" name="departValue" type="hidden">
+							<div id="departTreeId" style="position:absolute;border:1px solid #3BA4FF;border-radius: 3px;border-top:0px;-moz-border-radius-topleft:0px ;-moz-border-radius-topright: 0px;overflow: auto;display: none;background: #fff;z-index:9999;max-height: 230px;width: 85.5%;font-size: 10px;"></div>
+						</div>
+					</td>
+					<td></td>
+				</tr>
+				<tr>
+					<td class="font">
+						<div><span>角色<font color="red">*</font>：</span></div>
+					</td>
+					<td>
+						<div class="col-sm-10" id="roleSelect">
+							<input id="roleText" type="text" readonly class="form-control search-input" placeholder="请选择">
+							<input id="roleValue" name="roleValue" type="hidden">
+							<div id="roleTreeId" style="position:absolute;border:1px solid #3BA4FF;border-radius: 3px;border-top:0px;-moz-border-radius-topleft:0px ;-moz-border-radius-topright: 0px;overflow: auto;display: none;background: #fff;z-index:9999;max-height: 230px;width: 85.5%;font-size: 10px;"></div>
+						</div>
+					</td>
+					<td></td>
+				</tr>
+				<tr id="PASSWORD_GET">
+					<td class="font">
+						<div><span>密码<font color="red">*</font>：</span></div>
+					</td>
+					<td><input id="P_PASSWORD" name="P_PASSWORD" type="password" /> </td>
+					<td></td>
+				</tr>
+				<tr id="PASSWORD_GET_ER">
+					<td class="font">
+						<div><span>确认密码<font color="red">*</font>：</span></div>
+					</td>
+					<td><input id="P_PASSWORD_ER" name="P_PASSWORD_ER" type="password" /> </td>
+					<td></td>
+				</tr>
+				<tr id="PASSWORD_GET_D">
+					<td class="font">
+						<div>密码强度 ：</div>
+						</th>
+						<td>
+							<div id="strength_L" class="pwd_level">低</div>
+							<div id="strength_M" class="pwd_level">中</div>
+							<div id="strength_H" class="pwd_level">高</div>
+						</td>
+						<td></td>
+				</tr>
+				<tr>
+					<td class="font">
+						<div><span>联系电话<font color="red">*</font>：</span></div>
+					</td>
+					<td><input id="P_REAL_ACC_NBR" name="P_REAL_ACC_NBR" /> </td>
+					<td></td>
+				</tr>
+				<tr>
+					<td class="font">
+						<div><span>邮件：</span></div>
+					</td>
+					<td><input id="P_Email" name="P_Email" /> </td>
+					<td></td>
+				</tr>
+				<tr id="btn_tr">
+					<td colspan="3" style="text-align: center;padding-top:30px;">
+						<div class="btn-group">
+							<button id="submmitData" onclick="SubmmitData()" type="button" class="btn btn-primary">提交</button>
+						</div>
+					</td>
+				</tr>
+			</table>
+		</form>
+		<script type="text/javascript" src="../../../Lib/jquery-3.4.1.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/zui-1.9.1-dist/dist/lib/selectable/zui.selectable.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/jsTree/jstree.js"></script>
+		<script type="text/javascript" src="../../../Lib/public.js"></script>
+		<script type="text/javascript" src="../../../Lib/CheckPwd.js"></script>
+		<script src="../../../Lib/md5.js"></script>
+		<script type="text/javascript">
+			var userId = "",
+				userName = "",
+				pwd = "",
+				pwdEr = "",
+				tel = "",
+				email = "",
+				departId = "",
+				departName = "",
+				roleId = "",
+				roleName = "",
+				id = "",
+				actionUrl = "/UserHander/addUser.action",
+				operDsc = "新增";
+			var DP_TEXT = "";
+			var DP_VALUE = "";
+			var RL_TEXT = "";
+			var RL_VALUE = "";
+			var $departTree = "";
+			var $roleTree = "";
+			var userIdUpd = "";
+			$(document).ready(function() {
+				getDepartTree();
+				getRoleTree();
+				userIdUpd = $.url("P_ID");
+				if(userIdUpd != "") {
+					document.getElementById("PASSWORD_GET").style.display = "none";
+					document.getElementById("PASSWORD_GET_ER").style.display = "none";
+					document.getElementById("PASSWORD_GET_D").style.display = "none";
+					document.getElementById("P_USER_ID").readOnly=true;
+					actionUrl = "/UserHander/editUser.action";
+					operDsc = "修改";
+					getDataById();
+				}
+
+				$("#P_PASSWORD").on("input", function(e) {
+					var _this = $(this);
+					pwStrength(_this.val());
+				});
+
+				$("#P_PASSWORD").blur(function() {
+					pwStrength($("#P_PASSWORD").val());
+				});
+
+			});
+
+			//判断是否为11位自然数
+			function isPoneAvailable(userId) {
+				var myreg = /^[1][0-9][0-9]{9}$/;
+				if(!myreg.test(userId)) {
+					return false;
+				} else {
+					return true;
+				}
+			}
+			//提交数据校验
+			function dataCheck() {
+				var userArry = [];
+				var maxLength = 30;
+				var column = ["工号", "姓名", "密码", "确认密码", "联系电话", "邮箱", "部门", "角色"];
+				userId = $("#P_USER_ID").val();
+				userName = $("#P_USER_NAME").val();
+				pwd = $("#P_PASSWORD").val();
+				pwdEr = $("#P_PASSWORD_ER").val();
+				tel = $("#P_REAL_ACC_NBR").val();
+				email = $("#P_Email").val();
+				departId = DP_VALUE;
+				departName = DP_TEXT;
+				roleId = RL_VALUE;
+				roleName = RL_TEXT;
+				if(userIdUpd != "") {
+					pwd = "A";
+					pwdEr = "A";
+				}
+				userArry.push(userId);
+				userArry.push(userName);
+				userArry.push(pwd);
+				userArry.push(pwdEr);
+				userArry.push(tel);
+				userArry.push(email);
+				userArry.push(departName);
+				userArry.push(roleName);
+				for(var i = 0; i < userArry.length; i++) {
+					if(userArry[i] == "" && i != 5) {
+						new $.zui.Messager("消息提示：" + column[i] + "不能为空！", {
+							type: 'danger',
+							placement: 'center'
+						}).show();
+						return false;
+					}
+					if(i == 4) {
+						maxLength = 11;
+					}else{
+						maxLength = 30;
+					}
+					if(userArry[i].length > maxLength && i < 6) {
+						new $.zui.Messager("消息提示：" + column[i] + "不得超过" + maxLength + "个字符！", {
+							type: 'danger',
+							placement: 'center'
+						}).show();
+						return false;
+					}
+				}
+				if(pwd != pwdEr && userIdUpd == "") {
+					new $.zui.Messager("消息提示：两次输入密码不一致，请重新输入！", {
+						type: 'danger',
+						placement: 'center'
+					}).show();
+					$("#P_PASSWORD").val("");
+					$("#P_PASSWORD_ER").val("");
+					return false;
+				}
+				if(checkStrong(pwd) < 3 && userIdUpd == "") {
+					new $.zui.Messager("消息提示：密码强度不足，密码位数在8-20之间，必须包含大写字母、小写字母、数字、特殊符号中的三种！", {
+						type: 'danger',
+						placement: 'center'
+					}).show();
+					return false;
+				}
+				if(!isPoneAvailable(tel)) {
+					new $.zui.Messager("消息提示：请输入正确的联系电话！", {
+						type: 'danger',
+						placement: 'center'
+					}).show();
+					return false;
+				}
+				return true;
+			}
+			//数据提交
+			function SubmmitData() {
+				if(dataCheck()) {
+					$.ajax({
+						type: "post",
+						url: urlpath + actionUrl,
+						data: {
+							"P_ID":userIdUpd,
+							"P_USER_ID": userId,
+							"P_USER_NAME": userName,
+							"P_PASSWORD": hex_md5(pwd).toUpperCase(),
+							"P_DEPART_ID": departId,
+							"P_ROLE_ID": roleId,
+							"P_REAL_ACC_NBR": tel,
+							"P_EMAIL": email,
+							"P_USER_OA": ''
+						},
+						xhrFields: {
+							withCredentials: true
+						},
+						crossDomain: true == !(document.all), //兼容ie
+						dataType: 'text',
+						success: function(res) {
+							if(res.indexOf("SUCCESS") > -1) {
+								new $.zui.Messager('消息提示：' + operDsc + '成功！', {
+									type: 'success',
+									placement: 'center'
+								}).show();
+								window.parent.search();
+								setTimeout(function() {
+									window.parent.closeTrigger();
+								}, 1000);
+							} else {
+								new $.zui.Messager('提示消息：' + operDsc + '失败！', {
+									type: 'danger',
+									placement: 'center'
+								}).show();
+							}
+						},
+						error: function(res) {
+							new $.zui.Messager('提示消息：' + operDsc + '失败！', {
+								type: 'danger',
+								placement: 'center'
+							}).show();
+						}
+					});
+				}
+			}
+			//修改前获取用户数据
+			function getDataById() {
+				$.ajax({
+					type: "post",
+					url: urlpath + "/UserHander/getUserDate.action?r=" + Math.random(),
+					data: {
+						'P_ID': userIdUpd
+					},
+					dataType: "json",
+					success: function(data) {
+						$('#P_USER_ID').val(data[0].USER_ID);
+						$('#P_USER_NAME').val(data[0].USER_NAME);
+						$('#P_PASSWORD').val(data[0].PASSWORD);
+						$('#departTreeId').val(data[0].DEPART_ID);
+						$('#roleTreeId').val(data[0].ROLE_ID);
+						$('#P_REAL_ACC_NBR').val(data[0].REAL_ACC_NBR);
+						$('#P_Email').val(data[0].EMAIL);
+						DP_VALUE = data[0].DEPART_ID;
+						DP_TEXT = data[0].DEPART_NAME;
+						RL_VALUE = data[0].ROLE_ID;
+						RL_TEXT = data[0].ROLE_NAME;
+						$("#departValue").val(DP_VALUE);
+						$("#departText").val(DP_TEXT);
+						$("#roleValue").val(RL_VALUE);
+						$("#roleText").val(RL_TEXT);
+					},
+					error: function(err) {
+						new $.zui.Messager('提示消息：用户信息读取失败！', {
+							type: 'danger',
+							placement: 'center'
+						}).show();
+					}
+
+				});
+			}
+			//加载部门树
+			function getDepartTree() {
+				$departTree = $('#departTreeId').jstree({
+					'core': {
+						"multiple": false,
+						'data': {
+							"url": urlpath + "/DepartmentHander/getNDepartTree",
+							"data": function(node) {
+								return {
+									"id": node.id
+								};
+							}
+						}
+					},
+					"plugins": ["search"],
+					"search": {
+						"show_only_matches": true,
+						"show_only_matches_children": true
+					}
+				});
+				$departTree.bind('activate_node.jstree', function(obj, e) {
+					DP_TEXT = e.node.text;
+					DP_VALUE = e.node.id;
+					$("#departValue").val(DP_VALUE);
+					$("#departText").val(DP_TEXT);
+				})
+				$("#departSelect").on("blur", "#departText", function(e) {
+					setTimeout(function() {
+						$("#departTreeId").hide();
+					}, 200)
+				})
+				$("#departSelect").on("click", "#departText", function() {
+					if($("#departTreeId")[0].style.display == "none" ||
+						$("#departTreeId")[0].style.display == "") {
+						$("#departTreeId")[0].style.display = "block";
+					} else if($("#departTreeId")[0].style.display == "block") {
+						$("#departTreeId")[0].style.display = "none";
+					}
+				});
+			}
+			//加载角色树
+			function getRoleTree() {
+				$roleTree = $('#roleTreeId').jstree({
+					'core': {
+						"multiple": false,
+						'data': {
+							"url": urlpath + "/RoleHander/getNRoleTree",
+							"data": function(node) {
+								return {
+									"id": node.id
+								};
+							}
+						}
+					},
+					"plugins": ["search"],
+					"search": {
+						"show_only_matches": true,
+						"show_only_matches_children": true
+					}
+				});
+				$roleTree.bind('activate_node.jstree', function(obj, e) {
+					RL_TEXT = e.node.text;
+					RL_VALUE = e.node.id;
+					$("#roleValue").val(RL_VALUE);
+					$("#roleText").val(RL_TEXT);
+				})
+				$("#roleSelect").on("blur", "#roleText", function(e) {
+					setTimeout(function() {
+						$("#roleTreeId").hide();
+					}, 200)
+				})
+				$("#roleSelect").on("click", "#roleText", function() {
+					if($("#roleTreeId")[0].style.display == "none" ||
+						$("#roleTreeId")[0].style.display == "") {
+						$("#roleTreeId")[0].style.display = "block";
+					} else if($("#roleTreeId")[0].style.display == "block") {
+						$("#roleTreeId")[0].style.display = "none";
+					}
+				});
+
+			}
+		</script>
+	</body>
+
+</html>

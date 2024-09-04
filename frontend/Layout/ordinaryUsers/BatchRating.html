@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>批量评分</title>
+    <link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+    <!--<link href="../../Lib/zui-1.9.1-dist/lib/datetimepicker/datetimepicker.min.css" rel="stylesheet">-->
+    <style>
+        html,
+        body {
+            font-family: "微软雅黑";
+            font-size: 14px;
+            background: #F9F9F9;
+            overflow: hidden;
+        }
+        a:hover{
+            text-decoration: none;
+        }
+        a{
+            text-decoration: none;
+        }
+
+        .container-fluid {
+            padding: 20px;
+        }
+        #bottom_right_bottom{
+            width: 100%;
+            padding: 5% 10%;
+        }
+        #fbpl{
+            width: 100%;
+            height: 30px;
+            padding: 30px 100px 0px 0px;
+            margin-left: 40%;
+        }
+        .cleanfloat{
+            height: 100%;
+            line-height: 100%;
+            list-style-type: none;
+            margin: 0;
+            padding: 15px 0;
+            width: 90%;
+        }
+        #dsc{
+            width: 98%;
+            height: 100px;
+            border: solid 1px #d2cfcf;
+            margin-top: 20px;
+        }
+        .starLi
+        {
+            list-style:none;
+            float:left;
+            margin:5px 5px;
+            color:#ccc;
+            cursor:pointer;
+            font-size: 55px;
+
+        }
+        .cleanfloat::after{
+            display: block;
+            clear: both;
+            content:"";
+            visibility: hidden;
+            height: 0;
+        }/*清浮动*/
+        .hs,.cs{color:#FFD500;}/*五角星点击后样式*/
+        #pfbt{
+            width:100%;
+            padding-bottom: 15px;
+        }
+    </style>
+</head>
+
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-md-2">
+            <div class="panel" style="width: 550px;">
+                <div class="panel-body">
+
+                    <div id="bottom_right_bottom">
+                        <div id="pfbt">请为处理人的解决方案打分？</div>
+                        <ul class="cleanfloat">
+                            <li class="starLi">&#9733;</li>
+                            <li class="starLi">&#9733;</li>
+                            <li class="starLi">&#9733;</li>
+                            <li class="starLi">&#9733;</li>
+                            <li class="starLi">&#9733;</li>
+                        </ul>
+                        <textarea placeholder="请填写评分意见" id="dsc" name="dsc"></textarea>
+                        <div id="fbpl">
+                            <a href="javascript:TJ()" class="btn btn-primary-new" style="padding: 6px;border-radius: 5px;">&#12288;提&#12288;交&#12288;</a>
+                        </div>
+                    </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!--消息对话框-->
+<div class="modal fade" id="myModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header" style="background: #469AFD;">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">关闭</span></button>
+                <h2 style="color: #FFFFFF;" class="modal-title">提示</h2>
+            </div>
+            <div class="modal-body" style="display: inline-flex;height: 200px;padding: 11% 32%;">
+                <img src="../../Static/Img/a.png" width="60px" height="55px" class="img-circle" alt="圆形图片">
+                <div style="font-size:20px; margin: 15px;">确认评分？</div>
+            </div>
+            <div class="modal-footer">
+                <button style="margin-right: 20%;" type="button" class="btn btn-default" data-dismiss="modal">&#12288;&#12288;再想想&#12288;&#12288;</button>
+                <button style="margin-right: 20%;" id="submitTransFerred" type="button" class="btn btn-primary">&#12288;&#12288;确定&#12288;&#12288;</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="../../Lib/jquery-3.4.1.min.js"></script>
+<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+<script src="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js"></script>
+<script src="../../Lib/public.js"></script>
+<script>
+    var apply_id=$.url("P_APPLY_ID");
+    $(document).ready(function() {
+        $(".starLi").hover(function(){
+            $(this).addClass('hs');
+            $(this).prevAll().addClass('hs');
+        },function(){
+            $(this).removeClass('hs');
+            $(this).prevAll().removeClass('hs');
+        });
+
+        $(".starLi").click(function () {
+            $(this).addClass('cs');
+            $(this).prevAll().addClass('cs');
+            $(this).nextAll().removeClass('cs');
+        });
+
+
+    });
+    function TJ(){
+       var score=$('.cs').length;
+       if(score==0){
+           new $.zui.Messager('请您评分！', {
+               icon: 'heart',
+               placement: 'center' // 定义显示位置
+           }).show();
+           return false;
+       }
+        $.ajax({
+            type: "post",
+            url: urlpath + "/approval/batchRating",
+            dataType: 'text',
+            xhrFields: {
+                withCredentials: true
+            },
+            data: {
+                'P_IDS': apply_id,
+                'P_SCORE':score,
+                "P_RESULT_DSC":$("#dsc").val()
+            },
+            crossDomain:true==!(document.all),//兼容ie
+            success: function(data) {
+                if (data != null && data == 'SUCCESS') {
+                    new $.zui.Messager('评分成功！', {
+                        icon: 'heart',
+                        placement: 'center' // 定义显示位置
+                    }).show();
+                    window.parent.reload();
+                    window.parent.$.zui.modalTrigger.close();
+                }
+            },
+            error:function(err){
+                alert("警告！提交数据错误！");
+            }
+        });
+
+    }
+
+</script>
+</body>
+
+</html>

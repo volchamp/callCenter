@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>处理流程步骤配置</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../../Lib/bootstrap-3.3.7-dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="../../Lib/bootstrap-table/dist/bootstrap-table.css" />
+    <link rel="stylesheet" href="../../Lib/jsTree/style.min.css">
+    <link rel="stylesheet" href="../../Lib/select/css/select-mania.css" />
+
+    <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .container-fluid {
+            padding: 5px;
+        }
+
+        .row {
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+        .treeject {
+            position: absolute;
+            border: 1px solid #3BA4FF;
+            border-radius: 3px;
+            border-top: 0px;
+            -moz-border-radius-topleft: 0px;
+            -moz-border-radius-topright: 0px;
+            overflow: auto;
+            display: none;
+            background: #fff;
+            z-index: 9999;
+            max-height: 230px;
+            width:119%;
+            font-size: 10px;
+        }
+        .form-control[readonly]{
+            background: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- 顶部搜索框等操作部分 -->
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-inline">
+                    <div class="input-group">
+                        <select id="FLOW_TYPE" name="FLOW_TYPE" class="form-control">
+                            <option value="">全部流程</option>
+                        </select>
+                    </div>
+
+                    <div class="input-group" >
+                        <div style="float: left;width: 91%;margin-left: 10px" id="role_select">
+                            <input style="width: 160px;" id="role_text" type="text" readonly class="form-control search-input" placeholder="请选择操作角色">
+                            <input id="role_id" type="hidden">
+                            <div id="roleTree" class="treeject" style="position:absolute;border:1px solid #3BA4FF;border-radius: 3px;border-top:0px;-moz-border-radius-topleft:0px ;-moz-border-radius-topright: 0px;overflow: auto;display: none;background: #fff;z-index:9999;max-height: 230px;width: 160px;font-size: 10px;top: 35px;"></div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-primary" id="queryBtn">查 询</button>
+                </div>
+            </div>
+            <div class="col-md-8" id="btAdd" style="text-align: right;">
+                <button type="button" class="btn btn-primary" onclick="add()">新增</button>
+                <button type="button" class="btn btn-primary" onclick="updata()">修改</button>
+                <button type="button" class="btn btn-primary" onclick="del()">删除</button>
+            </div>
+        </div>
+        <!-- 主体数据表格等内容部分 -->
+        <div class="mainBody row">
+            <div class="col-md-12">
+                <table id="table"></table>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="../../Lib/jquery-3.4.1.min.js"></script>
+    <!--弹框-->
+    <script type="text/javascript" src="../../Lib/layer/layer.js"></script>
+    <script type="text/javascript" src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+    <script type="text/javascript" src="../../Lib/colResizable-1.6.js"></script>
+    <script src="../../Lib/jsTree/jstree.js"></script>
+    <script type="text/javascript" src="../../Lib/public.js"></script>
+    <script type="text/javascript" src="../../Lib/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+    <script type="text/javascript" src="../../Lib/bootstrap-table/dist/bootstrap-table.js"></script>
+    <script type="text/javascript" src="../../Lib/bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+    <script type="text/javascript" src="../../Lib/select/js/select-mania.js"></script>
+
+    <script type="text/javascript">
+        var Trigger = new $.zui.ModalTrigger();
+        $(function() {
+            $('#FLOW_TYPE').selectMania({
+                themes: ['green'],
+                placeholder: '请选择',
+                removable: false,
+                ajax: false,
+            });
+
+            webapi("/order/getFlowCombo",{},function (res) {
+                var str = "";
+                if(res.length>0){
+                    $.each(res,function (i,item) {
+                        str += "<option value='"+item.ID+"'>"+item.TEXT+"</option>"
+                    });
+                    $("#FLOW_TYPE").append(str);
+                    $("#FLOW_TYPE").selectMania('update');
+                }
+            });
+
+
+            getTable();
+            $("#queryBtn").click(function() {
+                getTable();
+            });
+            $("#table").colResizable({
+                liveDrag: true, //实时显示滑动位置
+                resizeMode:'overflow', //mode can be 'fit', 'flex' or 'overflow'
+                minWidth: 15, //minimum width value in pixels allowed for a column
+                gripInnerHtml:"<div class='grip'></div>",
+                disabledColumns:[0]
+            });
+
+            RoleTree();
+
+        });
+
+        function getTable() {
+            $('#table').bootstrapTable('destroy');
+            g = $('#table').bootstrapTable({
+                url: urlpath + '/order/operConfigList',
+                method: 'get',
+                contentType: "text/json; charset=UTF-8",
+                queryParamsType: "",
+                sidePagination: 'server', //指定服务器端分页
+                dataType: "json",
+                sortable: true, //是否启用排序
+                sortOrder: "desc", //排序方式
+                sortName: "",
+                pagination: true,
+                pageNumber: 1,
+                pageSize: 15, //单页记录数
+                pageList:[15, 20, 30, 40], //分页步进值
+                clickToSelect: true, //点击选中
+                //得到查询的参数
+                queryParams: function(params) {
+                    //这里的键的名字和控制器的变量名必须一致，这边改动，控制器也需要改成一样的
+                    var temp = {
+                        page: params.pageNumber, //初始化加载第一页，默认第一页
+                        recPerPage: params.pageSize, //每页的记录行数
+                        sortBy: params.sortName,
+                        order: params.sortOrder,
+                        P_FLOW_TYPE:$("#FLOW_TYPE").val(),
+                        P_OP_ROLE:$("#role_id").val()
+                    };
+                    return temp;
+                },
+                columns: [
+                    {
+                        checkbox: true,
+                        width:30
+                    },
+                    {
+                        field: "CONFIG_ID",
+                        title: "ID",
+                        align: "right",
+                        width: 40
+                    },
+                    {
+                        field: "FLOW_NAME",
+                        title: "流程名称",
+                        align: 'left',
+                        sortable: true,
+                        width: 120
+                    },
+                    {
+                        field: "NOW_STEP",
+                        title: "步骤",
+                        align: 'left',
+                        width: 80
+                    },
+                    {
+                        field: "OP_ROLE",
+                        title: "操作角色",
+                        align: "left",
+                        width: 120
+                    },
+                    {
+                        field: "OPER",
+                        title: "操作",
+                        align: 'left',
+                        width: 100
+                    },
+                    {
+                        field: "NEXT_STEP_NAME",
+                        title: "下一步骤",
+                        align: 'left',
+                        width: 110
+                    },
+                    {
+                        field: "CREATE_TIME",
+                        title: "创建时间",
+                        align: 'left',
+                        width: 150
+                    },
+                    {
+                        field: "CREATE_USER",
+                        title: "创建人",
+                        align: "left",
+                        width:150
+                    }
+
+                ]
+            });
+        };
+
+        function add() {
+            lock = false;
+            layer.open({
+                type: 2,
+                title: '新增配置工单',
+                shadeClose: false,
+                shade: [0.3, '#7D8591'],
+                maxmin: true, //开启最大化最小化按钮
+                area: ['800px', '600px'],
+                content: 'OrderOpConfigEdit.html?operation=add',
+                btn: ["提交", "取消"],
+                yes: function(index, layero) {
+                    //执行子页面中的验证方法
+                    if(lock) {
+                        return false;
+                    }
+                    var body = layer.getChildFrame('body', index);
+                    var iframe = window[layero.find('iframe')[0]['name']];
+                    lock = iframe.keySubmit();
+                },
+                btn2: function(index, layero) {
+                    layer.close(index);
+                    lock = false;
+                }
+            });
+        }
+
+        function updata() {
+            var select = $('#table').bootstrapTable('getSelections');
+            if(select.length != 1) {
+                layer.alert("请选择一条数据！");
+                return false;
+            }else {
+                lock = false;
+                layer.open({
+                    type: 2,
+                    title: '新增配置工单',
+                    shadeClose: false,
+                    shade: [0.3, '#7D8591'],
+                    maxmin: true, //开启最大化最小化按钮
+                    area: ['800px', '600px'],
+                    content: 'OrderOpConfigEdit.html?P_CONFIG_ID='+select[0].CONFIG_ID+"&operation=update",
+                    btn: ["提交", "取消"],
+                    yes: function(index, layero) {
+                        //执行子页面中的验证方法
+                        if(lock) {
+                            return false;
+                        }
+                        var body = layer.getChildFrame('body', index);
+                        var iframe = window[layero.find('iframe')[0]['name']];
+                        lock = iframe.keySubmit();
+                    },
+                    btn2: function(index, layero) {
+                        layer.close(index);
+                        lock = false;
+                    }
+                });
+            }
+        }
+
+        function del() {
+            var select = $('#table').bootstrapTable('getSelections');
+            if(select.length < 1) {
+                layer.alert("请选择需要删除的数据！");
+                return false;
+            } else {
+                //把要删除的id拼接起来
+                var ID = '';
+                for(var i = 0; i < select.length; i++) {
+                    if(select[i] == null) {
+                        ID = ID;
+                    } else {
+                        ID += select[i].CONFIG_ID + ',';
+                    }
+                }
+                layer.confirm("确定要删除这" + select.length + "条数据吗？", {
+                    btn: ['确定', '取消'] //按钮
+                }, function() {
+                    $.ajax({
+                        type: "post",
+                        url: urlpath + '/order/ConfigDel',
+                        data: {
+                            'P_CONFIG_ID': ID
+                        },
+                        xhrFields: {
+                            withCredentials: true
+                        },
+                        crossDomain: true == !(document.all), //兼容ie
+                        dataType: 'json',
+                        success: function(res) {
+                            if(res.RESULT == "success") {
+                                layer.msg("删除" + select.length + "条数据成功", {
+                                    icon: 6,
+                                    time: 1000
+                                });
+                                setTimeout(function() {
+                                    $("#table").bootstrapTable('refresh');
+                                }, 500);
+                            } else {
+                                layer.msg("删除失败", {
+                                    icon: 5,
+                                    time: 1000
+                                });
+                            }
+                        }
+                    });
+                });
+            }
+        }
+
+
+        function tableRefresh() {
+            $("#table").bootstrapTable('refresh');
+        }
+
+        function Close(msg) {
+            layer.closeAll();
+            layer.alert(msg);
+        }
+
+        function RoleTree() {
+            var $treepower = $('#roleTree').jstree({
+                'core': {
+                    "multiple": false,
+                    'data': {
+                        "url": urlpath + "/RoleHander/getNRoleTree",
+                        "data": function(node) {
+                            return {
+                                "id": node.id,
+                                "P_ROLE_ID": 0,
+                                "P_KEYWORD": 0
+                            };
+                        }
+                    }
+                }
+            }).bind('activate_node.jstree', function(obj, e) {
+                var ref = $("#roleTree").jstree(true);
+                sel = ref.get_selected();
+                var nodes = $("#roleTree").jstree("get_checked");
+                $("#role_id").val(e.node.id);
+                $("#role_text").val(e.node.text);
+            });
+            $("#role_select").on("blur", "#role_text", function(e) {
+                setTimeout(function() {
+                    $("#roleTree").hide();
+                }, 200)
+            });
+            $("#role_select").on("click", "#role_text", function() {
+                if($("#roleTree")[0].style.display == "none" || $("#roleTree")[0].style.display == "") {
+                    $("#roleTree")[0].style.display = "block";
+                } else if($("#roleTree")[0].style.display == "block") {
+                    $("#roleTree")[0].style.display = "none";
+                }
+            });
+        }
+    </script>
+</body>
+</html>

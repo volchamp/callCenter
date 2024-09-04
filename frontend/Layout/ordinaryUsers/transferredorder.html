@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>办结页面</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<!--<link href="../../Lib/zui-1.9.1-dist/lib/datetimepicker/datetimepicker.min.css" rel="stylesheet">-->
+		<style>
+			html,
+			body {
+				font-family: "微软雅黑";
+				font-size: 14px;
+				background: #F9F9F9;
+			}
+			
+			.container-fluid {
+				padding: 20px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-2">
+					<div class="panel" style="width: 550px;">
+						<div class="panel-body">
+							<div class="input-control search-box has-icon-right" id="searchbox">
+							</div>
+							<form class="form-horizontal" id="form">
+								<!--<div class="panel-heading" style="background: #469AFD;">
+									<div style="font-size: 24px; font-weight: 500px; color: #FFFFFF;">办结</div>
+								</div>-->
+								<div class="form-group">
+									<div style="height: 10px;"></div>
+									<div style="font-size: 18px;" for="jobsState"> &#12288;办结原因:</div>
+									<textarea style="height: 100px; width: 96%; margin:10px 10px 10px 10px ;" id="P_DSC" name="P_DSC" type="email" class="form-control" placeholder="请输入"></textarea>
+								</div>
+						</div>
+						<button style="margin-left: 39%; margin-bottom: 20px; font-size:18px ;" type="button" class="btn btn-primary" data-position="center" data-toggle="modal" data-target="#myModal">&#12288;办结&#12288;</button>
+						<!--<button style="margin-left: 39%; margin-bottom: 20px; font-size:18px ;" id="submitTransferred" class="btn btn-primary" type="button">&#12288;办结&#12288;</button>-->
+						</form>
+					</div>
+
+				</div>
+			</div>
+		</div>
+
+		<!--消息对话框-->
+		<div class="modal fade" id="myModal">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header" style="background: #469AFD;">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span class="sr-only">关闭</span></button>
+						<h2 style="color: #FFFFFF;" class="modal-title">提示</h4>
+					</div>
+					<div class="modal-body" style="display: inline-flex;height: 200px;padding: 11% 32%;">
+						<img src="../../Static/Img/a.png" width="60px" height="55px" class="img-circle" alt="圆形图片">
+						<div style="font-size:20px; margin: 15px;">确认办结？</div>
+					</div>
+					<div class="modal-footer">
+						<button style="margin-right: 20%;" type="button" class="btn btn-default" data-dismiss="modal">&#12288;&#12288;再想想&#12288;&#12288;</button>
+						<button style="margin-right: 20%;" id="submitTransFerred" type="button" class="btn btn-primary">&#12288;&#12288;确定&#12288;&#12288;</button>
+					</div>
+				</div>
+			</div>
+		</div>
+		
+
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js"></script>
+		<script src="../../Lib/public.js"></script>
+		<script type="text/javascript">
+			var apply_id=$.url("P_APPLY_ID");
+			$(function() {
+				$('#submitTransFerred').on('click', function() {
+			       	var $btn = $(this);
+                  $btn.button('loading');
+              var data1=$("#form").serializeArray();
+                  data1.push({
+                    	name:"P_IDS",
+                	    value:apply_id
+                    });
+			      	$.ajax({
+		            	type:"post",
+		            	url:urlpath+"/approval/applySetOver",
+		            	data:data1,
+		            	xhrFields: {
+		                withCredentials: true
+		              	},
+              		crossDomain:true==!(document.all),//兼容ie
+            			dataType:'json',
+            			success:function(res){
+            				if(res=="SUCCESS"){
+            				new $.zui.Messager('提示消息：提交成功', {
+										    type: 'success',
+										    placement:'center'
+											}).show();
+												window.parent.closeDialog();
+            				}else{
+            					new $.zui.Messager('提示消息：提交失败', {
+											    type: 'danger',
+											    placement:'center'
+												}).show();
+            		}
+            	},
+            	error:function(res){
+            	}
+            })
+			});
+			});
+			
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>处理记录</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../../Lib/bootstrap-4.3.1-dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="../../Lib/jsTree/style.min.css" />
+    <link rel="stylesheet" href="../../lib/bootstrap-datapicker/bootstrap-datetimepicker.min.css" />
+    <link rel="stylesheet" href="../../lib/font-awesome-4.7.0/css/font-awesome.min.css" />
+
+    <style>
+        html,
+        body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+        }
+
+
+        .container-fluid {
+            height: 100%;
+            overflow: auto;
+        }
+
+
+        .card-widget {
+            border: 0;
+            position: relative;
+        }
+
+
+        .card-comments {
+            background: #f8f9fa;
+        }
+
+        .card-comments .card-comment {
+            border-bottom: 1px solid #e9ecef;
+            padding: 8px 0;
+        }
+
+        .card-comments .card-comment::after {
+            display: block;
+            clear: both;
+            content: "";
+        }
+
+        .card-comments .card-comment:last-of-type {
+            border-bottom: 0;
+        }
+
+        .card-comments .card-comment:first-of-type {
+            padding-top: 0;
+        }
+
+        .card-comments .card-comment img {
+            height: 1.875rem;
+            width: 1.875rem;
+            float: left;
+        }
+
+        .card-comments .comment-text {
+            color: #78838e;
+            margin-left: 40px;
+        }
+
+        .card-comments .username {
+            color: #495057;
+            display: block;
+            font-weight: 600;
+        }
+
+        .card-comments .text-muted {
+            font-size: 12px;
+            font-weight: 400;
+        }
+
+        .img-fluid {
+            max-width: 100%;
+            height: auto;
+        }
+
+        .img-circle {
+            border-radius: 50%;
+        }
+
+        .img-sm,
+        .img-md,
+        .img-lg {
+            float: left;
+        }
+
+        .img-sm {
+            height: 1.875rem;
+            width: 1.875rem;
+        }
+
+        .img-sm+.img-push {
+            margin-left: 2.5rem;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div class="card card-widget">
+            <!-- /.card-header -->
+            <!-- /.card-body -->
+            <div class="card-footer card-comments">
+                <div class="card-comment">
+                    <!-- User image -->
+                    <img class="img-circle img-sm" src="../../Static/img/photo.jpg" alt="User Image">
+
+                    <div class="comment-text">
+                        <span class="username">
+                            张三
+                            <span class="text-muted float-right">2019-12-25 15:33:22</span>
+                        </span><!-- /.username -->
+                        挺不错的，问题解决了
+                    </div>
+                    <!-- /.comment-text -->
+                </div>
+                <!-- /.card-comment -->
+                <div class="card-comment">
+                    <!-- User image -->
+                    <img class="img-circle img-sm" src="../../Static/img/photo.jpg" alt="User Image">
+
+                    <div class="comment-text">
+                        <span class="username">
+                            李红艳
+                            <span class="text-muted float-right">2019-12-23 14:20:20</span>
+                        </span><!-- /.username -->
+                        问题已解决，3Q
+                    </div>
+                    <!-- /.comment-text -->
+                </div>
+                <!-- /.card-comment -->
+
+            <!-- /.card-footer -->
+                <div style="margin-top:30px;">
+                    <form action="#" method="post">
+                        <img class="img-fluid img-circle img-sm" src="../../Static/img/photo.jpg" alt="Alt Text">
+                        <!-- .img-push is used to add margin to elements next to floating images -->
+                        <div class="img-push">
+                            <input type="text" class="form-control form-control-sm"
+                                placeholder="在此处输入评论">
+                        </div>
+                        <button type="button" style="margin-top:10px;margin-left:40px;" class="btn btn-primary btn-sm">发表评论</button>
+                    </form>
+                </div>
+
+         
+            <!-- /.card-footer -->
+        </div>
+        <!-- /.card -->
+    </div>
+    </div>
+
+</body>
+<script type="text/javascript" src="../../Lib/jquery-3.4.1.min.js"></script>
+<script type="text/javascript" src="../../Lib/bootstrap-4.3.1-dist/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="../../Lib/jsTree/jstree.js"></script>
+<!--弹框-->
+<script type="text/javascript" src="../../Lib/layer/layer.js"></script>
+<script type="text/javascript" src="../../Lib/public.js"></script>
+<script>
+    $(document).ready(function () {
+        //getData();
+
+        function drawLine(arr) {
+            var html = '';
+            // if (arr.length > 0) {
+            //     for (var i = 0; i < arr.length; i++) {
+            //         if (i == 0) {
+            //             html += '<div class="time-label"><span class="bg-blue">' + arr[i].day +
+            //                 '</span></div>';;
+            //         } else {
+            //             html += '<div class="time-label"><span class="bg-gray">' + arr[i].day +
+            //                 '</span></div>';;
+            //         }
+            //         for (var j = 0; j < arr[i].content.length; j++) {
+            //             html +=
+            //                 '<div><i class="fa fa-calendar-check-o bg-blue"></i><div class="timeline-item"><span class="time"><i class="fas fa-clock"></i>' +
+            //                 arr[i].content[j].operTime + '</span><h3 class="timeline-header">' + arr[i]
+            //                 .content[j].operDsc +
+            //                 '</h3><div class="timeline-body"><div class="person-info"><i class="fa fa-user">&nbsp;</i><span>' +
+            //                 arr[i].content[j].operUser + '</span></div><div class="content-info">' + arr[i]
+            //                 .content[j].operMsg + '</div></div></div></div>';
+            //         }
+            //     }
+            //     $("#originLine").show();
+            //     $("#timeline").prepend(html);
+            // }
+        }
+
+        function getData() {
+            var dt = {
+                P_DB_ID: 1000
+            };
+            webapi("/order/getOperationLog", dt, function (res) {
+                if (res != null && res.length > 0) {
+                    drawLine(res);
+                } else {
+                    $("#originLine").hide();
+                    layer.msg("暂无数据", {
+                        icon: 9,
+                        time: 2000
+                    });
+                }
+
+            }, function (err) {
+                $("#originLine").hide();
+                layer.msg("获取数据失败", {
+                    icon: 5,
+                    time: 2000
+                });
+            })
+        }
+
+    })
+</script>
+
+</html>

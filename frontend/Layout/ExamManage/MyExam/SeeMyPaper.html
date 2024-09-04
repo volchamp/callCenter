@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<title>查看得分详情</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<link rel="stylesheet" href="../../../Lib/bootstrap-3.3.7-dist/css/bootstrap.css" />
+		<link rel="stylesheet" href="../../../Lib/bootstrap-table/dist/bootstrap-table.css" />
+		<link rel="stylesheet" href="../../../Static/Css/checkboxRadito.css" />
+		<style>
+		html,
+			body {
+				height: 100%;
+				width: 100%;
+				font-family: "微软雅黑", "宋体", Arial, sans-serif;
+				overflow: hidden;
+				background: #F9F9F9;
+			}
+			
+			.container-fluid {
+				padding: 5px;
+				width: 80%;
+				height: 90%;
+				margin: auto;
+				clear: both;
+			}
+			
+			#title1 {
+				width: 100%;
+				height: 100%;
+				background:#3BA4FF;
+				text-align: center;
+				padding: 5px 0px;
+				color: #ffffff;
+			}
+		#answer input {
+			vertical-align: middle;
+			line-height: 2em;
+		}
+		#answer label {
+			padding-left: 3px;
+			vertical-align: middle;
+			line-height: 2em;
+		}
+		#tatolscore1 {
+			color: red;
+			font-size: 10px;
+			background: #fff;
+		}
+		#is_right {
+			width: 30px;
+			height: 30px;
+			overflow: hidden;
+		}
+		#is_right img {
+			width: 30px;
+			height: 30px;
+			position: absolute;
+		}
+		#question_ts {
+			margin-left: 34px;
+			margin-top: 50px;
+		}
+		#question_ts tr td {
+			padding-left: 6px;
+		}
+		.answers {
+			font-size: 16px;
+			padding-bottom: 2px;
+			font-weight: 600;
+			color: green;
+		}
+		#qtr{
+				list-style: none;
+			}
+			#qtr li{
+				display: inline-block;
+				margin-left: 3px;
+				line-height: 30px;
+			}
+
+			#questionUl ul{
+				list-style: none;
+			}
+			#questionUl ul li{
+				float: left;
+				height: 30px;
+				width: 30px;
+				text-align: center;
+				margin-right: 5px;
+				line-height: 30px;
+			}
+			.wrong{
+				background-color: #d44c4c;
+				color: white;
+			}
+			.right{
+				background-color: #1770ff;
+				color: white;
+			}
+			.someright{
+				background-color: #e8e159;
+				color: white;
+			}
+			.none{
+				background-color: #bdb7b7;
+				color: white;
+			}
+			.option{
+				padding-left: 20px;
+			}
+			.tsocre{
+				margin-left: 10px;
+			}
+			.queT{
+				height: 40px;
+				line-height: 40px;
+			}
+			.rightAnswer{
+				font-size: 16px;
+			}
+			.wrongResult{
+				color: red;
+				font-size: 16px;
+				margin-right: 5px;
+			}
+			.rightResult{
+				color: #0a67fb;
+				font-size: 16px;
+			}
+			.someResult{
+
+				color: #0CBF73;
+			}
+			.que{
+				padding: 10px 0;
+				border-bottom: 1px solid;
+			}
+			.getScore{
+				height: 40px;
+				line-height: 40px;
+				color: #2666ff;
+			}
+		</style>
+
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<!--存放标题信息-->
+			<div class="col-md-12" style="padding: 0;height: 130px;" id="title">
+				<div id="title1">
+					<span id="P_PAPER_NAME" style="font-size: 32px;font-weight: 600;"></span><br><br />
+					<span style="font-size: 22px;">卷面总分数：</span><span id="P_PAPER_SCORE" style="font-size: 22px;color:#e30ce6;font-weight: 600;"></span><span style="font-size: 22px;">&nbsp;分</span>
+				</div>
+			</div>
+			<div class="col-md-8" style="margin-top: 3px;height: 90%;background: #fff;overflow: auto;padding-left: 6%;" id="question_content">
+
+			</div>
+			<div class="col-md-4" style="margin-top: 3px;padding-right: 0px;">
+				<div id="tatolscore1" >
+					<h3 style="margin-left: 10px;color:#CCCCCC;margin-top: 0px;">得分</h3>
+					<div id="tatolscore" style="font-size: 36px;text-align: center;font-weight: 600;"></div>
+				</div>
+				<!-- 题目的题号 -->
+				<div id="question_number" style="margin-top: 5px;background: #fff;">
+					<h4 style="margin-left:10px;padding-top: 10px;color:#CCCCCC;">题号</h4>
+					<div id="questionUl" style="overflow: hidden">
+
+					</div>
+					<div id="question_numbera">
+					<table id="question_ts">
+						<tr>
+							<td>
+								<table>
+									<tr>
+										<td style='width:20px;height:30px;border: 1px solid #1770ff;background-color: #1770ff'></td>
+									</tr>
+									<tr>
+										<td style='width:30px;height:30px;border: 0px solid #1770ff;'>
+											<font style="font-size:10px">正确</font>
+										</td>
+									</tr>
+								</table>
+							</td>
+							<td>
+								<table>
+									<tr>
+										<td style='width:20px;height:30px;border: 1px solid #e8e159;background-color:#e8e159'></td>
+									</tr>
+									<tr>
+										<td style='width:30px;height:30px;border: 0px solid #fff100;'>
+											<font style="font-size:10px">部分</font>
+										</td>
+									</tr>
+								</table>
+							</td>
+							<td>
+								<table>
+									<tr>
+										<td style='width:20px;height:30px;background-color:#bdb7b7'></td>
+									</tr>
+									<tr>
+										<td style='width:30px;height:30px; '>
+											<font style="font-size:10px">未评</font>
+										</td>
+									</tr>
+								</table>
+							</td>
+							<td>
+								<table>
+									<tr>
+										<td style='width:20px;height:30px;border: 1px solid #d44c4c;background-color:#d44c4c'></td>
+									</tr>
+									<tr>
+										<td style='width:30px;height:30px;border: 0px solid #B4CDCD;'>
+											<font style="font-size:10px">错误</font>
+										</td>
+									</tr>
+								</table>
+							</td>
+						</tr>
+					</table>
+				</div>
+				</div>
+				</div>
+
+		</div>
+		<script type="text/javascript" src="../../../Lib/jquery-3.4.1.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+		<script type="text/javascript" src="../../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/bootstrap-table/dist/bootstrap-table.js"></script>
+		<script type="text/javascript" src="../../../Lib/bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+		<script type="text/javascript" src="../../../Lib/bootstrap-table/src/virtual-scroll/index.js"></script>
+		<script type="text/javascript" src="../../../Lib/public.js"></script>
+		<script type="text/javascript">
+			var P_PAPER_ID = $.url("PAPER_ID");
+			var P_ID = "";
+			var ID = 1;
+			var total;
+			var maxtime;
+			$(document).ready(function() {
+				// LoadInfo();
+				// findQuestion(1);
+				myPaper();
+			});
+
+			function myPaper() {
+				$.ajax({
+					type:'post',
+					url: urlpath + '/exam/myPaperInfo?r=' + Math.random(),
+					data: {
+						'P_PAPER_ID': P_PAPER_ID
+					},
+					dataType:'json',
+					success:function (res) {
+						console.log(res);
+						setInfo(res);
+					},
+					error: function(err) {
+						alert(err);
+					}
+				})
+			}
+
+			function setInfo(data) {
+				$("#P_PAPER_NAME").text(data.paperName);
+				$("#P_PAPER_SCORE").text(data.totalScore);
+				$("#tatolscore").text(data.myScore+'分');
+				var questionStr = "";
+				var quesLi = "<ul>";
+				$.each(data.questions,function (i,item) {
+					questionStr+="<div class='que'>" +
+							"<div class='queT'>" +
+							"<span class='tid'>"+item.rid+"、</span>" +
+							"<span class='tname'>"+item.questionName+"</span>" +
+							"<span class='tsocre'>此题分数为："+item.tScore+"</span>"+
+							"</div>";
+					var result = "";
+					var isright = item.isRight;
+					var rightAnswers = item.rightAnswers==null?"暂无":item.rightAnswers;
+					var userAnswers = item.userAnsers;
+					var userScore = item.userScore==null?"未评":item.userScore;
+					if(isright==1){
+						quesLi+="<li class='right'>"+item.rid+"</li>";
+					}else if(isright==2){
+						quesLi+="<li class='someright'>"+item.rid+"</li>";
+					}else if(isright==0){
+						quesLi+="<li class='wrong'>"+item.rid+"</li>";
+					}else{
+						quesLi+="<li class='none'>"+item.rid+"</li>";
+					}
+
+					switch (item.questionClass) {
+						case 1:
+							if(isright==1){
+								result="<div><span class='rightResult'>正确</span><span class='getScore'>&nbsp;此题得分："+userScore+"</span></div>"
+							}else if(isright==2){
+								result="<div><span class='someResult'>部分正确</span><span class='rightAnswer'>正确答案为"+rightAnswers+"</span><span class='getScore'>&nbsp;此题得分："+userScore+"</span></div>"
+							}else{
+								result="<div><span class='wrongResult' >错误</span><span class='rightAnswer'>正确答案为"+rightAnswers+"</span><span class='getScore'>&nbsp;此题得分："+userScore+"</span></div>";
+							}
+							var radios = "";
+							$.each(item.answers,function (j,ans) {
+								var ischeck = 0;
+								$.each(userAnswers,function (d,ua) {
+									if(ua == ans.answerId){
+										ischeck = 1;
+									}
+								});
+								if(ischeck == 1){
+									radios += '<input readonly  checked class="danxuan" type="radio" value="' + ans.answerId + '" name="' + ans.answerId + '">';
+								}else{
+									radios += '<input readonly  class="danxuan" type="radio" value="' + ans.answerId + '" name="' + ans.answerId + '">';
+								}
+
+								radios += '<label>' + ans.answerName + '</label>';
+								radios += '<br/>';
+							});
+							questionStr+="<div class='option'>"+radios+"</div>";
+							break;
+						case 2:
+							if(isright==1){
+								result="<div><span class='rightResult'>正确</span><span class='getScore'>&nbsp;此题得分："+userScore+"</span></div>"
+							}else if(isright==2){
+								result="<div><span class='someResult'>部分正确</span><span class='rightAnswer'>正确答案为"+rightAnswers+"</span><span class='getScore'>&nbsp;此题得分："+userScore+"</span></div>"
+							}else{
+								result="<div><span class='wrongResult' >错误</span><span class='rightAnswer'>正确答案为"+rightAnswers+"</span><span class='getScore'>&nbsp;此题得分："+userScore+"</span></div>";
+							}
+							var check="";
+							$.each(item.answers,function (j,ans){
+								var ischeck = 0;
+								$.each(userAnswers,function (d,ua) {
+									if(ua == ans.answerId){
+										ischeck = 1;
+									}
+								});
+								if(ischeck==1){
+									check += '<div class="checkbox-item"><input readonly checked class="duoxuan" type="checkbox" value="' + ans.answerId+ '" name="answers">';
+								}else{
+									check += '<div class="checkbox-item"><input readonly class="duoxuan" type="checkbox" value="' + ans.answerId+ '" name="answers">';
+								}
+
+								check += '<label>' + ans.answerName + '</label></div>';
+								check += '<br/>';
+							});
+							questionStr+="<div class='option'>"+check+"</div>";
+							break;
+						case 3:
+							if(isright==1){
+								result="<div><span class='rightResult'>正确</span><span class='getScore'>&nbsp;此题得分："+userScore+"</span></div>"
+							}else if(isright==2){
+								result="<div><span class='someResult'>部分正确</span><span class='rightAnswer'>正确答案为"+rightAnswers+"</span><span class='getScore'>&nbsp;此题得分："+userScore+"</span></div>"
+							}else{
+								result="<div><span class='wrongResult' >错误</span><span class='rightAnswer'>正确答案为"+rightAnswers+"</span><span class='getScore'>&nbsp;此题得分："+userScore+"</span></div>";
+							}
+							if(userAnswers[0]==1){
+								var html = "<input readonly type='radio' checked value='1' class='panduan'>";
+								html += "<label>正确</label>";
+								html += "<br/>";
+								html += "<input readonly type='radio' value='2'  class='panduan'>";
+								html += "<label>错误</label>";
+								questionStr+="<div class='option'>"+html+"</div>";
+							}else{
+								var html = "<input readonly type='radio' value='1'  class='panduan'>";
+								html += "<label>正确</label>";
+								html += "<br/>";
+								html += "<input readonly type='radio' checked value='2'  class='panduan'>";
+								html += "<label>错误</label>";
+								questionStr+="<div class='option'>"+html+"</div>";
+							}
+
+							break;
+						case 4:
+							result="<div class='getScore'>此题得分:"+userScore+"分</div>" +
+									"<div class='rightAnswer'>标准答案："+rightAnswers+"</div>";
+							var tiankong = "";
+							$.each(item.answers,function (j,ans){
+								var v = "";
+								if(userAnswers[j]){
+									v=userAnswers[j];
+								}else{
+									v="未答";
+								}
+								tiankong +='('+(j+1)+')<span>'+v+'</span>';
+								// tiankong += '(' + (j + 1) + ')<input id="tk_' + ans.answerId + '" value="'+v+'" class="tiankong" type="text" style="padding-left:10px;padding-top:10px;border-bottom:#4A708B 1px solid; border-left: 0px solid; border-right: 0px solid; border-top: 0px solid;onclick:outline:Blue Solid 1px;" name="answers_tiankong_' + ans.answerId + '"/>';
+								tiankong += '  ';
+							});
+							questionStr+="<div class='option'>"+tiankong+"</div>";
+							break;
+						case 5:
+							result="<div class='getScore'>此题得分:"+userScore+"分</div>" +
+									"<div class='rightAnswer'>标准答案："+rightAnswers+"</div>";
+							var jianda = '<div>答：'+userAnswers[0]+'</div>';
+							questionStr+="<div class='option'>"+jianda+"</div>";
+							break;
+					}
+					questionStr+=result;
+					questionStr+="</div>";
+
+
+				});
+				quesLi+="</ul>";
+				console.log(quesLi);
+				$("#questionUl").html(quesLi);
+				$("#question_content").html(questionStr);
+
+			}
+
+
+
+		</script>
+	</body>
+
+</html>

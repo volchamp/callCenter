@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>规则配置</title>
+    <link rel="stylesheet" href="../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+    <link href="../Lib/zui-1.9.1-dist/dist/lib/chosen/chosen.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../Lib/jsTree/style.min.css">
+    <style>
+        .container,
+        .row,
+        .col-md-2,
+        .col-md-10 {
+            height: 100%;
+        }
+        .col-md-6{
+            margin: 20px 0;
+            height: calc(100% - 100px);
+        }
+
+        .col-md-3 {
+            margin: 20px 0;
+            height: calc(100% - 100px);
+            /*border-right: 1px solid #DFDFDF;*/
+        }
+
+        .col-md-6>ul {
+            list-style: none;
+        }
+
+        .col-md-6>ul>li {
+            font-size: 2rem;
+            cursor: pointer;
+            height: 50px;
+            line-height: 50px;
+        }
+
+        .icon-circle {
+            color: #AAAAAA;
+            position: relative;
+            bottom: 2px;
+        }
+
+        .select,
+        .select .icon-circle {
+            color: #469AFD;
+        }
+
+        .col-md-10 {
+            padding: 200px 100px;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        /*#save {*/
+        /*    padding: 10px 50px;*/
+        /*    position: absolute;*/
+        /*    bottom: 80px;*/
+        /*}*/
+    </style>
+
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6 panel">
+                <ul id="setSelect">
+                    <li class="select"><i class="icon icon-circle"></i>&nbsp;规则配置</li>
+                </ul>
+            </div>
+
+            <div class="col-md-3 panel" id="formBox">
+                <form class="form-horizontal" style="margin-top: 20px;">
+                    <div class="form-group">
+                        <label class="col-sm-3 required">字段</label>
+                        <div class="col-sm-9">
+                            <select class="chosen-select form-control" data-max_drop_width="200" style="width: 100px"
+                                id="ziduan">
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 required">字段值</label>
+                        <div class="col-sm-9" id="ziduanzhi">
+<!--                            <select data-placeholder="选择分类" class= form-control" tabindex="2" multiple=""-->
+<!--                                id="ziduanzhi">-->
+<!--                            </select>-->
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-3 required">规则对象</label>
+                        <div class=" col-sm-9">
+                            <input id="searchTree" type="text" class="form-control" readonly placeholder="请从下方点击你要选择的数据 R">
+                            <div id="tree" style="margin-top: 10px;max-height: 400px;overflow: auto;"></div>
+                        </div>
+                    </div>
+
+                </form>
+                <button class="btn btn-block btn-primary" id="save" onclick="submitRule()" type="button">添加</button>
+                <button class="btn btn-block  btn-info" id="add" onclick="addRuleto()" >完成</button>
+            </div>
+            <div class="panel col-md-3">
+                <table id="rulestable" class="table table-bordered">
+                    <tr>
+                        <td>字段</td>
+                        <td>字段值</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script src="../Lib/jquery-3.4.1.min.js"></script>
+    <script src="../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+    <script src="../Lib/zui-1.9.1-dist/dist/lib/chosen/chosen.min.js"></script>
+    <script src="../Lib/jsTree/jstree.js"></script>
+    <script src="../Lib/public.js"></script>
+    <script>
+        var RULES_ID = 0;
+        var msg = 1;
+        var messager = new $.zui.Messager('继续配置规则无法切换规则对象！', {
+            type: 'danger',
+            placement: 'center'
+        });
+        $(function () {
+            getSelected();
+
+            $("#save").css("right", $("#formBox").width() / 2 + 68)
+
+            $('select.chosen-select').chosen({
+                no_results_text: '没有找到',    // 当检索时没有找到匹配项时显示的提示文本
+                disable_search_threshold: 8, // 8 个以下的选择项则不显示检索框
+                search_contains: true,        // 从任意位置开始检索
+                drop_width: 260
+            });
+
+            $('#tree').jstree({
+                'core': {
+                    'data': {
+                        "url": urlpath + "/CommonHander/getUsrTree?lazy",
+                        "data": function (node) {
+                            return { "id": node.id };
+                        }
+                    },
+                    'themes': {
+                        'responsive': true
+                    }
+                },
+                "plugins": ["search"],
+                'search': {
+                    // 'show_only_matches': true,
+                    'ajax': {
+                        'url': urlpath + "/CommonHander/getUsrTree",
+                        'dataType': 'json',
+                        'type': 'GET',
+                        'crossDomain':true==!(document.all),//兼容ie
+                        'data': function (search) {
+                            return { "search": search };
+                        }
+                    }
+                }
+            });
+
+        });
+        
+        function addRuleto() {
+            var ziduan = $("#ziduan").val();
+            var zidianzhi = $("#ziduanzhi").text();
+            var taStr = "<tr><td>"+ziduan+"</td><td>"+zidianzhi+"</td></tr>";
+            $('#rulestable').append(taStr);
+        }
+
+        function getSelected() {
+            // 字段
+            $.ajax({
+                type: "post",
+                url: urlpath + "/ProcessHandler/GetProcessType",
+                async: false,
+                data: {
+                    'P_TABLE': 'TR_RULES_CONFIG',
+                    'P_COLUMN': 'FIELD'
+                },
+                xhrFields: {
+                    withCredentials: true
+                },
+               crossDomain:true==!(document.all),//兼容ie
+                dataType: 'json',
+                success: function (res) {
+                    var html = '<option value=""></option>';
+                    for (var r in res) {
+                        html += '<option value="' + res[r]["TEXT"] + '">' + res[r]["TEXT"] + '</option>'
+                    }
+                    $("#ziduan").html(html);
+                },
+                error: function (res) {
+                    new $.zui.Messager('字段获取失败', {
+                        type: 'danger',
+                        placement: 'center'
+                    }).show();
+                }
+            });
+
+            $("#ziduan").bind("change",function(){
+                if($(this).val()==''){
+                    return;
+                }
+                else{
+                    // 字段值
+                    $.ajax({
+                        type: "post",
+                        url: urlpath + "/rulesconfig/getFieldValue",
+                        async: false,
+                        data: {
+                            "P_FIELD":$(this).val()
+                        },
+                        xhrFields: {
+                            withCredentials: true
+                        },
+                        crossDomain:true==!(document.all),//兼容ie
+                        dataType: 'json',
+                        success: function (res) {
+                            var html = "";
+                            for (var r in res) {
+                                // html += '<option value="' + res[r]["ID"] + '">' + res[r]["TEXT"] + '</option>'
+                                html += '<label class="checkbox-inline">' +
+                                    '<input name="ziduanzhi" type="checkbox" value="'+res[r]["ID"]+'">'+res[r]["TEXT"]+
+                                    '</label>';
+                            }
+                            $("#ziduanzhi").html(html);
+                        },
+                        error: function (res) {
+                            new $.zui.Messager('字段值获取失败', {
+                                type: 'danger',
+                                placement: 'center'
+                            }).show();
+                        }
+                    });
+
+                }
+            });
+
+
+
+        }
+
+        function submitRule() {
+            var ziduanzhi_val = "";
+            var obj = document.getElementsByName("ziduanzhi");
+            for(i in obj){
+                if(obj[i].checked){
+                    ziduanzhi_val+=obj[i].value+',';
+                }
+            }
+            ziduanzhi_val = ziduanzhi_val.substring(0,ziduanzhi_val.length-1);
+            if ($("#ziduan").val() == "") {
+                new $.zui.Messager('"字段"不能为空！', {
+                    type: 'danger',
+                    placement: 'center'
+                }).show();
+                return false;
+            } else if (ziduanzhi_val=="") {
+                new $.zui.Messager('"字段值"不能为空！', {
+                    type: 'danger',
+                    placement: 'center'
+                }).show();
+                return false;
+            } else if (RULES_ID == 0 && $("#tree").jstree("get_selected") == "") {
+                new $.zui.Messager('请选择"规则对象"！', {
+                    type: 'danger',
+                    placement: 'center'
+                }).show();
+                return false;
+            }
+            var par = {
+                P_RULES_ID: RULES_ID,
+                P_FIELD_ID: $("#ziduan").val(),
+                P_FIELD_VALUE:ziduanzhi_val,
+                // P_FIELD_VALUE: $("#ziduanzhi").val().join(","),
+                P_FACTORY_ID: $("#tree").jstree("get_selected")[0]
+            };
+            webapi('/rulesconfig/rulesAdd',par,function (res) {
+                if(res.result == "SUCCESS"){
+                    new $.zui.Messager('提示消息：条件添加成功', {
+                        type: 'success',
+                        placement: 'center'
+                    }).show();
+                    $("#ziduan").val("");
+                    $("#ziduanzhi").html("");
+                    $('select.chosen-select').trigger('chosen:updated');
+                    RULES_ID = res.data[0].RULES_ID;
+                    msg = 1;
+                    $("#tree").on("changed.jstree", function (event, data) {
+                        if (msg == 1) {
+                            messager.show();
+                            $("#tree").jstree("deselect_node", data.node.id, true);
+                            $("#tree").jstree("select_node", res.data[0].FACTORY_ID, true);
+                        } else {
+                            $("#tree").unbind("changed.jstree");
+                        }
+                    });
+
+                    var tdStr = "<tr><td>"+res.data[0].FIELD+"</td><td>"+res.data[0].FILED_VAL+"</td></tr>";
+                    $('#rulestable').append(tdStr);
+                }else{
+                    new $.zui.Messager('配置规则失败,请检查该规则是否已存在！', {
+                        type: 'danger',
+                        placement: 'center'
+                    }).show();
+                }
+            });
+            // webapi('/rulesconfig/rulesAdd', par, function (res) {
+            //     if (res.result == "SUCCESS") {
+            //
+            //
+            //         new $.zui.Messager('规则配置成功，是否继续配置该对象规则', {
+            //             type: 'success',
+            //             placement: 'center',
+            //             time: 0,
+            //             close: false,
+            //             actions: [{
+            //                 name: 'continueConfig',
+            //                 icon: 'arrow-right',
+            //                 text: '继续',
+            //                 action: function () {
+            //                     $("#ziduan").val("");
+            //                     $("#ziduanzhi").val("");
+            //                     $('select.chosen-select').trigger('chosen:updated');
+            //                     RULES_ID = res.data[0].RULES_ID;
+            //                     msg = 1;
+            //                     $("#tree").on("changed.jstree", function (event, data) {
+            //                         if (msg == 1) {
+            //                             messager.show();
+            //                             $("#tree").jstree("deselect_node", data.node.id, true);
+            //                             $("#tree").jstree("select_node", res.data[0].FACTORY_ID, true);
+            //                         } else {
+            //                             $("#tree").unbind("changed.jstree");
+            //                         }
+            //                     });
+            //                 }
+            //             }, {
+            //                 name: 'undo',
+            //                 icon: 'undo',
+            //                 text: '取消',
+            //                 action: function () {
+            //                     $("#ziduan").val("");
+            //                     $("#ziduanzhi").val("");
+            //                     $('select.chosen-select').trigger('chosen:updated');
+            //                     RULES_ID = 0;
+            //                     msg = 0;
+            //                 }
+            //             }]
+            //         }).show();
+            //     } else {
+            //         new $.zui.Messager('配置规则失败,请检查该规则是否已存在！', {
+            //             type: 'danger',
+            //             placement: 'center'
+            //         }).show();
+            //     }
+            // });
+        }
+    </script>
+</body>
+
+</html>

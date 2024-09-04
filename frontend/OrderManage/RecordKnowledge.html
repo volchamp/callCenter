@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>关联知识</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="../Lib/bootstrap-3.3.7-dist/css/bootstrap.css" />
+    <link rel="stylesheet" href="../Lib/bootstrap-table/dist/bootstrap-table.css" />
+    <link rel="stylesheet" href="../Lib/jsTree/style.min.css">
+    <style>
+        .row{
+            margin-right: 0px!important;
+            margin-left: 0px!important;
+            }
+</style>
+</head>
+<body>
+    <div class="container-fluid">
+        <!-- 顶部搜索框等操作部分 -->
+        <div class="row" style="padding: 10px 0;">
+            <div class="col-md-4">
+                <div class="form-inline">
+                    <div class="input-group">
+                                <span class="input-group-btn">
+                                <button class="btn btn-default" type="button"><span
+                                        class="glyphicon glyphicon-search"></span></button>
+                                </span>
+                        <input type="text" class="form-control" id="searchString" placeholder="请输入题目名称">
+                    </div>
+
+<!--                    <div class="input-group" >-->
+
+<!--                        <div  style="float: left;width: 91%;margin-left: 10px" id="selecttree" >-->
+<!--                            <input style="width: 160px;" id="factory_text" type="text" readonly class="form-control search-input" placeholder="请选择题目分类" >-->
+<!--                            <input id="factory_id" type="hidden">-->
+<!--                            <div id="tree" class="treeject" style="position:absolute;border:1px solid #3BA4FF;border-radius: 3px;border-top:0px;-moz-border-radius-topleft:0px ;-moz-border-radius-topright: 0px;overflow: auto;display: none;background: #fff;z-index:9999;max-height: 230px;width: 160px;font-size: 10px;top: 35px;"></div>-->
+<!--                        </div>-->
+<!--                    </div>-->
+                    <button type="button" class="btn btn-primary" id="queryBtn">查 询</button>
+                </div>
+            </div>
+<!--            <div class="col-md-8" id="btAdd" style="text-align: right;">-->
+<!--                <button type="button" class="btn btn-primary" onclick="record(P_DB_ID)">关联</button>-->
+<!--            </div>-->
+        </div>
+        <!-- 主体数据表格等内容部分 -->
+        <div class="mainBody row">
+            <div class="col-md-12">
+                <table id="table"></table>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="../Lib/jquery-3.4.1.min.js"></script>
+    <script type="text/javascript" src="../Lib/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+    <script type="text/javascript" src="../Lib/bootstrap-table/dist/bootstrap-table.js"></script>
+    <script type="text/javascript" src="../Lib/bootstrap-table/dist/locale/bootstrap-table-zh-CN.min.js"></script>
+    <script type="text/javascript" src="../Lib/layer/layer.js"></script>
+    <script type="text/javascript" src="../Lib/colResizable-1.6.js"></script>
+    <script src="../Lib/jsTree/jstree.js"></script>
+    <script type="text/javascript" src="../Lib/public.js"></script>
+<!--    <script type="text/javascript" src="../Lib/all.js"></script>-->
+    <script type="text/javascript">
+        var P_DB_ID = $.url("P_DB_ID");
+        $(function () {
+            getTable();
+            $("#table").colResizable({
+                liveDrag: true, //实时显示滑动位置
+                resizeMode:'overflow', //mode can be 'fit', 'flex' or 'overflow'
+                minWidth: 15, //minimum width value in pixels allowed for a column
+                gripInnerHtml:"<div class='grip'></div>",
+                disabledColumns:[0]
+            });
+
+            $("#queryBtn").click(function() {
+                getTable();
+            });
+
+        });
+
+
+        function getTable() {
+            $('#table').bootstrapTable('destroy');
+            g = $('#table').bootstrapTable({
+                url: urlpath + '/order/getKnowledgeList',
+                method: 'get',
+                contentType: "text/json; charset=UTF-8",
+                queryParamsType: "",
+                sidePagination: 'server', //指定服务器端分页
+                dataType: "json",
+                sortable: true, //是否启用排序
+                sortOrder: "desc", //排序方式
+                sortName: "",
+                pagination: true,
+                pageNumber: 1,
+                pageSize: 10, //单页记录数
+                pageList:[10, 15, 20, 30], //分页步进值
+                clickToSelect: true, //点击选中
+                //得到查询的参数
+                queryParams: function(params) {
+                    //这里的键的名字和控制器的变量名必须一致，这边改动，控制器也需要改成一样的
+                    var temp = {
+                        page:params.pageNumber, //初始化加载第一页，默认第一页
+                        recPerPage: params.pageSize, //每页的记录行数
+                        KEYWORD: $("#searchString").val(),
+                        sortBy: params.sortName,
+                        order: params.sortOrder
+                    };
+                    return temp;
+                },
+                columns: [{
+                    checkbox: true
+                },
+                    {
+                        field: "OP",
+                        title: "操作",
+                        align: "center",
+                        width: 100,
+                        formatter(value,row,index){
+                            return "<a href='javascript:knowledgeDetail("+row.KNOWLEDGE_ID+")'>查看详情</a>"
+                        }
+                    },
+                    {
+                        field: "KNOWLEDGE_ID",
+                        title: "ID",
+                        align: 'right',
+                        width: 40
+                    },
+
+                    {
+                        field: "TITLE",
+                        title: "问题标题",
+                        align: 'left',
+                        sortable: true,
+                        width: 350
+                    },
+                    {
+                        field: "CREATE_TIME",
+                        title: "创建时间",
+                        align: 'left',
+                        width: 100
+                    },
+                    {
+                        field: "USER_NAME",
+                        title: "创建人",
+                        align: 'left',
+                        width: 100
+                    }
+
+                ]
+            });
+        };
+
+
+        function record() {
+            var select = $('#table').bootstrapTable('getSelections');
+            if(select.length == 0) {
+                layer.alert("请选择一条数据！");
+                return false;
+            } else {
+                var ID = '';
+                for(var i = 0; i < select.length; i++) {
+                    if(select[i] == null) {
+                        ID = ID;
+                    } else {
+                        ID += select[i].KNOWLEDGE_ID + ',';
+                    }
+                }
+                webapi('/order/orderRecordKnowledge',{"P_DB_ID":P_DB_ID,"P_KNOWLEDGE_ID":ID},function (res) {
+                    if (res.RESULT=="success"){
+                        parent.window.layer.closeAll();
+                        parent.window.recordSuccess();
+                    }else{
+                        layer.alert(res.MSG);
+                    }
+                },function (err) {
+                    layer.alert("后台链接出错了");
+                });
+            }
+        }
+
+        function knowledgeDetail(knowledge_id) {
+            window.open("../Layout/ordinaryUsers/lookKnowledgeContent.html?itemid="+knowledge_id+"&itemtypeid=1","知识详情");
+        }
+    </script>
+</body>
+</html>

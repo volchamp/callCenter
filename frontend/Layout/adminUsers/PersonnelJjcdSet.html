@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<title>紧急程度设置</title>
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Lib/jsTree/style.min.css">
+		<style>
+			html,
+			body {
+				font-family: "微软雅黑";
+				font-size: 14px;
+				background: #F9F9F9;
+				height: 100%;
+				width: 100%;
+				overflow: hidden;
+			}
+			
+			.container-fluid {
+				padding: 20px;
+			}
+			
+			btn_class {
+				height: 98%;
+			}
+			
+			#loadingBtn:hover {
+				background-color: #0000F1;
+				border: #0000F1;
+			}
+			
+			.urgent {
+				display: inline-block;
+				width: 23%;
+				cursor: pointer;
+			}
+			
+			.urgent .label:empty {
+				display: inline-block;
+				width: 65px;
+				height: 15px;
+				position: absolute;
+				background: #E4E4E4;
+				margin-top: 5px;
+			}
+			
+			.urgent span:first-child {
+				font-size: 12px;
+				margin-left: 18px;
+				margin-top: 8px;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container-fluid" style="height: 75%;">
+			<div class="row" style="height: 100%;">
+				<div class="col-md-2" style="height: 100%;">
+					<div class="panel" style="width: 358px;height: 95%;">
+						<div class="panel-body" style="height: 100%;">
+							<div>
+								<div class="form-group">
+									<label style="font-size: 18px;" class="col-sm-4 control-label required">紧急程度</label>
+									<div>
+										<div class="col-sm-8">
+											<div onclick="urgent(4,this)" class="urgent EM_LEVEL"><span id="NAME-4">&nbsp;&nbsp;低</span><br><span id="SPAN-4" class="label label-badge"></span></div>
+											<div onclick="urgent(3,this)" class="urgent EM_LEVEL"><span id="NAME-3">&nbsp;&nbsp;中</span><br><span id="SPAN-3" class="label label-badge"></span></div>
+											<div onclick="urgent(2,this)" class="urgent EM_LEVEL"><span id="NAME-2">&nbsp;&nbsp;高</span><br><span id="SPAN-2" class="label label-badge"></span></div>
+											<div onclick="urgent(1,this)" class="urgent EM_LEVEL"><span id="NAME-1">紧急</span><br><span id="SPAN-1" class="label label-badge"></span></div>
+										</div>
+										<input type="hidden" id="urgent" name="EM_LEVEL" class="urgent_input"></div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div style="position: absolute;margin-left: 40%;">
+			<button style="  font-size:18px ;" type="button" class="btn btn-primary" data-position="center" data-toggle="modal" id="sendbtn" data-target="#myModal">&#12288;设置&#12288;
+    </button>
+		</div>
+		<!--消息对话框-->
+		<div class="modal fade" id="myModal">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header" style="background: #469AFD;">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
+                        class="sr-only">关闭</span></button>
+						<h2 style="color: #FFFFFF;" class="modal-title">提示</h2>
+					</div>
+					<div class="modal-body" style="display: inline-flex;height: 100px;padding: 5% 32%;">
+						<img src="../../Static/Img/a.png" width="60px" height="45px" class="img-circle" alt="圆形图片">
+						<div style="font-size:20px; margin: 15px;">确认设置？</div>
+					</div>
+					<div class="modal-footer">
+						<button style="margin-right: 20%;" type="button" class="btn btn-default" data-dismiss="modal">&#12288;&#12288;取消&#12288;&#12288;</button>
+						<button style="margin-right: 20%;" id="submitturnsend" onclick="submitturnsend()" type="button" class="btn btn-primary">&#12288;&#12288;确认&#12288;&#12288;
+                </button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js"></script>
+		<script src="../../Lib/public.js"></script>
+		<script src="../../Lib/jsTree/jstree.js"></script>
+		<script>
+			var apply_id = $.url("applyId");
+			var jjcd = $.url("ccid");
+			$(function() {
+				$("#urgent").val(jjcd);
+				var color = "";
+				switch(jjcd) {
+					case "4":
+						color = "#11bae1";
+						break;
+					case "3":
+						color = "orange";
+						break;
+					case "2":
+						color = "#f4e60d";
+						break;
+					case "1":
+						color = "red";
+						break;
+				}
+				$("#SPAN-" + jjcd).css("background", color);
+				$("#NAME-" + jjcd).css("color", "red");
+			});
+			
+			function urgent(num, obj) {
+				$(".col-sm-8 span").css("color","black");
+				$('.urgent').css("color", "#353535");
+				$('.urgent .label').css("background", "#E4E4E4");
+				$("#NAME-"+num).css("color","red");
+				var color = "";
+				switch(num){
+					case 4:
+						color="#11bae1";
+						break;
+					case 3:
+						color="orange";
+						break;
+					case 2:
+						color="#f4e60d";
+						break;
+					case 1:
+						color="red";
+						break;
+				}
+				$(obj).children(".label").css("background",color);
+				$("#urgent").val(num);
+			}
+			
+			function submitturnsend() {
+				if($("#urgent").val() == jjcd) {
+					new $.zui.Messager('请调整紧急程度', {
+						type: 'danger',
+						placement: 'top'
+					}).show();
+					return;
+				}
+				var data1 = $("#form").serializeArray();
+				data1.push({
+					name: "P_ID",
+					value: apply_id
+				});
+				data1.push({
+					name: "P_EM_LEVEL",
+					value: $('#urgent').val()
+				});
+				$('#sendbtn').toggleClass('loading');
+				$.ajax({
+					type: "post",
+					url: urlpath + "/approval/OrderJjcdSet",
+					data: data1,
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'json',
+					success: function(res) {
+						if(res.result == "SUCCESS") {
+							new $.zui.Messager('消息提示：调整成功', {
+								type: 'success',
+								placement: 'center'
+							}).show();
+							window.parent.reload();
+							window.parent.closeDialog();
+						} else {
+							new $.zui.Messager('提示消息：调整失败', {
+								type: 'danger',
+								placement: 'center'
+							}).show();
+						}
+					},
+					error: function(res) {
+						new $.zui.Messager('提示消息：调整失败', {
+								type: 'danger',
+								placement: 'center'
+							}).show();
+					}
+				});
+			}
+
+		</script>
+	</body>
+
+</html>

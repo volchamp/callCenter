@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>人员树</title>
+    <link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+    <link rel="stylesheet" href="../../Lib/jsTree/style.min.css">
+    <style></style>
+</head>
+<style>
+    html,
+    body {
+        background: #F9F9F9;
+        height: 100%;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    btn_class {
+        height: 98%;
+    }
+
+    /*滚动条样式*/
+    .ibox-content::-webkit-scrollbar { /*滚动条整体样式*/
+        width: 6px; /*高宽分别对应横竖滚动条的尺寸*/
+        height: 6px;
+
+    }
+
+    .ibox-content::-webkit-scrollbar-thumb { /*滚动条里面小方块*/
+        border-radius: 5px;
+        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        background: rgba(0, 0, 0, 0.2);
+    }
+
+    .ibox-content::-webkit-scrollbar-track { /*滚动条里面轨道*/
+        -webkit-box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.2);
+        border-radius: 0;
+        background: rgba(0, 0, 0, 0.1);
+    }
+    #btn_left,#btn_right{
+        width: 50%;
+        height: 100%;
+        float: left;
+    }
+</style>
+<body class="gray-bg">
+<div class="wrapper wrapper-content " style="height: 100%">
+<!--    <div style=" margin:10px 0 0 100px" class="input-group">-->
+<!--        <div class="input-control search-box search-box has-icon-left has-icon-right search-example" id="searchboxExample">-->
+<!--            <input id="inputSearchExample" type="search" style="width: 300px" class="form-control search-input" placeholder="请输入查询关键字">-->
+<!--            <label for="inputSearchExample" class="input-control-icon-left search-icon"><i class="icon icon-search"></i></label>-->
+<!--			<span class="input-group-btn">-->
+<!--				<button id="inputSearch" class="btn btn-primary" type="button">查询</button>-->
+<!--			</span>-->
+<!--        </div>-->
+<!--    </div>-->
+    <div style="height: 98%">
+        <div class="ibox-content" style="height: 90%;overflow: auto;padding-left: 10%;margin-right: 10px;border-bottom:solid 1px  #e5e5e5; ">
+            <div style="" id="jsTree"></div>
+        </div>
+
+            <div class="btn_class" style="width: 100%;height: 20%;line-height: 20%;">
+                <!--<div id="btn_left" style="vertical-align: center;margin: auto 0;">
+                    <label style="height: 20px;line-height: 20px;cursor: pointer;padding-left: 35%;margin-top: 5%;display: none;" >是否短信验证&nbsp;&nbsp;&nbsp;<input style="vertical-align: text-bottom;width: 15px;height: 15px;"  id="senddx" type="checkbox" /></label>
+                </div>-->
+                <div id="btn_right" style="width: 100%;text-align: center;">
+                    <button id="jsTreeButton" class="btn btn-primary"
+                            style="position: absolute;bottom: 10px;left: 50%;letter-spacing: 3px;" type="button"
+                            onclick="loadUser()"></button>
+                </div>
+            </div>
+
+    </div>
+</div>
+<script src="../../Static/Js/myEchars.js"></script>
+<script src="../../Lib/jquery-3.4.1.min.js"></script>
+<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+<script src="../../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.js"></script>
+<script src="../../Static/Js/yunnan.js"></script>
+<script src="../../Lib/public.js"></script>
+<script src="../../Lib/jsTree/jstree.js"></script>
+<script type="text/javascript">
+    var P_inputId = $.url('inputId');
+    var textname="";
+    $(document).ready(function () {
+        if (P_inputId == "diaodu") {
+            $("#jsTreeButton").html("调度");
+        } else if (P_inputId == "zhuangpai") {
+            $("#jsTreeButton").html("转派");
+        }
+        loadTree();
+        $('#jsTree').bind("activate_node.jstree", function(obj, e) {
+					var currentNode = e.node;
+					if(!e.instance.is_leaf(currentNode)) {
+						e.instance.deselect_node(currentNode);
+					};
+				});
+    });
+
+	$('#inputSearch').on('click', function () {
+		var to = false;
+		var runn = false;
+        var v;
+        if (to) {
+            clearTimeout(to);
+        };
+        if (runn) {
+            clearTimeout(to);
+        };
+		to = setTimeout(function () {
+            v = $('#inputSearchExample').val();
+            $('#jsTree').jstree(true).search(v);
+        }, 500);
+        //
+        // runn = setTimeout(function () {
+        //     $(m).find('.jsTree').focus();
+        // }, 22000);
+	});
+
+    function getTreeData() {
+        $.ajax({
+            type: "POST",
+            url: urlpath + "/CommonHander/getUsrTreeNode",
+            xhrFields: {
+                withCredentials: true
+            },
+           crossDomain: true==!(document.all),//兼容ie
+            dataType: 'json',
+            success: function (tree) {
+                loadTree(tree);
+            }
+        });
+    }
+
+    function loadTree() {
+        $('#jsTree').jstree({
+            'core': {
+                "multiple": false,
+                'data': {
+                    "url": urlpath + "/CommonHander/getUsrDDTree",
+                    "data": function (node) {
+                        return {
+                            "id": node.id
+                        };
+                    }
+                }
+            },
+            "plugins": ["checkbox","search"],
+            "search":{
+                "show_only_matches":true,
+                "show_only_matches_children":true
+            }
+        });
+        $('#jsTree').bind("loaded.jstree", function (e, data) {
+            // $('#jsTree').jstree('open_all');
+        });
+    }
+
+    function loadUser() {
+        var userNames, userIds;
+        var ref = $('#jsTree').jstree(true); // 获得整个树
+        userIds = ref.get_bottom_selected();
+        users = ref.get_bottom_checked('true');
+
+        var txt = users[0].text;
+        // for (var user in users) {
+        //     if (users[user].state.mType == "user") {
+        //         txt = txt + users[user].text + ",";
+        //     }
+        // }
+        if (P_inputId == 'diaodu') {
+            if (userIds.length > 1) {
+                new $.zui.Messager("你只能选择一个调度部门！", {
+                    type: 'danger',
+                    placement: 'center'
+                }).show();
+                // console.log("你只能选择一个调度部门！");
+            } else if (userIds.length < 1) {
+                new $.zui.Messager("请选择您要调度的部门！", {
+                    type: 'danger',
+                    placement: 'center'
+                }).show();
+                // console.log("请选择您要调度的部门！");
+            } else {
+                // console.log(userIds);
+                var type=$('#senddx').is(":checked")?1:0;
+                parent.loadUser(userIds, txt,type);
+                parent.$.zui.modalTrigger.close();
+            }
+        }
+
+    }
+</script>
+</body>
+</html>

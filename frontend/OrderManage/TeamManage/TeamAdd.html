@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+	<head>
+		<meta charset="UTF-8">
+		<title>团队编辑</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/chosen/chosen.min.css">
+		<link rel="stylesheet" href="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.css">
+		<link rel="stylesheet" href="../../Lib/select/css/select-mania.css" />
+		<link rel="stylesheet" href="../../Lib/jsTree/style.min.css">
+		<!--<script src="../../Lib/select/ySelect.css"></script>-->
+		<!--<script src="../../Lib/select/multiple-select.css"></script>-->
+		<style>
+			.container-fluid {
+				padding: 10px;
+			}
+			
+			.tips {
+				color: red;
+				font-size: 12px;
+				float: right;
+			}
+			
+			#factory_text {
+				display: none;
+			}
+			
+			html,
+			body {
+				overflow-x: hidden;
+				overflow-y: auto;
+			}
+			
+			input {
+				border: 1px solid #95b8e7;
+				border-radius: 5px;
+			}
+			
+			.font {
+				font-family: "微软雅黑";
+				font-size: 12px;
+				width: 100px;
+			}
+			
+			.pwd_level {
+				float: left;
+				width: 50px;
+				height: 23px;
+				margin-right: 10px;
+				background-color: #eeeeee;
+				text-align: center;
+				color: #fff;
+				line-height: 23px;
+			}
+		</style>
+
+	</head>
+
+	<body>
+
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-2">
+					<div class="panel" style="width: 100%;">
+						<div class="panel-body">
+							<form class="form-horizontal" id="form">
+								<div class="form-group">
+									<label for="P_DepartName" class="col-sm-2 required">团队名称</label>
+									<div class="col-sm-10">
+										<input type="text" class="form-control" id="P_TeamName" name="P_TeamName">
+									</div>
+								</div>
+								<div class="form-group">
+									<label for="P_DSC" class="col-sm-2 ">备注</label>
+									<div class="col-sm-10">
+										<textarea class="form-control" rows="6" placeholder="" id="P_DSC" name="P_DSC"></textarea>
+									</div>
+								</div>
+								<button class="btn btn-primary" style="float:left;margin-left: 25%;margin-top: 15px;width: 200px;margin-bottom: 10px" onclick="submitBtn()" type="button" data-loading-text="正在提交...">提交</button>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Lib/jsTree/jstree.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+		<script src="../../Lib/zui-1.9.1-dist/dist/lib/datetimepicker/datetimepicker.min.js"></script>
+		<script src="../../Lib/select/js/select-mania.js"></script>
+		<script src="../../Lib/public.js"></script>
+		<script src="../../Lib/jsTree/jstree.js"></script>
+		<!--<script src="../../Lib/select/multiple-select.js"></script>-->
+		<script type="text/javascript">
+			var P_ID = $.url("P_ID");
+			var TEXTs = "";
+			var IDs = "";
+//			getTag();
+			$(function() {
+				if(P_ID) {
+					loadInfo();
+				}
+
+			});
+
+			//修改时加载数据
+			function loadInfo() {
+				$.ajax({
+					type: 'get',
+					url: urlpath + '/order/GetTeamDate',
+					dataType: 'json',
+					data: {
+						P_ID: P_ID
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all),
+					success: function(res) {
+						$("#P_TeamName").val(res[0].TEAM_NAME);
+						$("#P_DSC").val(res[0].DSC);
+					}
+				})
+			}
+
+			function submitBtn() {
+				var P_TeamName = $("#P_TeamName").val();
+				var data = $("#form").serializeArray();
+				var url = "/order/TeamAdd";
+				if(P_ID != "") {
+					url = "/order/TeamEdit";
+					data.push({
+						name: "P_ID",
+						value: P_ID
+					})
+				}
+				if(P_TeamName == "") {
+					new $.zui.Messager('团队名称不能为空！', {
+						type: 'danger',
+						placement: 'center'
+					}).show();
+					return false;
+				}
+				$.ajax({
+					type: "post",
+					url: urlpath + url,
+					data: data,
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'text',
+					success: function(res) {
+						if(res == "SUCCESS") {
+							new $.zui.Messager('提示消息：提交成功', {
+								type: 'success',
+								placement: 'center'
+							}).show();
+							window.parent.closeTrigger();
+							window.parent.updateGrid(); //刷新列表数据
+						} else {
+							new $.zui.Messager('提示消息：提交失败', {
+								type: 'danger',
+								placement: 'center'
+							}).show();
+						}
+					},
+					error: function(err) {
+
+					}
+				});
+			}
+
+			function getProject(columnName, useId) {
+				$.ajax({
+					type: 'get',
+					dataType: 'json',
+					url: urlpath + '/ProcessHandler/GetProject',
+					data: {},
+					success: function(res) {
+						if(res.length > 0) {
+							var opStr = "<option value=\"\"></option>";
+							$.each(res, function(i, item) {
+								opStr += "<option type=\"checkbox\" value=" + item.ID + ">" + item.TEXT + "</option>";
+							});
+							$("#" + useId).html(opStr);
+
+							fromisok(columnName);
+						}
+					},
+					error: function(err) {
+						layer.alert("获取下拉数据错误,错误信息为" + err);
+					}
+				})
+			}
+			// 根据参数赋值  系统  来源  区域不做选择
+			function fromisok(typename) {
+				if(typename == "SYSTEM") {
+					if(P_SYSTEM_ID != null && P_SYSTEM_ID != "") {
+						var select = document.getElementById("SYSTEM");
+						for(var i = 0; i < select.options.length; i++) {
+							if(select.options[i].value == P_SYSTEM_ID) {
+								$("#SYSTEM").val(P_SYSTEM_ID);
+								$("#SYS").addClass("noshow");
+								break;
+							}
+						}
+					}
+				}
+				if(typename == "SOURCE") {
+					if(source != null && source != "") {
+						var select = document.getElementById("SOURCE");
+						for(var i = 0; i < select.options.length; i++) {
+							if(select.options[i].value == source) {
+								$("#SOURCE").val(source);
+								$("#SOU").addClass("noshow");
+								break;
+							}
+						}
+					}
+				}
+				if(typename == 'TYPE') {
+					if(area_code != null && area_code != "") {
+						$("#AREA").val(area_code);
+						$("#AREA").parent().parent().addClass("noshow");
+					}
+				}
+			}
+			//加载标签
+			function getTag() {
+				$.ajax({
+					type: "post",
+					url: urlpath + "/ProcessHandler/GetProject",
+					data: {
+						'P_TABLE': 'TR_KNOWLEDGE_TAG',
+						'P_COLUMN': 'TAG_ID'
+					},
+					xhrFields: {
+						withCredentials: true
+					},
+					crossDomain: true == !(document.all), //兼容ie
+					dataType: 'json',
+					success: function(res) {
+						for(var i = 0; i < res.length; i++) {
+							var option = document.createElement("li");
+							$(option).val(res[i].ID);
+							$(option).text(res[i].TEXT);
+							$("#CHILD_PROJECT").append(option);
+						}
+						$('#CHILD_PROJECT li').on('click', function() {					
+							if($(this).hasClass("tagChecked"))
+							{
+								for(var i = 0; i < butnum.length; i++) {
+									if($(this).val() == butnum[i]) {
+										butnum.splice(i, 1);
+									}
+								}
+							}
+							else
+							{
+								butnum.push($(this).val());
+							}
+							$(this).toggleClass("tagChecked");
+							
+						});
+					},
+					error: function(err, error) {
+						//console.log(err);
+					}
+				});
+			}
+		</script>
+	</body>
+
+</html>

@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title></title>
+    <link rel="stylesheet" href="../Lib/zui-1.9.1-dist/dist/css/zui.min.css">
+    <link rel="stylesheet" href="../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            font-size: 14px;
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            background-color: #12183C;
+        }
+
+        body {
+            min-width: 1000px;
+            min-height: 600px;
+            overflow: auto;
+        }
+
+        #tab {
+            width: 100%;
+            height: 100%;
+        }
+
+        .echart-content {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border: 1px solid #2F5E92;
+        }
+
+        .echart-title {
+            width: 100%;
+            height: 40px;
+            line-height: 40px;
+            padding-left: 20px;
+            letter-spacing: 3px;
+            border-bottom: 1px solid #2F5E92;
+            color: #FFFFFF;;
+        }
+
+        .echart-bar {
+            position: absolute;
+            top: 40px;
+            bottom: 0;
+            width: 100%;
+            padding: 10px;
+        }
+
+        .type {
+            display: inline-block;
+            width: 50%;
+            height: 35px;
+            line-height: 35px;
+            float: left;
+            padding: 0 10px;
+        }
+
+        .datagrid-container {
+            width: 100% !important;
+            height: 100% !important;
+            border: 1px solid #2F5E92;
+        }
+
+        .progress {
+            height: 5px;
+            margin-bottom: 0;
+            width: 70%;
+        }
+
+        .table-responsive {
+            height: 100%;
+            padding-bottom: 10px;
+        }
+
+        .table {
+            color: #FFFFFF;
+            margin-bottom: 0;
+            height: 99%;
+        }
+
+        .table tr td:first-child {
+            width: 150px;
+            text-align: center;
+        }
+
+        .table tr td {
+            border-right: 1px solid #2F5E92;
+        }
+
+        .table tr td:last-child {
+            border-right: none;
+        }
+
+        .table td {
+            vertical-align: middle;
+            border-bottom: 1px solid #2F5E92;
+        }
+
+        .tab-type {
+            position: absolute;
+            right: 5px;
+            top: 5px;
+            letter-spacing: 2px;
+        }
+
+        .tab-span {
+            position: absolute;
+            left: 5px;
+            bottom: 5px;
+            letter-spacing: 2px;
+        }
+
+        .icon {
+            color: #FFE45B;
+            margin: 0 2px;
+        }
+
+        @media (min-width: 992px) {
+            .col-md-6,
+            .col-sm-6 {
+                height: 33.333333%;
+            }
+        }
+
+        @media (min-width: 1200px) {
+            .col-lg-4 {
+                height: 50%;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<table id="tab">
+    <tr style="height: 50%;">
+        <td style="width: 60%;padding: 10px;">
+            <div class="echart-content">
+                <div class="echart-title"><strong>问题处理时长</strong></div>
+                <div class="echart-bar">
+                    <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM(类型饼图) -->
+                    <div id="typeBar" style="width: 100%;height:100%;"></div>
+                </div>
+            </div>
+        </td>
+        <td style="width: 39%;padding: 10px;">
+            <div class="echart-content">
+                <div class="echart-title"><strong>问题类型统计</strong></div>
+                <div class="echart-bar">
+                    <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM(类型饼图) -->
+                    <div id="typePie" style="width: 100%;height:100%;"></div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    <tr style="height: 50%;">
+        <td style="padding: 10px;">
+            <div class="echart-content" style="padding: 5px 10px;">
+                <div class="table-responsive">
+                    <table class="table" id="table">
+                        <tr>
+                            <td style="position: relative;background-image: url(../img/tableTile.jpg);background-size: 100% 100%;">
+                                <span class="tab-type">类型</span>
+                                <span class="tab-span">评分</span>
+                            </td>
+                            <td  style="text-align: center;" v-for="(item,index) in table_title">{{item}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </td>
+        <td style="padding: 10px;">
+            <div class="echart-content">
+                <div class="echart-title"><strong>个人处理信息</strong></div>
+                <div class="echart-bar" style="color: #FFFFFF;">
+                    <div class="col-sm-6 col-md-6 col-lg-4" style="display: table;">
+                        <div style="display: table-cell;vertical-align: middle;padding: 0 10px;">
+                            <div>目前处理人</div>
+                            <div style="font-size: 24px;">{{total_oper}}</div>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                                     aria-valuemax="100" style="width: 100%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-6 col-lg-4" style="display: table;">
+                        <div style="display: table-cell;vertical-align: middle;padding: 0 10px;">
+                            <div>平均处理时长</div>
+                            <div style="font-size: 24px;">{{avg_time}}&nbsp;h</div>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                                     aria-valuemax="100" style="width: 100%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-6 col-lg-4" style="display: table;">
+                        <div style="display: table-cell;vertical-align: middle;padding: 0 10px;">
+                            <div>处理时长排名</div>
+                            <div style="font-size: 24px;">{{use_time_rank}}</div>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                                     aria-valuemax="100" style="width: 100%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-6 col-lg-4" style="display: table;">
+                        <div style="display: table-cell;vertical-align: middle;padding: 0 10px;">
+                            <div>处理工单量</div>
+                            <div style="font-size: 24px;">{{op_num}}</div>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                                     aria-valuemax="100" style="width: 100%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-6 col-lg-4" style="display: table;">
+                        <div style="display: table-cell;vertical-align: middle;padding: 0 10px;">
+                            <div>处理工单量排名</div>
+                            <div style="font-size: 24px;">{{op_num_rank}}</div>
+                            <div class="progress">
+                                <div class="progress-bar" role="progressbar" aria-valuenow="100" aria-valuemin="0"
+                                     aria-valuemax="100" style="width: 100%">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<!--<script src="../Lib/echarts-2.2.7/build/dist/echarts-all.js"></script>-->
+		<script src="../Lib/Echarts4.1.0/echarts.min.js"></script>
+		<script src="../Lib/Echarts4.1.0/echarts-gl.js"></script>
+<script src="../Lib/jquery-3.4.1.min.js"></script>
+<script src="../Lib/zui-1.9.1-dist/dist/js/zui.min.js"></script>
+<script src="../Lib/zui-1.9.1-dist/dist/lib/datagrid/zui.datagrid.min.js" type="text/javascript"></script>
+<script src="../Lib/public.js"></script>
+<script src="../Lib/vue.js"></script>
+<script>
+    var applyTrigger = new $.zui.ModalTrigger();
+    $(document).ready(function () {
+    });
+    var vm = new Vue({
+        el: "#tab",
+        data: {
+            time_text: [],//柱状图x轴参数
+            time_value: [],//柱状图y轴值
+            type_pie: [],//饼图的值
+            total_oper: "",//目前处理人数
+            avg_time: "",//平均处理时长
+            use_time_rank: "",//处理时长排名
+            op_num: "",//处理工单量
+            op_num_rank: "",//处理工单量排名
+            table_title: []//表格头部
+        },
+        methods: {
+            getLegend: function () {//取后台数据
+                webapi("/statisticsController/statisticsList", "", function (res) {
+                    if (res) {
+                        var list_row = res.SCORE_LIST_ROW.splice(1, res.SCORE_LIST_ROW.length);
+                        var use_time = res.USE_TIME;
+                        var type_count = res.TYPE_COUNT;
+                        var rank = res.RANK;
+                        var time_xAxis = []; //定义x轴y轴值得数组
+                        var time_value = [];
+                        var type_arry = [];//存储饼图数据
+                        vm.table_title = vm.table_title.concat(list_row);
+                        for (var i = 0; i < use_time.length; i++) {
+                            time_xAxis.push(use_time[i].TYPE_TEXT);
+                            time_value.push(use_time[i].AVG_TIME);
+                        }
+                        ;
+                        for (var i = 0; i < type_count.length; i++) {
+                            var a = {};
+                            a.value = type_count[i].APPLY_NUM;
+                            a.name = type_count[i].TYPE_TEXT;
+                            type_arry.push(a);
+                        }
+                        //柱状图赋值(this报错nudefind)
+                        vm.time_text = vm.time_text.concat(time_xAxis);
+                        vm.time_value = vm.time_value.concat(time_value);
+                        vm.type_pie = vm.type_pie.concat(type_arry);
+                        vm.total_oper = rank[0].TOTAL_OPER;
+                        vm.avg_time = rank[0].AVG_TIME;
+                        vm.use_time_rank = rank[0].USE_TIME_RANK;
+                        vm.op_num = rank[0].V_OP_NUM;
+                        vm.op_num_rank = rank[0].OP_NUM_RANK;
+                        vm.typeBar();
+                        vm.typeChart();
+                        vm.getTable(list_row, res.SCORE_LIST);
+                    }
+                });
+            },
+            typeChart: function () {//饼图
+                // 基于准备好的dom，初始化echarts实例
+//              var myChart = echarts.init(document.getElementById('typePie'));
+                var myChart = echarts.init(document.getElementById('typePie'));
+                var option = {
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: "{b} : {c} ({d}%)"
+                    },
+                    calculable: false,
+                    series: [{
+                        name: '类型',
+                        type: 'pie',
+                        radius: [0, 110],
+                        center: ['50%', '50%'],
+                        roseType: 'area',
+                        data: this.type_pie,
+                        itemStyle: {
+                            normal: {
+                                label: {
+                                    show: true,
+                                    formatter: '{b} : {c}'
+                                },
+                                labelLine: {
+                                    show: true
+                                }
+                            }
+                        }
+                    }]
+                }
+                // 绘制图表
+                myChart.setOption(option);
+                myChart.on("click", function (pram) {
+                    var name = encodeURI(encodeURI(pram.name));
+                    applyTrigger.show({
+                        iframe: "maintenanceStaff/statisticsList.html?P_IS_TYPE=1&P_TYPE_ID=" + name,
+                        height: $("body").height() * 0.8,
+                        width: $("body").width() * 0.8,
+                        title: pram.name
+                    });
+                })
+            },
+            typeBar: function () {//柱状图
+                // 基于准备好的dom，初始化echarts实例
+                var myChart = echarts.init(document.getElementById('typeBar'));
+                var option = {
+                    tooltip: {
+                        formatter: '{b}: {c}h'
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: this.time_text,
+                        splitLine: { //x轴网格不显示
+                            show: false
+                        },
+                        axisLabel: { //改变x轴字体的颜色
+                            show: true,
+                            textStyle: {
+                                color: '#ffffff'
+                            }
+                        },
+                        axisLine: { //改变x轴的颜色
+                            lineStyle: {
+                                color: '#2F5E92',
+                            }
+                        }
+                    },
+                    yAxis: {
+                        type: 'value',
+                        axisLabel: { //y轴字体颜色
+                            formatter:'{value} (小时)',
+                            show: true,
+                            textStyle: {
+                                color: '#1CB7E5'
+                            }
+                        },
+                        splitLine: { //y轴网格的颜色
+                            lineStyle: {
+                                color: ['#2F5E92']
+                            }
+                        },
+                        axisLine: { //改变y轴的颜色
+                            lineStyle: {
+                                color: '#2F5E92',
+                            }
+                        },
+                        axisLine: {
+                            show: false
+                        }, //显示数字，但不显示y轴线
+                        axisTick: {
+                            show: false
+                        }
+                    },
+                    grid: {
+                        x: 50,
+                        y: 40,
+                        x2: 25,
+                        y2: 30,
+                        borderWidth: 0
+                    },
+                    series: [{
+                        data: this.time_value,
+                        type: 'bar',
+                        barWidth: 40,
+                        itemStyle: {
+                            normal: {
+                                barBorderRadius: [5, 5, 0, 0],
+                                color: '#1CB7E5',
+                                label: {
+                                    show: true, //开启显示
+                                    position: 'top', //在上方显示
+                                    textStyle: { //数值样式
+                                        color: '#ffffff',
+                                        fontSize: 16
+                                    }
+                                }
+                            }
+                        },
+                        emphasis: {
+                            itemStyle: {
+                                color: '#FFFFFF',
+                            }
+                        }
+                    }]
+                };
+                // 绘制图表
+                myChart.setOption(option);
+                myChart.on("click", function (pram) {
+                    var name = encodeURI(encodeURI(pram.name));
+                    applyTrigger.show({
+                        iframe: "maintenanceStaff/statisticsList.html?P_IS_TYPE=2&P_TYPE_ID=" + name,
+                        height: $("body").height() * 0.8,
+                        width: $("body").width() * 0.8,
+                        title: pram.name
+                    });
+                })
+            },
+            getTable: function (a, b) {//拼接表格
+                var html = "";
+                for (var i = 0; i < b.length; i++) {
+                    var jsonObj = b[i];
+                    var val = jsonObj["评分"];
+                    html += "<tr>";
+                    if (jsonObj["评分"] == "未评分") {
+                        html += "<td>未评分</td>";
+                    } else {
+                        val = parseInt(val);
+                        html += "<td>"
+                        for (var n = 0; n < val; n++) {
+                            html += "<i class=\"icon icon-star\"></i>";
+                        }
+                        html += "</td>";
+                    }
+                    for (var j = 0; j < a.length; j++) {
+                        for (var item in jsonObj) {
+                            var SCORE_GRADE = jsonObj["评分"];
+                            if (jsonObj["评分"] == "未评分") {
+                                SCORE_GRADE = 0;
+                            }
+                            ;
+                            if (item == a[j]) {
+                                var jValue = jsonObj[item];//key所对应的value
+                                html += "<td onclick=\"type('" + item + "','" + SCORE_GRADE + "')\" style=\"cursor:pointer;text-align: right\">" + jValue + "</td>";
+                            }
+                        }
+                    }
+                    html += "</tr>";
+                }
+                $("#table").append(html);
+            }
+        },
+        mounted: function () {
+            this.getLegend();
+        }
+    });
+
+    function type(item, num) {
+        var name = encodeURI(encodeURI(item));
+        var nbr = encodeURI(encodeURI(num));
+        applyTrigger.show({
+            iframe: "maintenanceStaff/statisticsList.html?P_IS_TYPE=3&P_SCORE_GRADE=" + nbr + "&P_TYPE_ID=" + name,
+            height: $("body").height() * 0.8,
+            width: $("body").width() * 0.8,
+            title: item
+        });
+    }
+</script>
+
+</body>
+
+</html>

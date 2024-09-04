@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>二级菜单</title>
+		<link rel="stylesheet" href="../../Static/Css/tabs.css" />
+		<style>
+			html,
+			body {
+				height: 100%;
+				width: 100%;
+				background: #fff;
+				overflow: hidden;
+			}
+			
+			.center {
+				width: 86%;
+				height: 90%;
+				overflow: auto;
+				padding: 2% 7%;
+			}
+			
+			.center-title {
+				/*height: 30%;*/
+			}
+			
+			.center-type {
+				color: #3BA4FF;
+				letter-spacing: 2px;
+				border-left: 5px solid #3BA4FF;
+				padding-left: 5px;
+				height: 24px;
+				font-size: 20px;
+				line-height: 100%;
+			}
+			
+			.center-report {
+				/*height: 78%;*/
+				padding: 1%;
+				clear: both;
+				content: '';
+				overflow: auto;
+			}
+			
+			.report {
+				height: 106px;
+				width: 120px;
+				text-align: center;
+				float: left;
+				margin: 0px 3px;
+				cursor: pointer;
+			}
+			
+			.report:hover {
+				background:rgba(160,146,236,0.5);
+				color: #39379c;
+				border-radius: 3px;
+			}
+			
+			.report-img {
+				margin: 5px 0px;
+				/*border: 1px solid #fff;*/
+				width: 44px;
+				border-radius: 50%;
+				height: 44px;
+				line-height: 63px;
+				margin-left: 37px;
+				background: #A092EC;
+			}
+			
+			.report-img img {
+				width: 44px;
+			}
+			
+			.report-text {
+				font-size: 16px;
+			}
+			
+			.iframe {
+				width: 100%;
+				height: 100%;
+				border: 0px solid #fff;
+			}
+			
+			#menu {
+				display: none;
+				position: absolute;
+				border: 1px solid #CCCCCC;
+				padding: 5px;
+				border-radius: 3px;
+				background: #fff;
+				width: 120px;
+			}
+			
+			#menu p {
+				cursor: pointer;
+				margin-top: 2.5px;
+				border-bottom: 1px solid #CCC;
+			}
+			#menu p:first-child{
+				border-top:1px solid #CCC;
+			}
+			#menu p:hover {
+				color:#fff;
+				background: #0066CC;
+			}
+			.rightMenu {
+				display: none;
+			}
+			.cont-scroll li{
+				background: #fff;
+				margin-left: 3px;
+				border-top-left-radius: 6px;
+                border-top-right-radius: 6px;
+                height: 40px !important;
+                margin-top: 10px;
+                box-shadow: 0px -1.2px 0px #1767ec;
+			}
+			.cont-scroll li span{
+				color: #4b8bf4;
+			}
+		</style>
+	</head>
+
+	<body>
+
+		<div class="wrap">
+			<!-- 选项卡标题内容 -->
+			<div id="title" class="wrap-top">
+				<div style="display: none;width: 0px;" class="tab-left">＜＜</div>
+				<div style="display: none;width: 0px;" class="tab-right">＞＞</div>
+				<div class="cont-tab" style="width: 99%;">
+					<ul id="contentTabs" style="padding-left: 0.5%;padding-right: 0.5%;" class="cont-scroll">
+						<li id="tab0" class="active">
+							<span>首页</span>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<!-- 选项卡对应内容 -->
+
+			<div class="wrap-content">
+				<div id="iframe_0" class="cont-index">
+					<div id="center" class="center">
+					</div>
+				</div>
+			</div>
+		</div>
+		<!--菜单右键-->
+		<div id="menu">
+		</div>
+		<script src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script src="../../Static/Js/TABS.js"></script>
+		<script src="../../Lib/select/jquery.ellipsis.js"></script>
+		<script src="../../Lib/public.js"></script>
+		<script type="text/javascript">
+			var tabid = 0;
+			$(function() {
+				$('.report-text').ellipsis({
+					row: 2
+				});
+				$(".wrap").tabs({
+					range: 300
+				})
+				getdate();
+			});
+
+			function getdate() {
+				var par = {
+					"P_MENU_ID": "1746"
+				}
+				webapi("/MenuHander/getEJMenuList", par, function(res) {
+					var arr = [];
+					var html = "";
+					var htmll = "";
+					for(var i = 0; i < res.length; i++) {
+						/*获取当前元素后的所有元素*/
+						if(arr.indexOf(res[i].PARENTID) == -1) {
+							arr.push(res[i].PARENTID);
+							html += '<div class="center-title">' +
+								'<div class="center-type">' + res[i].PARENDNAME + '</div>' +
+								'<div id="' + res[i].PARENTID + '" class="center-report">' +
+								'</div></div>';
+						}
+					}
+					$("#center").html(html);
+					for(var j = 0; j < res.length; j++) {
+						htmll = '<div class="report" onclick="addTabs(this,\'' + res[j].MENU_NAME + '\',\'' + res[j].MENU_PATH + '\')">' +
+							'<div class="report-img">' +
+							'<img src="'+res[j].ICON_PATH+'" />' +
+							'</div>' +
+							'<div class="report-text">' + res[j].MENU_NAME + '</div>' +
+							'</div>';
+						$("#" + res[j].PARENTID).append(htmll);
+					}
+				});
+			}
+		</script>
+	</body>
+
+</html>

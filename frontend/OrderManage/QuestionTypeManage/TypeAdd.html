@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>新增题库</title>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<meta http-equiv="X-UA-Compatible" content="ie=edge">
+		<link rel="stylesheet" href="../../Lib/bootstrap-3.3.7-dist/css/bootstrap.css" />
+		<link rel="stylesheet" href="../../Lib/bootstrap-table/dist/bootstrap-table.css" />
+		<link rel="stylesheet" href="../../Lib/jsTree/style.min.css" />
+		<style>
+			html,
+			body {
+				height: 100%;
+				width: 100%;
+				overflow: hidden;
+			}
+			
+			.form {
+				padding: 10px 14%;
+			}
+			
+			.container-fluid {
+				height: 100%;
+			}
+			
+			label {
+				margin-right: 10px;
+				display: inline-block;
+				width: 64px;
+			}
+			
+			.form-control {
+				width: 400px;
+				display: inline-block;
+			}
+		</style>
+	</head>
+
+	<body>
+		<div class="container-fluid">
+			<!-- 文章正文部分 -->
+			<form role="form" class="form">
+				<div class="form-group">
+					<label for="P_TYPE_NAME" class="required">类型名称</label>
+					<input type="text" id="P_TYPE_NAME" name="P_TYPE_NAME" class="form-control" id="name" placeholder="请输入类型名称">
+				</div>
+				<div class="form-group">
+					<label for="P_TYPE_CODE" class="required">类型值</label>
+					<input type="text" id="P_TYPE_CODE" name="P_TYPE_CODE" oninput="value=value.replace(/[^\d]/g,'')" maxlength="11" class="form-control" placeholder="请输入类型值/只能输入数字">
+				</div>
+
+			</form>
+		</div>
+
+		<script type="text/javascript" src="../../Lib/jquery-3.4.1.min.js"></script>
+		<script type="text/javascript" src="../../Lib/bootstrap-3.3.7-dist/js/bootstrap.js"></script>
+		<script type="text/javascript" src="../../Lib/jsTree/jstree.js"></script>
+		<!--弹框-->
+		<script type="text/javascript" src="../../Lib/layer/layer.js"></script>
+		<script type="text/javascript" src="../../Lib/public.js"></script>
+		<script type="text/javascript">
+			var ID = $.url("ID");
+			var EVENT_ID = $.url("EVENT_ID");
+			var option = $.url("option");
+			$(document).ready(function() {
+				if(option == "updata") {
+					getdate(ID);
+				}
+			});
+
+			function sumit() {
+				if(trim($("#P_TYPE_NAME").val()) == "") {
+					layer.alert("请输入类型名称！");
+					return false;
+				} else if($("#P_TYPE_CODE").val() == "") {
+					layer.alert("请输入类型值！");
+					return false;
+				} else {
+					var urlstr = "";
+					var Date = {};
+					if(option == "updata") {
+						urlstr = "/order/orderSelectTypeUpdate";
+						Date = {
+							"P_ID": ID,
+							'P_EVENT_ID': EVENT_ID,
+							'P_TYPE_CODE': $('#P_TYPE_CODE').val(),
+							'P_TYPE_NAME': $("#P_TYPE_NAME").val()
+						}
+					} else {
+						urlstr = "/order/orderSelectTypeAdd";
+						Date = {
+							'P_EVENT_ID': EVENT_ID,
+							'P_TYPE_CODE': $('#P_TYPE_CODE').val(),
+							'P_TYPE_NAME': $("#P_TYPE_NAME").val()
+						}
+					}
+					$.ajax({
+						type: "post",
+						url: urlpath + urlstr,
+						async: true,
+						data: Date,
+						dataType: 'json',
+						success: function(res) {
+							if(res.RESULT== "SUCCESS") {
+								var index = parent.layer.getFrameIndex(window.name); //获取父页面窗口索引
+								parent.layer.msg(res.MSG, {
+									icon: 6,
+									time: 1000
+								});
+								setTimeout(function(){
+									parent.layer.close(index);
+								parent.tableRefresh();
+								},200)
+							} else {
+								parent.layer.alert(res.MSG);
+								parent.lock = false;
+							}
+						},
+						error: function(err) {
+							layer.alert("服务器出错了");
+							parent.lock = false;
+						}
+					});
+				}
+			}
+
+			function getdate(id) {
+				$.ajax({
+					type: "post",
+					url: urlpath + "/order/orderSelectTypeDataGet",
+					async: true,
+					data: {
+						'P_ID': id
+					},
+					dataType: 'json',
+					success: function(res) {
+						EVENT_ID = res.EVENT_ID;
+						$('#P_TYPE_CODE').val(res.TYPE_CODE);
+						$("#P_TYPE_NAME").val(res.TYPE_NAME);
+					},
+					error: function(err) {
+						alert("获取数据服务器出错了");
+					}
+				});
+			}
+		</script>
+	</body>
+
+</html>
